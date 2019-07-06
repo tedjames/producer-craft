@@ -5,6 +5,16 @@
 /.pnp
 .pnp.js
 
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+/serverless-producer-craft/.serverless
+/serverless-producer-craft/node_modules
+/serverless-producer-craft/jspm_packages
+
 # testing
 /coverage
 
