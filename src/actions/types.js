@@ -1,0 +1,167 @@
+/*  API Request States  */
+export const PENDING = 'PENDING';
+export const SUCCESS = 'SUCCESS';
+export const ERROR = 'ERROR';
+
+/*  Form Error Handling  */
+export const FORM_ERROR = 'FORM_ERROR';
+export const CLEAR_FORM_ERROR = 'CLEAR_FORM_ERROR';
+export const ADMIN_FORM_ERROR = 'FORM_ERROR';
+
+/*  Authentication  */
+export const NAME_CHANGED = 'NAME_CHANGED';
+export const EMAIL_CHANGED = 'EMAIL_CHANGED';
+export const PASSWORD_CHANGED = 'PASSWORD_CHANGED';
+export const COMPANY_CHANGED = 'COMPANY_CHANGED';
+export const POSITION_CHANGED = 'POSITION_CHANGED';
+export const CLEAR_AUTH_FORM = 'CLEAR_AUTH_FORM';
+export const ADMIN_MODE = 'ADMIN_MODE';
+export const REGISTER_MODAL = 'REGISTER_MODAL';
+
+export const AUTH_USER = 'AUTH_USER';
+export const LOGIN_USER = 'LOGIN_USER';
+export const LOGOUT_USER = 'LOGOUT_USER';
+export const REQUEST_ACCOUNT = 'REQUEST_ACCOUNT';
+export const AUTH_ERROR = 'AUTH_ERROR';
+export const RESET_PASSWORD = 'RESET_PASSWORD';
+export const UPDATE_EMAIL = 'UPDATE_EMAIL';
+export const FORGOT_PASSWORD_MODAL = 'FORGOT_PASSWORD_MODAL';
+
+/*  User Management  */
+export const CREATE_USER = 'CREATE_USER';
+export const GET_USERS = 'GET_USERS';
+export const GET_USER = 'GET_USER';
+export const UPDATE_USER = 'UPDATE_USER';
+export const DELETE_USER = 'DELETE_USER';
+
+/*  Registration Management  */
+export const GET_REGISTRATIONS = 'GET_REGISTRATIONS';
+export const DELETE_REGISTRATION = 'DELETE_REGISTRATION';
+
+// user + registration form
+export const USER_NAME_CHANGED = 'USER_NAME_CHANGED';
+export const USER_EMAIL_CHANGED = 'USER_EMAIL_CHANGED';
+export const USER_POSITION_CHANGED = 'USER_POSITION_CHANGED';
+export const USER_COMPANY_CHANGED = 'USER_COMPANY_CHANGED';
+export const USER_IS_ADMIN_CHANGED = 'USER_IS_ADMIN_CHANGED';
+
+export const SET_USER_FORM = 'SET_USER_FORM';
+export const CLEAR_USER_FORM = 'CLEAR_USER_FORM';
+export const ADMIN_ERROR = 'ADMIN_ERROR';
+
+/*  Company Management  */
+export const GET_COMPANIES = 'GET_COMPANIES';
+export const CREATE_COMPANY = 'CREATE_COMPANY';
+export const UPDATE_COMPANY = 'UPDATE_COMPANY';
+export const DELETE_COMPANY = 'DELETE_COMPANY';
+export const COMPANY_NAME_CHANGED = 'COMPANY_NAME_CHANGED';
+export const COMPANY_BLOG_CHANGED = 'COMPANY_BLOG_CHANGED';
+export const COMPANY_FOUNDER_CHANGED = 'COMPANY_FOUNDER_CHANGED';
+export const COMPANY_EMAIL_CHANGED = 'COMPANY_EMAIL_CHANGED';
+export const CLEAR_COMPANY_FORM = 'CLEAR_COMPANY_FORM';
+export const SET_COMPANY_FORM = 'SET_COMPANY_FORM';
+
+/*  Common View Management  */
+export const SNACKBAR = 'SNACKBAR';
+export const MENU_MODAL = 'MENU_MODAL';
+
+/*  Dashboard Modals  */
+export const REGION_MODAL = 'REGION_MODAL';
+export const REGION_METRIC_MODAL = 'REGION_METRIC_MODAL';
+export const UNIVERSAL_METRIC_MODAL = 'UNIVERSAL_METRIC_MODAL';
+export const BLOG_SETTINGS_MODAL = 'BLOG_SETTINGS_MODAL';
+export const PR_MODAL = 'PR_MODAL';
+export const REPORTS_MODAL = 'REPORTS_MODAL';
+export const SUPPORT_MODAL = 'SUPPORT_MODAL';
+export const SETTINGS_MODAL = 'SETTINGS_MODAL';
+export const INFLUENCER_MODAL = 'INFLUENCER_MODAL';
+export const MEDIA_MODAL = 'MEDIA_MODAL';
+export const LISTING_MODAL = 'LISTING_MODAL';
+export const ASSIGN_AMBASSADOR_MODAL = 'ASSIGN_AMBASSADOR_MODAL';
+export const UNASSIGN_AMBASSADOR_MODAL = 'UNASSIGN_AMBASSADOR_MODAL';
+
+export const GET_COMPANY_DETAILS = 'GET_COMPANY_DETAILS';
+
+/*  World Map  */
+export const UPDATE_CITY = 'UPDATE_CITY';
+export const RESET_CITY = 'RESET_CITY';
+export const HANDLE_ZOOM_IN = 'HANDLE_ZOOM_IN';
+export const HANDLE_ZOOM_OUT = 'HANDLE_ZOOM_OUT';
+
+/*  Region Management  */
+export const CREATE_REGION = 'CREATE_REGION';
+export const GET_REGIONS = 'GET_REGIONS';
+export const UPDATE_REGION = 'UPDATE_REGION';
+export const DELETE_REGION = 'DELETE_REGION';
+export const ASSIGN_AMBASSADOR = 'ASSIGN_AMBASSADOR';
+export const UNASSIGN_AMBASSADOR = 'UNASSIGN_AMBASSADOR';
+
+/*  Metrics Management  */
+export const CREATE_METRIC = 'CREATE_METRIC';
+export const DELETE_METRIC = 'DELETE_METRIC';
+export const UPDATE_METRIC = 'UPDATE_METRIC';
+export const GET_METRICS = 'GET_METRICS';
+
+export const CREATE_REGION_METRIC = 'CREATE_REGION_METRIC';
+export const GET_REGION_METRICS = 'GET_REGION_METRICS';
+export const UPDATE_REGION_METRIC = 'UPDATE_REGION_METRIC';
+export const DELETE_REGION_METRIC = 'DELETE_REGION_METRIC';
+
+export const CREATE_UNIVERSAL_METRIC = 'CREATE_UNIVERSAL_METRIC';
+export const GET_UNIVERSAL_METRICS = 'GET_UNIVERSAL_METRICS';
+export const UPDATE_UNIVERSAL_METRIC = 'UPDATE_UNIVERSAL_METRIC';
+export const DELETE_UNIVERSAL_METRIC = 'DELETE_UNIVERSAL_METRIC';
+
+/*  PR Management  */
+export const GET_PRESS_RELEASES = 'GET_PRESS_RELEASES';
+export const CREATE_PRESS_RELEASE = 'CREATE_PRESS_RELEASE';
+export const UPDATE_PRESS_RELEASE = 'UPDATE_PRESS_RELEASE';
+export const DELETE_PRESS_RELEASE = 'DELETE_PRESS_RELEASE';
+
+export const PRESS_RELEASE_MODAL = 'PRESS_RELEASE_MODAL';
+
+/*  Report Management  */
+export const CREATE_REPORT = 'CREATE_REPORT';
+export const GET_REPORTS = 'GET_REPORTS';
+export const DELETE_REPORT = 'DELETE_REPORT';
+export const UPDATE_REPORT = 'UPDATE_REPORT';
+
+export const GET_REPORT_URL = 'GET_REPORT_URL';
+export const CLEAR_REPORT_URL = 'CLEAR_REPORT_URL';
+export const UPLOAD_REPORT = 'UPLOAD_REPORT';
+export const DELETE_REPORT_FILE = 'DELETE_REPORT_FILE';
+
+/*  Influencer Content Management  */
+export const GET_INFLUENCER_CONTENT = 'GET_INFLUENCER_CONTENT';
+export const CREATE_INFLUENCER_CONTENT = 'CREATE_INFLUENCER_CONTENT';
+export const UPDATE_INFLUENCER_CONTENT = 'UPDATE_INFLUENCER_CONTENT';
+export const DELETE_INFLUENCER_CONTENT = 'DELETE_INFLUENCER_CONTENT';
+
+/*  Media Content Management  */
+export const GET_MEDIA = 'GET_MEDIA';
+export const CREATE_MEDIA = 'CREATE_MEDIA';
+export const UPDATE_MEDIA = 'UPDATE_MEDIA';
+export const DELETE_MEDIA = 'DELETE_MEDIA';
+
+/*  Blog Content Management  */
+export const GET_BLOG_CONTENT = 'GET_BLOG_CONTENT';
+export const CREATE_BLOG_CONTENT = 'CREATE_BLOG_CONTENT';
+export const DELETE_BLOG_CONTENT = 'DELETE_BLOG_CONTENT';
+export const UPDATE_BLOG_CONTENT = 'UPDATE_BLOG_CONTENT';
+export const BLOG_MODAL = 'BLOG_MODAL';
+
+/*  ICO Listing Management  */
+export const GET_LISTINGS = 'GET_LISTINGS';
+export const CREATE_LISTING = 'CREATE_LISTING';
+export const UPDATE_LISTING = 'UPDATE_LISTING';
+export const DELETE_LISTING = 'DELETE_LISTING';
+
+/*  Admin Modals  */
+export const USER_MODAL = 'USER_MODAL';
+export const COMPANY_MODAL = 'COMPANY_MODAL';
+export const REGISTRATION_MODAL = 'REGISTRATION_MODAL';
+export const SWITCH_COMPANY = 'SWITCH_COMPANY';
+export const SWITCH_COMPANY_MODAL = 'SWITCH_COMPANY_MODAL';
+
+/*  Google Analytics  */
+export const GET_ANALYTICS = 'GET_ANALYTICS';
