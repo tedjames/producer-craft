@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import InputBase from '@material-ui/core/InputBase';
 
@@ -48,42 +48,34 @@ const InputField = styled(InputBase)`
   font-family: roboto-condensed !important;
 `;
 
-export default class CommentSubmission extends Component {
-  constructor(props) {
-    super(props);
+const CommentSubmission = () => {
+  const [message, setMessage] = useState('');
+  return (
+    <div>
+      <CommentDetails>
+        <UserAvatar backgroundImage={StorchProfile} />
+        <FieldCard>
+          <InputField
+            placeholder="Add a public comment..."
+            inputProps={{
+              'aria-label': 'Comment Submission',
+            }}
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            fullWidth
+          />
+        </FieldCard>
+      </CommentDetails>
+      <CommentButtons message={message}>
+        <FlatButton onClick={() => setMessage('')} style={{ backgroundColor: '#eee', width: 120 }}>
+          <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
+        </FlatButton>
+        <FlatButton>
+          <ButtonText>Submit</ButtonText>
+        </FlatButton>
+      </CommentButtons>
+    </div>
+  );
+};
 
-    this.state = {
-      message: '',
-    };
-  }
-
-  render() {
-    const { message } = this.state;
-    return (
-      <div>
-        <CommentDetails>
-          <UserAvatar backgroundImage={StorchProfile} />
-          <FieldCard>
-            <InputField
-              placeholder="Add a public comment..."
-              inputProps={{
-                'aria-label': 'Comment Submission',
-              }}
-              value={message}
-              onChange={e => this.setState({ message: e.target.value })}
-              fullWidth
-            />
-          </FieldCard>
-        </CommentDetails>
-        <CommentButtons message={message}>
-          <FlatButton style={{ backgroundColor: '#eee', width: 120 }}>
-            <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
-          </FlatButton>
-          <FlatButton>
-            <ButtonText>Submit</ButtonText>
-          </FlatButton>
-        </CommentButtons>
-      </div>
-    );
-  }
-}
+export default CommentSubmission;
