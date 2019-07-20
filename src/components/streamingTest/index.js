@@ -1,26 +1,24 @@
-import React from 'react';
-import VideoPlayer from './VideoPlayer';
+import React, { PureComponent } from 'react';
+import ReactJWPlayer from 'react-jw-player';
+import VideoImage from '../../assets/hero-image-5.jpg';
 
-const videoJsOptions = {
-  autoplay: false,
-  playbackRates: [0.5, 1, 1.25, 1.5, 2],
-  width: 720,
-  height: 405,
-  controls: true,
-  sources: [
-    {
-      src: 'https://dfkv75gx1ii0n.cloudfront.net/60slaunchpromo14/master.m3u8',
-      type: 'application/x-mpegURL',
-    },
-  ],
-};
+const playlist = [
+  {
+    file: 'https://content.jwplatform.com/videos/RyMYYAIp-LEbNYiQV.mp4',
+    image: VideoImage,
+  },
+];
 
-function StreamingTest() {
-  return (
-    <div>
-      <VideoPlayer {...videoJsOptions} />
-    </div>
-  );
+class StreamingTest extends PureComponent {
+  render() {
+    return (
+      <ReactJWPlayer
+        playerId="my-jw-player-instance"
+        playerScript="https://cdn.jwplayer.com/libraries/Zel8X0GE.js"
+        playlist={playlist}
+      />
+    );
+  }
 }
 
 export default StreamingTest;

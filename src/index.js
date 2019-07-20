@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import './styles/index.css';
-import './styles/videojs-custom-skin.css';
-import App from './components';
+import './styles/mouse-scroll-animation.css';
+import App from './components/routing';
 import * as serviceWorker from './hocs/serviceWorker';
 
 // enables hot module reloading
