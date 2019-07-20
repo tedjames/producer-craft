@@ -14,11 +14,15 @@
     "max-len": ["error", { "code": 100 }],
     "prefer-promise-reject-errors": ["off"],
     "react/jsx-filename-extension": ["off"],
-    "react/prop-types": ["warn"],
+    "react/prop-types": ["off"],
     "no-return-assign": ["off"],
     "react/jsx-one-expression-per-line": ["off"],
     "no-underscore-dangle": ["off"],
     "no-console": ["off"],
-    "import/prefer-default-export": ["off"]
+    "import/prefer-default-export": ["off"],
+    "eslint(react/prop-types)": ["off"],
+    "eslint(class-methods-use-this)": ["off"],
+    "class-methods-use-this": ["off"],
+    "spaced-comment": ["off"]
   }
 }
