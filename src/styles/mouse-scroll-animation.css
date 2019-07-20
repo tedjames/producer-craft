@@ -1,0 +1,65 @@
+.scroll-downs {
+  position: absolute;
+  top: 10;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 34px;
+  height: 55px;
+}
+@media (max-width: 1080px) {
+  .scroll-downs {
+    top: 430px;
+    margin-right: 60px;
+  }
+}
+@media (max-width: 600px) {
+  .scroll-downs {
+    top: 430px;
+    margin-right: 40px;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+  .scroll-downs {
+    top: 240px;
+    margin-right: 10px;
+  }
+}
+
+.mousey {
+  transform: scale(0.6);
+  width: 3px;
+  padding: 10px 15px;
+  height: 35px;
+  border: 2px solid #fff;
+  border-radius: 25px;
+  opacity: 0.2;
+  box-sizing: content-box;
+  position: relative;
+  bottom: 15px;
+}
+.scroller {
+  width: 3px;
+  height: 10px;
+  border-radius: 25%;
+  background-color: #fff;
+  animation-name: scroll;
+  animation-duration: 2.2s;
+  animation-timing-function: cubic-bezier(0.15, 0.41, 0.69, 0.94);
+  animation-iteration-count: infinite;
+}
+@keyframes scroll {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+}
