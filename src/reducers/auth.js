@@ -1,46 +1,65 @@
 import {
   PENDING,
   ERROR,
-  NAME_CHANGED,
+  FIRST_NAME_CHANGED,
+  LAST_NAME_CHANGED,
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
-  COMPANY_CHANGED,
-  POSITION_CHANGED,
+  CONFIRM_PASSWORD_CHANGED,
   CLEAR_AUTH_FORM,
   AUTH_ERROR,
   AUTH_USER,
   LOGIN_USER,
   LOGOUT_USER,
-  REQUEST_ACCOUNT,
+  CREATE_USER,
+  AUTH_MODAL,
+  GET_USER,
+  REGISTRATION_MODAL,
+  LOGIN_MODAL,
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   password: '',
-  company: '',
-  position: '',
+  confirmPassword: '',
   user: null,
   error: '',
   success: '',
   loading: false,
+  showModal: false,
+  showRegistration: false,
+  userDetails: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case GET_USER:
+      return { ...state, userDetails: action.payload };
+    case AUTH_MODAL:
+      return { ...state, showModal: action.payload };
+    case LOGIN_MODAL:
+      return { ...state, showRegistration: false };
+    case REGISTRATION_MODAL:
+      return { ...state, showModal: action.payload, showRegistration: action.payload };
     /*  Login / Registration Form Reducers  */
-    case NAME_CHANGED:
-      return { ...state, name: action.payload };
+    case FIRST_NAME_CHANGED:
+      return { ...state, firstName: action.payload };
+    case LAST_NAME_CHANGED:
+      return { ...state, lastName: action.payload };
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
     case PASSWORD_CHANGED:
       return { ...state, password: action.payload };
-    case COMPANY_CHANGED:
-      return { ...state, company: action.payload };
-    case POSITION_CHANGED:
-      return { ...state, position: action.payload };
+    case CONFIRM_PASSWORD_CHANGED:
+      return { ...state, confirmPassword: action.payload };
     case CLEAR_AUTH_FORM:
-      return { ...state, ...INITIAL_STATE };
+      return {
+        ...state,
+        ...INITIAL_STATE,
+        email: action.payload && action.payload.email ? state.email : INITIAL_STATE.email,
+      };
     case AUTH_ERROR:
       return { ...state, error: action.payload };
 
@@ -70,11 +89,11 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             success: 'Successfully logged in',
             user: action.payload,
-            name: '',
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
-            company: '',
-            position: '',
+            confirmPassword: '',
             error: '',
             loading: false,
           };
@@ -94,26 +113,26 @@ export default (state = INITIAL_STATE, action) => {
           };
       }
 
-    /*  Account Registration Reducers  */
-    case REQUEST_ACCOUNT:
+    /*  Account Creation Reducers  */
+    case CREATE_USER:
       switch (action.payload) {
         case PENDING:
           return { ...state, loading: true };
         case ERROR:
           return {
             ...state,
-            error: 'Error requesting account',
+            error: 'Error creating user',
             loading: false,
           };
         default:
           return {
             ...state,
-            success: 'Successfully submitted registration',
-            name: '',
+            success: 'Successfully created user',
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
-            company: '',
-            position: '',
+            confirmPassword: '',
             error: '',
             loading: false,
           };
