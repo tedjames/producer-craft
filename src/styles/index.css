@@ -1,13 +1,160 @@
+html {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background: black;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Placeholder Text for Material UI Form Fields */
+.MuiOutlinedInput-input {
+  font-family: roboto-condensed !important;
+  font-size: 16px !important;
+  padding-top: 17.5px !important;
+  padding-bottom: 15px !important;
+}
+.Mui-focused > fieldset {
+  border-width: 1px !important;
+}
+
+.MuiInputLabel-outlined {
+  font-family: roboto-condensed, sans-serif !important;
+}
+
+.MuiInputLabel-outlined.Mui-focused {
+  opacity: 0.85 !important;
+}
+
+.cb-slideshow,
+.cb-slideshow:after {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+}
+.cb-slideshow:after {
+  content: '';
+  background: transparent repeat top left;
+}
+
+.cb-slideshow li span {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  color: transparent;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: none;
+  opacity: 0;
+  z-index: -1;
+  animation: imageAnimation 24s linear infinite 0s;
+}
+
+.cb-slideshow li:nth-child(1) span {
+  background-image: url(../assets/hero-image-12.jpg);
+}
+.cb-slideshow li:nth-child(2) span {
+  background-image: url(../assets/hero-image-3.jpeg);
+  animation-delay: 6s;
+}
+.cb-slideshow li:nth-child(3) span {
+  background-image: url(../assets/hero-image-8.jpg);
+  animation-delay: 12s;
+}
+.cb-slideshow li:nth-child(4) span {
+  background-image: url(../assets/hero-image-7.png);
+  animation-delay: 18s;
+}
+
+.cb-slideshow li:nth-child(2) div {
+  animation-delay: 6s;
+}
+.cb-slideshow li:nth-child(3) div {
+  animation-delay: 12s;
+}
+.cb-slideshow li:nth-child(4) div {
+  animation-delay: 18s;
+}
+
+@keyframes imageAnimation {
+  0% {
+    opacity: 0;
+    animation-timing-function: ease-in;
+  }
+  8% {
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  17% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#trailer-dialog-transparent > .MuiDialog-container > .MuiPaper-root {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.disable-selection {
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+
+.icon-gradient {
+  /* gradient and fallback color */
+  stroke: url(#my-cool-gradient) #447799;
+}
+
+.icon-gradient-fill {
+  /* gradient and fallback color */
+  fill: url(#my-cool-gradient) #447799;
+}
+
+.gradient-background {
+  /* gradient and fallback color */
+  background: url(#my-cool-gradient) #447799;
+}
+
+.horizontal-scroll {
+  scroll-behavior: smooth;
+}
+
+.designBox {
+  transition: all 0.2s ease-out;
+  transform: rotate(45deg);
+  position: absolute;
+  left: 7px;
+  opacity: 0.4;
+}
+
+.designArrow {
+  transition: all 0.25s ease-out;
+  transform: scaleX(1.25) translateX(0px);
+}
+
+.designTriangle {
+  transition: all 0.25s ease-out;
+  transform: rotate(90deg) scale(0.3) scaleY(0.8) translateY(92px);
 }
