@@ -175,7 +175,7 @@ const CopyrightText = styled.p`
 // eslint-disable-next-line no-shadow
 const Footer = ({ emailChanged, email }) => {
   return (
-    <Container>
+    <Container id="footer">
       <FooterMenu>
         <FooterLogo />
       </FooterMenu>
