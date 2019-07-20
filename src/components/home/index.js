@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
-
 import { showAuthModal, showRegistrationModal } from '../../actions';
 import {
   AuthModal,
@@ -18,6 +18,8 @@ import {
   ShareIcon,
   ValuePropCard,
   ValuePropositions,
+  FlatButton,
+  ButtonText,
 } from '../common';
 
 // Components
@@ -41,30 +43,56 @@ import HeroImage from '../../assets/hero-image-12.jpg';
 //   return console.log(response);
 // }
 
+const FloatingActionBar = styled.div`
+  position: fixed;
+  bottom: 0px;
+  transform: ${props => (props.show ? 'translateY(0px)' : 'translateY(80px)')};
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  box-shadow: 2px 2px 66px -35px rgba(0, 0, 0, 0.75);
+  background-color: #f4f4f4;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23dfdfdf' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+  transition: all 0.35s ease;
+`;
+
 class Home extends Component {
   constructor(props) {
     super(props);
+    this.scrollListener = this.scrollListener.bind(this);
 
     this.state = {
       showTrailerModal: false,
-      showFloatingButton: false,
+      showFloatingActionBar: false,
     };
   }
 
   componentDidMount() {
-    setInterval(() => {
-      if (document.documentElement.scrollTop > 1024 || document.body.scrollTop > 1024) {
-        this.setState({ showFloatingButton: true });
-      } else {
-        this.setState({ showFloatingButton: false });
-      }
-    }, 1000);
+    window.addEventListener('scroll', this.scrollListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.scrollListener);
+  }
+
+  scrollListener() {
+    if (window.scrollY >= 800) {
+      return window.scrollY >= document.getElementById('comingSoon').offsetTop
+        ? this.setState({ showFloatingActionBar: false })
+        : this.setState({ showFloatingActionBar: true });
+    }
+    return this.setState({ showFloatingActionBar: false });
   }
 
   render() {
     // eslint-disable-next-line no-shadow
     const { showRegistrationModal } = this.props;
-    const { showTrailerModal, showFloatingButton } = this.state;
+    const { showTrailerModal, showFloatingActionBar } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
         {/* Animated Hero Image and Featured Courses */}
@@ -161,7 +189,7 @@ class Home extends Component {
           </CardList>
 
           {/* Coming Soon */}
-          <SectionTitle>Coming Soon</SectionTitle>
+          <SectionTitle id="comingSoon">Coming Soon</SectionTitle>
           <CardList style={{ paddingBottom: 80 }}>
             <CourseCard
               backgroundImage={HeroImage4}
@@ -185,6 +213,26 @@ class Home extends Component {
         </div>
 
         <Footer />
+        <FloatingActionBar show={showFloatingActionBar}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}
+          >
+            <FlatButton onClick={showRegistrationModal} style={{ width: 160, marginRight: 10 }}>
+              <ButtonText>Enroll</ButtonText>
+            </FlatButton>
+            <FlatButton
+              onClick={() => this.setState({ showTrailerModal: true })}
+              style={{ width: 160, backgroundColor: 'rgba(0, 0, 0, 0.275' }}
+            >
+              <ButtonText>Preview</ButtonText>
+            </FlatButton>
+          </div>
+        </FloatingActionBar>
         {/* Modals */}
         <AuthModal />
         <TrailerModal
