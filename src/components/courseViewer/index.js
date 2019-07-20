@@ -481,7 +481,7 @@ class CourseViewer extends Component {
                 </FileCard>
               </FilesSection>
 
-              <ShareText>Share this course</ShareText>
+              <ShareText className="disable-selection">Share this course</ShareText>
               <SharingButtons>
                 <ShareIconButton>
                   <svg
@@ -525,7 +525,7 @@ class CourseViewer extends Component {
               {/* TODO: ADD COMMENTS SECTION */}
 
               <Comments>
-                <CommentSectionTitle>COMMENTS</CommentSectionTitle>
+                <CommentSectionTitle className="disable-selection">COMMENTS</CommentSectionTitle>
                 <CommentSubmission />
               </Comments>
             </LessonDetails>

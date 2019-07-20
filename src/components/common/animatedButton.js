@@ -16,6 +16,9 @@ const ButtonText = styled.p`
   transition: all 0.3s ease;
   position: relative;
   top: 5px;
+  background: -webkit-linear-gradient(#888, #333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const Button = styled.div`
