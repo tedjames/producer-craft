@@ -15,9 +15,9 @@ const Text = styled.p`
   cursor: default;
 `;
 
-const SectionTitle = ({ style, children, onClick }) => {
+const SectionTitle = ({ style, children, onClick, id }) => {
   return (
-    <Text onClick={onClick} style={style} className="disable-selection">
+    <Text id={id} onClick={onClick} style={style} className="disable-selection">
       {children}
     </Text>
   );
