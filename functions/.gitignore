@@ -1,0 +1,14 @@
+## Compiled JavaScript files
+**/*.js
+**/*.js.map
+
+# Typescript v1 declaration files
+typings/
+
+node_modules/
+
+# Firebase Service Account
+service-account.json
+
+# Stripe Account
+test/stripe-account.ts
