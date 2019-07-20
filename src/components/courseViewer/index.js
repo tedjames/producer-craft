@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { browserHistory } from 'react-router';
+
 // Redux
 import { connect } from 'react-redux';
 import { showAuthModal, showRegistrationModal } from '../../actions';
@@ -23,10 +23,13 @@ import {
   PlayButton,
   AnimatedButton,
   ReturnSection,
+  FlatButton,
+  ButtonText,
 } from '../common';
 import Hero from './hero';
 import ActionBar from './actionBar';
 import Recommended from './recommended';
+import CommentSubmission from './commentSubmission';
 
 // Image Assets
 import HeroImage3 from '../../assets/hero-image-3.jpeg';
@@ -211,7 +214,11 @@ const Thumbnail = styled.div`
   width: 168px;
   border-radius: 4px;
   background-repeat: no-repeat;
+  background-repeat: no-repeat;
   background-image: ${props => `url(${props.backgroundImage})`};
+  background-size: cover;
+  background-position: 75% 25%;
+  background-color: #555;
   background-size: cover;
   background-position: 75% 25%;
   background-color: #555;
@@ -332,6 +339,25 @@ const ShareText = styled.p`
   letter-spacing: 5.5px;
   text-transform: uppercase;
   cursor: default;
+`;
+
+const Comments = styled.div`
+  border-top: 1px dotted #bebebe;
+  margin-right: 40px;
+  margin-top: 20px;
+`;
+const CommentSectionTitle = styled.div`
+  font-family: proxima-nova;
+  font-weight: 800;
+  font-style: black;
+  font-size: 16px;
+  text-align: left;
+  color: #000;
+  opacity: 0.3;
+  margin-top: 32.5px;
+  margin-bottom: 15px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
 `;
 
 class CourseViewer extends Component {
@@ -477,6 +503,13 @@ class CourseViewer extends Component {
               >
                 Next Lesson
               </AnimatedButton>
+
+              {/* TODO: ADD COMMENTS SECTION */}
+
+              <Comments>
+                <CommentSectionTitle />
+                <CommentSubmission />
+              </Comments>
             </LessonDetails>
 
             {/* Floating LessonPlan Card */}
