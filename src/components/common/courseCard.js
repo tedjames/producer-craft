@@ -18,7 +18,7 @@ const Card = styled.div`
   padding-left: 20px;
   padding-bottom: 20px;
   padding-right: 40px;
-  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.7);
+  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.8);
   transition: all 0.35s ease;
   cursor: pointer;
   opacity: 0.96;
@@ -43,7 +43,7 @@ const Card = styled.div`
     height: 240px;
   }
   :hover {
-    box-shadow: inset 340px -40px 70px 140px rgba(0, 0, 0, 0.8);
+    box-shadow: inset 380px -40px 70px 140px rgba(0, 0, 0, 0.87);
   }
   :active {
     opacity: 0.85;
@@ -92,7 +92,7 @@ const PreviewTagline = styled.p`
 `;
 
 const MiniCard = styled.div`
-  height: 160px;
+  height: 130px;
   width: 320px;
   background-repeat: no-repeat;
   background-image: ${props => `url(${props.backgroundImage})`};
@@ -109,12 +109,12 @@ const MiniCard = styled.div`
   padding-right: 40px;
   margin-left: 25px;
   margin-right: 25px;
-  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.65);
+  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.8);
   opacity: 0.95;
   transition: all 0.35s ease;
   cursor: pointer;
   @media (max-width: 1400px) {
-    height: 150px;
+    height: 130px;
     width: 300px;
   }
   @media (max-width: 1300px) {
@@ -122,11 +122,11 @@ const MiniCard = styled.div`
     width: 280px;
   }
   @media (max-width: 1240px) {
-    height: 120px;
+    height: 130px;
     width: 267.5px;
   }
   @media (max-width: 1200px) {
-    height: 180px;
+    height: 130px;
     width: 100%;
     margin-bottom: 17.5px;
     border-radius: 15px;
@@ -138,7 +138,7 @@ const MiniCard = styled.div`
     width: 98%;
   }
   @media (max-width: 480px) {
-    height: 160px;
+    height: 100px;
     box-shadow: inset 180px -40px 70px 140px rgba(0, 0, 0, 0.7);
   }
   :hover {
