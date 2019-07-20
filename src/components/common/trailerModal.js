@@ -87,7 +87,7 @@ class TrailerModal extends PureComponent {
         open={open}
         onClose={() => close()}
         aria-labelledby="form-dialog-title"
-        classes={{ paperFullWidth: true }}
+        classes={{ paperFullWidth: 'true' }}
         maxWidth={false}
         id="trailer-dialog-transparent"
         fullScreen={window.innerWidth < 481}
