@@ -10,10 +10,11 @@ export const ADMIN_FORM_ERROR = 'FORM_ERROR';
 
 /*  Authentication  */
 export const NAME_CHANGED = 'NAME_CHANGED';
+export const FIRST_NAME_CHANGED = 'FIRST_NAME_CHANGED';
+export const LAST_NAME_CHANGED = 'LAST_NAME_CHANGED';
 export const EMAIL_CHANGED = 'EMAIL_CHANGED';
 export const PASSWORD_CHANGED = 'PASSWORD_CHANGED';
-export const COMPANY_CHANGED = 'COMPANY_CHANGED';
-export const POSITION_CHANGED = 'POSITION_CHANGED';
+export const CONFIRM_PASSWORD_CHANGED = 'CONFIRM_PASSWORD_CHANGED';
 export const CLEAR_AUTH_FORM = 'CLEAR_AUTH_FORM';
 export const ADMIN_MODE = 'ADMIN_MODE';
 export const REGISTER_MODAL = 'REGISTER_MODAL';
@@ -26,6 +27,8 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const UPDATE_EMAIL = 'UPDATE_EMAIL';
 export const FORGOT_PASSWORD_MODAL = 'FORGOT_PASSWORD_MODAL';
+export const AUTH_MODAL = 'AUTH_MODAL';
+export const LOGIN_MODAL = 'LOGIN_MODAL';
 
 /*  User Management  */
 export const CREATE_USER = 'CREATE_USER';

@@ -5,54 +5,59 @@ import {
   PENDING,
   ERROR,
   SUCCESS,
-  NAME_CHANGED,
+  FIRST_NAME_CHANGED,
+  LAST_NAME_CHANGED,
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
-  COMPANY_CHANGED,
-  POSITION_CHANGED,
+  CONFIRM_PASSWORD_CHANGED,
   CLEAR_AUTH_FORM,
   AUTH_ERROR,
   AUTH_USER,
   LOGIN_USER,
   LOGOUT_USER,
   RESET_PASSWORD,
-  UPDATE_EMAIL,
-  REQUEST_ACCOUNT,
-  REGISTER_MODAL,
   SNACKBAR,
   FORGOT_PASSWORD_MODAL,
+  GET_USER,
+  CREATE_USER,
+  UPDATE_USER,
+  DELETE_USER,
+  AUTH_MODAL,
+  REGISTRATION_MODAL,
+  LOGIN_MODAL,
 } from './types';
 
 // ////////////////////////////////////////////////////////////////////
 /*  Helper Functions  */
 
-// used to generate randomized seed
-const generateSeed = () => {
-  const length = 32;
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
-  const randomValues = new Uint32Array(length);
-  const result = new Array(length);
-
-  window.crypto.getRandomValues(randomValues);
-
-  let cursor = 0;
-  for (let i = 0; i < randomValues.length; i++) {
-    cursor += randomValues[i];
-    result[i] = chars[cursor % chars.length];
-  }
-  return result.join('');
-};
 // universal auth form error handler
-export const authError = error => ({
+export const authError = ({ error }) => ({
   type: AUTH_ERROR,
   payload: error,
+});
+
+// hide and show auth modal
+export const showAuthModal = payload => ({
+  type: AUTH_MODAL,
+  payload,
+});
+
+// show registration modal
+export const showRegistrationModal = payload => ({
+  type: REGISTRATION_MODAL,
+  payload,
+});
+
+export const showLoginModal = payload => ({
+  type: LOGIN_MODAL,
+  payload,
 });
 
 // ////////////////////////////////////////////////////////////////////
 /*  Login + Registration Actions  */
 
 // log in user w/ email and password + self-destruct account if not found in db
-export const loginUser = (email, password) => {
+export const loginUser = ({ email, password }) => {
   return dispatch => {
     dispatch({ type: LOGIN_USER, payload: PENDING });
 
@@ -63,25 +68,6 @@ export const loginUser = (email, password) => {
         // handle login success
         console.log('Successfully logged in: ', user);
         dispatch({ type: CLEAR_AUTH_FORM });
-        const { currentUser } = auth();
-        database()
-          .ref(`/users/${currentUser.uid}`)
-          .once('value', snapshot => {
-            // delete user if not found in db
-            if (snapshot.val() === null) {
-              console.log('USER NOT FOUND IN DATABASE - SELF-DESTRUCTING NOW... ');
-              currentUser
-                .delete()
-                .then(() => {
-                  console.log('User deleted');
-                  dispatch({ type: LOGIN_USER, payload: ERROR });
-                })
-                .catch(() => {
-                  console.log('Error deleting user');
-                  dispatch({ type: LOGIN_USER, payload: ERROR });
-                });
-            }
-          });
       })
       .catch(error => {
         // handle login error
@@ -112,8 +98,12 @@ export const logoutUser = () => {
   };
 };
 // login + registration form
-export const nameChanged = text => ({
-  type: NAME_CHANGED,
+export const firstNameChanged = text => ({
+  type: FIRST_NAME_CHANGED,
+  payload: text,
+});
+export const lastNameChanged = text => ({
+  type: LAST_NAME_CHANGED,
   payload: text,
 });
 export const emailChanged = text => ({
@@ -124,42 +114,14 @@ export const passwordChanged = text => ({
   type: PASSWORD_CHANGED,
   payload: text,
 });
-export const companyChanged = text => ({
-  type: COMPANY_CHANGED,
+export const confirmPasswordChanged = text => ({
+  type: CONFIRM_PASSWORD_CHANGED,
   payload: text,
 });
-export const positionChanged = text => ({
-  type: POSITION_CHANGED,
-  payload: text,
-});
-export const clearAuthForm = () => ({
+export const clearAuthForm = payload => ({
   type: CLEAR_AUTH_FORM,
+  payload,
 });
-
-// request account
-export const requestAccount = ({ name, email, company, position }) => {
-  return dispatch => {
-    dispatch({ type: REQUEST_ACCOUNT, payload: PENDING });
-    const rid = generateSeed();
-
-    // add registration to db
-    database()
-      .ref(`/registrations/${rid}`)
-      .set({ rid, name, email, company, position })
-      .then(() => {
-        // handle registration success
-        console.log('Registration successful!');
-        dispatch({ type: REGISTER_MODAL, payload: false });
-        dispatch({ type: SNACKBAR, payload: 'Account request submitted' });
-        dispatch({ type: REQUEST_ACCOUNT, payload: SUCCESS });
-      })
-      .catch(error => {
-        // handle registration error
-        console.log('Error writing registration to db: ', error);
-        dispatch({ type: REQUEST_ACCOUNT, payload: ERROR });
-      });
-  };
-};
 
 // ////////////////////////////////////////////////////////////////////
 /*  Authentication Session Handling  */
@@ -169,27 +131,8 @@ export const pendingAuthentication = () => {
 };
 export const authenticate = authUser => {
   return dispatch => {
-    database()
-      .ref(`/users/${authUser.uid}`)
-      .once('value', snapshot => {
-        // if email doesn't match DB, update DB ref to match it
-        if (snapshot.val().email !== authUser.email) {
-          database()
-            .ref(`/users/${authUser.uid}`)
-            .update({ email: authUser.email })
-            .then(() => {
-              console.log('Email successfully updated in DB!');
-              dispatch({ type: UPDATE_EMAIL, payload: SUCCESS });
-              dispatch({ type: AUTH_USER, payload: authUser });
-            })
-            .catch(error => {
-              console.log('Error- Unable to update email in DB', error);
-              dispatch({ type: UPDATE_EMAIL, payload: ERROR });
-              dispatch({ type: AUTH_USER, payload: authUser });
-            });
-        }
-        dispatch({ type: AUTH_USER, payload: authUser });
-      });
+    // TODO: check if authUser.email matches email found in db user document
+    dispatch({ type: AUTH_USER, payload: authUser });
   };
 };
 export const unauthenticate = () => {
@@ -200,7 +143,7 @@ export const unauthenticate = () => {
 /*  Personal Account Management  */
 
 // send password reset email
-export const resetPassword = email => {
+export const resetPassword = ({ email }) => {
   console.log('PASSWORD RESET ENGAGED');
   return dispatch => {
     dispatch({ type: RESET_PASSWORD, payload: PENDING });
@@ -217,29 +160,187 @@ export const resetPassword = email => {
       });
   };
 };
-// update email for currently logged in user
-export const updateEmail = email => {
+
+//////////////////////////////////////////////////////////////////////
+/*  User Account Management  */
+
+// get user
+export const getUser = () => {
   return dispatch => {
-    dispatch({ type: UPDATE_EMAIL, payload: PENDING });
-    const { uid } = auth().currentUser;
+    const user = auth().currentUser;
+    dispatch({ type: GET_USER, payload: PENDING });
+
+    // listen to users object from db
+    database()
+      .collection('users')
+      .doc(user.uid)
+      .onSnapshot(doc => {
+        // handle listen to users success
+        console.log('Successfully retrieved user!', doc.val());
+        dispatch({ type: GET_USER, payload: doc.val() });
+      });
+  };
+};
+// create new user
+export const createUser = ({ firstName, lastName, email, password }) => {
+  return dispatch => {
+    dispatch({ type: CREATE_USER, payload: PENDING });
+
+    // TODO: Preserve subscription + purchase data after creating a new account
+    // Check db to see if email exists in users doc
+    // If email exists, make new user doc
+    // Copy private sub-collection from old user doc to new user doc
+    // Then delete the old user doc so that...
+    // Users can keep their subscriptions and purchases after deleting their account
+
+    // create new user w/ new firebase instance - requires name, email, and password
     auth()
-      .currentUser.updateEmail(email)
-      .then(() => {
-        console.log('Email successfully changed! Updating ref in db...');
+      .createUserWithEmailAndPassword(email, password)
+      .then(userRecord => {
+        console.log('Account successfully created:', userRecord);
+        const { uid } = userRecord.user;
+
+        // Add reference to user in db
         database()
-          .ref(`/users/${uid}`)
-          .update({ email })
+          .collection('users')
+          .doc(uid)
+          .set({ uid, firstName, lastName, email, roles: ['student'] })
           .then(() => {
-            console.log('Email successfully updated in DB!');
-            dispatch({ type: UPDATE_EMAIL, payload: SUCCESS });
+            // send verification email to user
+            auth()
+              .currentUser()
+              .sendEmailVerification()
+              .then(() => {
+                console.log('Verification email sent!');
+                dispatch({ type: AUTH_MODAL, payload: false });
+                dispatch({
+                  type: SNACKBAR,
+                  payload: 'Verification email sent',
+                });
+                dispatch({ type: CREATE_USER, payload: SUCCESS });
+              })
+              .catch(error => {
+                console.log('Error sending verification email: ', error);
+                dispatch({ type: SNACKBAR, payload: 'Unable to send verification email' });
+                dispatch({ type: CREATE_USER, payload: ERROR });
+              });
           })
           .catch(error => {
-            console.log('Error- Unable to update email in DB', error);
-            dispatch({ type: UPDATE_EMAIL, payload: ERROR });
+            // handle adding db document error
+            console.log('Error adding document to users collection: ', error);
+            dispatch({ type: SNACKBAR, payload: 'Unable to create user' });
+            dispatch({ type: CREATE_USER, payload: ERROR });
           });
       })
       .catch(error => {
-        console.log('ERROR - Unable to update email: ', error);
+        // handle error creating user w/ admin API
+        console.log('Error creating new user: ', error);
+        dispatch({ type: SNACKBAR, payload: 'Unable to create user' });
+        dispatch({ type: CREATE_USER, payload: ERROR });
+      });
+  };
+};
+// update existing user - provide null object to remove entries
+export const updateUser = ({ firstName, lastName, email, password }) => {
+  return dispatch => {
+    const user = auth().currentUser;
+    dispatch({ type: UPDATE_USER, payload: PENDING });
+
+    // update user reference in db
+    user
+      .reauthenticateWithCredential(password)
+      .then(() => {
+        console.log('User successfully re-authenticated');
+        // check if their email has changed
+        if (user.email !== email) {
+          user
+            .updateEmail(email)
+            .then(() => {
+              console.log('Updated email in firebase');
+              // update email, firstName and lastName in db
+              database()
+                .collection('users')
+                .doc(user.uid)
+                .update({ firstName, lastName, email })
+                .then(() => {
+                  // handle adding user reference to db success
+                  console.log('User reference successfully updated in db!');
+                  dispatch({ type: AUTH_MODAL, payload: false });
+                  dispatch({ type: UPDATE_USER, payload: SUCCESS });
+                })
+                .catch(error => {
+                  // handle adding user reference to db error
+                  console.log('Error updating reference to user in db: ', error);
+                  dispatch({ type: SNACKBAR, payload: 'Unable to update user' });
+                  dispatch({ type: UPDATE_USER, payload: ERROR });
+                });
+            })
+            .catch(error => {
+              console.log('Error updating email in firebase: ', error);
+              dispatch({ type: UPDATE_USER, payload: ERROR });
+            });
+        } else {
+          // Update firstName and lastName only in db
+          database()
+            .collection('users')
+            .doc(user.uid)
+            .update({ firstName, lastName })
+            .then(() => {
+              // handle adding user reference to db success
+              console.log('User reference successfully updated in db!');
+              dispatch({ type: AUTH_MODAL, payload: false });
+              dispatch({ type: UPDATE_USER, payload: SUCCESS });
+            })
+            .catch(error => {
+              // handle adding user reference to db error
+              console.log('Error updating reference to user in db: ', error);
+              dispatch({ type: SNACKBAR, payload: 'Unable to update user' });
+              dispatch({ type: UPDATE_USER, payload: ERROR });
+            });
+        }
+      })
+      .catch(error => {
+        console.log('Error re-authenticating user: ', error);
+      });
+  };
+};
+// delete user by uid
+export const deleteUser = ({ password }) => {
+  return dispatch => {
+    const user = auth().currentUser;
+    dispatch({ type: DELETE_USER, payload: PENDING });
+    user
+      .reauthenticateWithCredential(password)
+      .then(() => {
+        console.log('User successfully re-authenticated');
+        user
+          .delete()
+          .then(() => {
+            database()
+              .collection('users')
+              .doc(user.uid)
+              .set({ disabled: true })
+              .then(() => {
+                // handle delete user reference from db success
+                console.log('Successfully deleted user from db!');
+                dispatch({ type: SNACKBAR, payload: 'User deleted' });
+                dispatch({ type: AUTH_MODAL, payload: false });
+                dispatch({ type: DELETE_USER, payload: SUCCESS });
+              })
+              .catch(error => {
+                // handle delete user reference from db error
+                console.log('Error deleting user reference from db', error);
+                dispatch({ type: SNACKBAR, payload: 'Unable to delete user' });
+                dispatch({ type: DELETE_USER, payload: ERROR });
+              });
+          })
+          .catch(error => {
+            console.log('Error deleting user: ', error);
+            dispatch({ type: DELETE_USER, payload: ERROR });
+          });
+      })
+      .catch(error => {
+        console.log('Error re-authenticating user: ', error);
       });
   };
 };
