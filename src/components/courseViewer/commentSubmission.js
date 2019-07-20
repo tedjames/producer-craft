@@ -38,9 +38,9 @@ const CommentButtons = styled.div`
   align-items: center;
   justify-content: flex-end;
   margin-top: 12px;
-  transform: ${props => (props.message ? 'translateY(0px)' : 'translateY(-60px)')};
-  margin-bottom: ${props => (props.message ? '0px' : '-60px')};
-  opacity: ${props => (props.message ? '1' : '0')};
+  transform: ${props => (props.showButtons ? 'translateY(0px)' : 'translateY(-60px)')};
+  margin-bottom: ${props => (props.showButtons ? '0px' : '-60px')};
+  opacity: ${props => (props.showButtons ? '1' : '0')};
   transition: all 0.35s ease;
 `;
 
@@ -50,12 +50,19 @@ const InputField = styled(InputBase)`
 
 const CommentSubmission = () => {
   const [message, setMessage] = useState('');
+  const [showButtons, toggleButtons] = useState(false);
+  const close = () => {
+    setMessage('');
+    toggleButtons(false);
+  };
   return (
     <div>
       <CommentDetails>
         <UserAvatar backgroundImage={StorchProfile} />
         <FieldCard>
           <InputField
+            onFocus={() => toggleButtons(true)}
+            onBlur={() => !message && toggleButtons(false)}
             placeholder="Add a public comment..."
             inputProps={{
               'aria-label': 'Comment Submission',
@@ -66,8 +73,8 @@ const CommentSubmission = () => {
           />
         </FieldCard>
       </CommentDetails>
-      <CommentButtons message={message}>
-        <FlatButton onClick={() => setMessage('')} style={{ backgroundColor: '#eee', width: 120 }}>
+      <CommentButtons showButtons={message || showButtons}>
+        <FlatButton onClick={() => close()} style={{ backgroundColor: '#eee', width: 120 }}>
           <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
         </FlatButton>
         <FlatButton>

@@ -150,7 +150,6 @@ const LessonDetails = styled.div`
 const LessonPlan = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
   flex: 1.5;
   margin-top: -200px;
   z-index: 1000;
@@ -164,6 +163,8 @@ const LessonPlan = styled.div`
   @media (min-width: 1400px) {
     margin-right: 40px;
   }
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 `;
 
 const LessonTitle = styled.p`
