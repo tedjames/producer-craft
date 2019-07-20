@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 const ButtonText = styled.p`
   font-family: proxima-nova, sans-serif;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 5px;
@@ -44,7 +44,7 @@ const Button = styled.div`
     opacity: 0.25;
   }
   &:hover ${ButtonText} {
-    opacity: 0.5;
+    opacity: 0.4;
     transform: translateX(-3px);
   }
   text-decoration: none;

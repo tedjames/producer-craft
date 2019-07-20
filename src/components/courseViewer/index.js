@@ -172,12 +172,15 @@ const LessonTitle = styled.p`
   font-style: black;
   font-size: 16px;
   text-align: left;
-  color: #000;
-  opacity: 0.3;
+  opacity: 0.6;
   margin-top: 32.5px;
   margin-bottom: 15px;
   letter-spacing: 5px;
   text-transform: uppercase;
+  background: -webkit-linear-gradient(#777, #444);
+  color: #444;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const LessonPlanTitle = styled.p`
@@ -186,7 +189,11 @@ const LessonPlanTitle = styled.p`
   font-size: 11px;
   text-align: left;
   padding-left: 5px;
-  color: #ccc;
+  opacity: 0.75;
+  background: -webkit-linear-gradient(#888, #333);
+  color: #888;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-top: 20px;
   margin-bottom: 10px;
   letter-spacing: 5.5px;
@@ -245,14 +252,18 @@ const LessonNumber = styled.p`
 `;
 const LessonName = styled.p`
   font-family: proxima-nova;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 12px;
   text-align: left;
-  color: #333;
+  color: #7a7a7a;
+  opacity: 0.925;
   margin-bottom: 5px;
   letter-spacing: 3.5px;
   text-transform: uppercase;
   cursor: pointer;
+  background: -webkit-linear-gradient(#7c7c7c, #484a5f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const LessonDescription = styled.p`
@@ -314,6 +325,7 @@ const SharingButtons = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-bottom: 0px;
 `;
 const ShareIconButton = styled.div`
   margin-right: 15px;
@@ -332,9 +344,9 @@ const ShareText = styled.p`
   font-weight: 900;
   font-size: 11px;
   text-align: left;
-  padding-left: 5px;
+  padding-left: 2.5px;
   color: #ccc;
-  margin-top: 22.5px;
+  margin-top: 25px;
   margin-bottom: 12.5px;
   letter-spacing: 5.5px;
   text-transform: uppercase;
@@ -348,14 +360,13 @@ const Comments = styled.div`
 `;
 const CommentSectionTitle = styled.div`
   font-family: proxima-nova;
-  font-weight: 800;
+  font-weight: 900;
   font-style: black;
-  font-size: 16px;
+  font-size: 12px;
   text-align: left;
-  color: #000;
-  opacity: 0.3;
-  margin-top: 32.5px;
-  margin-bottom: 15px;
+  color: #bebebe;
+  margin-top: 25px;
+  margin-bottom: 20px;
   letter-spacing: 5px;
   text-transform: uppercase;
 `;
@@ -406,6 +417,7 @@ class CourseViewer extends Component {
                 reccomend you skim through the manual for a quick run through of the basic
                 functionality you need to get up and running.{' '}
               </LessonDescription>
+
               <FilesSection>
                 <FileCard>
                   <FileIcon>
@@ -445,7 +457,7 @@ class CourseViewer extends Component {
                       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                     </svg>
                   </FileIcon>
-                  <FileName>Scott Storch Drum Kit</FileName>
+                  <FileName className="disable-selection">Scott Storch Drum Kit</FileName>
                 </FileCard>
                 <FileCard>
                   <FileIcon>
@@ -465,12 +477,11 @@ class CourseViewer extends Component {
                       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                     </svg>
                   </FileIcon>
-                  <FileName>Drum Rack Presets</FileName>
+                  <FileName className="disable-selection">Drum Rack Presets</FileName>
                 </FileCard>
               </FilesSection>
 
-              {/* Social Sharing */}
-              <ShareText className="disable-selection">Share this course</ShareText>
+              <ShareText>Share this course</ShareText>
               <SharingButtons>
                 <ShareIconButton>
                   <svg
@@ -497,17 +508,24 @@ class CourseViewer extends Component {
                   </svg>
                 </ShareIconButton>
               </SharingButtons>
+
               <AnimatedButton
-                containerStyle={{ width: 200, alignSelf: 'flex-start', marginTop: 10 }}
+                containerStyle={{
+                  width: 200,
+                  alignSelf: 'flex-start',
+                  marginTop: 5,
+                }}
                 textStyle={{ color: '#777' }}
               >
                 Next Lesson
               </AnimatedButton>
 
+              {/* Social Sharing */}
+
               {/* TODO: ADD COMMENTS SECTION */}
 
               <Comments>
-                <CommentSectionTitle />
+                <CommentSectionTitle>COMMENTS</CommentSectionTitle>
                 <CommentSubmission />
               </Comments>
             </LessonDetails>
