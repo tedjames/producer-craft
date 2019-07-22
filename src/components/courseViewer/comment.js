@@ -147,7 +147,7 @@ const LikeCount = styled.div`
   text-align: left;
   color: #bebebe;
   letter-spacing: 5px;
-  margin-right: 17.5px;
+  margin-right: 5px;
   text-transform: uppercase;
   margin-left: 7.5px;
 `;
@@ -207,7 +207,7 @@ const CommentReply = ({ name, message }) => {
 
       <CommentAction
         onClick={e => handleReplySettingsClick(e)}
-        style={{ marginLeft: 0, marginRight: 15 }}
+        style={{ display: 'flex', marginLeft: 0, alignItems: 'center' }}
       >
         <svg
           width="15"
@@ -235,6 +235,7 @@ const CommentReply = ({ name, message }) => {
         open={Boolean(anchorEl)}
         onClose={handleReplySettingsClose}
       >
+        <MenuItem onClick={handleReplySettingsClose}>Report</MenuItem>
         <MenuItem onClick={handleReplySettingsClose}>Delete</MenuItem>
       </Menu>
     </CommentReplyContainer>
@@ -273,7 +274,10 @@ const Comment = () => {
         <UserAvatar backgroundImage={StorchHero4} />
       </AvatarContainer>
       <CommentDetails showReplies={showReplies}>
-        <CommenterName>Alice C.</CommenterName>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <CommenterName>Alice C.</CommenterName>
+          {/* Settings Button */}
+        </div>
         <CommentMessage className="linkify">
           <Linkify options={{ attributes: linkProps }}>
             Lorem insum dolor sit amet, consectetur adipicing elit, sed do eiusmod tempor incididunt
@@ -281,137 +285,145 @@ const Comment = () => {
             exercitaition ullamco laboris nisi ut
           </Linkify>
         </CommentMessage>
-        <CommentActionBar>
-          <button
-            type="button"
-            onClick={() => likeComment(!liked)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginTop: 2.5,
-              marginBottom: 2.5,
-              paddingLeft: 0,
-              background: 'transparent',
-              border: '0px',
-              outline: 'none',
-            }}
-          >
-            <ActionIcon activated={liked}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <CommentActionBar>
+            <button
+              type="button"
+              onClick={() => likeComment(!liked)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: 2.5,
+                marginBottom: 2.5,
+                paddingLeft: 0,
+                background: 'transparent',
+                border: '0px',
+                outline: 'none',
+              }}
+            >
+              <ActionIcon activated={liked}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  style={{ position: 'relative', top: 1 }}
+                  fill={liked ? 'red' : '#bebebe'}
+                  stroke="none"
+                  strokeWidth="0"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="feather feather-heart"
+                  onClick={() => likeComment(!liked)}
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </ActionIcon>
+
+              <Confetti active={liked} config={confettiConfig} />
+              <LikeCount className="disable-selection">4 Likes</LikeCount>
+            </button>
+            <button
+              onClick={() => toggleReplies(!showReplies)}
+              type="button"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                marginTop: 2.5,
+                marginBottom: 2.5,
+                marginRight: 0,
+                paddingLeft: 0,
+                background: 'transparent',
+                border: '0px',
+                outline: 'none',
+              }}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
-                style={{ position: 'relative', top: 1 }}
-                fill={liked ? 'red' : '#bebebe'}
+                fill={showReplies ? '#7eb4ea' : '#bebebe'}
                 stroke="none"
                 strokeWidth="0"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="feather feather-message-circle"
+                style={{ marginRight: 5 }}
+              >
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              </svg>
+
+              <CommentAction
+                className="disable-selection"
+                onClick={() => toggleReplies(!showReplies)}
+                style={{ marginRight: 5 }}
+              >
+                8 Replies
+              </CommentAction>
+            </button>
+
+            {/* Settings Menu */}
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleSettingsClose}
+            >
+              <MenuItem onClick={handleSettingsClose}>Report</MenuItem>
+              <MenuItem onClick={handleSettingsClose}>Delete</MenuItem>
+            </Menu>
+
+            {/* Instructor Like */}
+            <InstructorLike>
+              <MiniAvatar backgroundImage={StorchHero} />
+              <svg
+                style={{ position: 'absolute', bottom: -4, right: -5 }}
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="red"
+                stroke="#fff"
+                strokeWidth="1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="feather feather-heart"
-                onClick={() => likeComment(!liked)}
               >
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-            </ActionIcon>
-
-            <Confetti active={liked} config={confettiConfig} />
-            <LikeCount className="disable-selection">4 Likes</LikeCount>
-          </button>
-          <button
-            onClick={() => toggleReplies(!showReplies)}
-            type="button"
+            </InstructorLike>
+          </CommentActionBar>
+          <CommentAction
+            onClick={e => handleSettingsClick(e)}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              cursor: 'pointer',
-              marginTop: 2.5,
-              marginBottom: 2.5,
-              marginRight: 0,
-              paddingLeft: 0,
-              background: 'transparent',
-              border: '0px',
-              outline: 'none',
+              marginLeft: 0,
+              marginRight: 10,
+              marginBottom: 9,
+              alignSelf: 'flex-start',
+              marginTop: 20,
             }}
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               width="15"
               height="15"
-              viewBox="0 0 24 24"
-              fill={showReplies ? '#7eb4ea' : '#bebebe'}
-              stroke="none"
-              strokeWidth="0"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-message-circle"
-              style={{ marginRight: 5 }}
-            >
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-            </svg>
-
-            <CommentAction
-              className="disable-selection"
-              onClick={() => toggleReplies(!showReplies)}
-              style={{ marginRight: 10 }}
-            >
-              8 Replies
-            </CommentAction>
-          </button>
-
-          {/* Settings Button */}
-          <CommentAction
-            onClick={e => handleSettingsClick(e)}
-            style={{ marginLeft: 0, marginRight: 15 }}
-          >
-            <svg
-              width="24"
-              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#bebebe"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="feather feather-more-horizontal"
+              className="feather feather-more-vertical"
+              style={{ position: 'relative', top: 1 }}
             >
               <circle cx="12" cy="12" r="1" />
-              <circle cx="19" cy="12" r="1" />
-              <circle cx="5" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
             </svg>
           </CommentAction>
-
-          {/* Settings Menu */}
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleSettingsClose}
-          >
-            <MenuItem onClick={handleSettingsClose}>Delete</MenuItem>
-          </Menu>
-
-          {/* Instructor Like */}
-          <InstructorLike>
-            <MiniAvatar backgroundImage={StorchHero} />
-            <svg
-              style={{ position: 'absolute', bottom: -4, right: -5 }}
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="red"
-              stroke="#fff"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-heart"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </InstructorLike>
-        </CommentActionBar>
+        </div>
 
         {/* Replies */}
         {showReplies && (
@@ -447,6 +459,17 @@ const Comment = () => {
             <CommentReply name="Joel O." message="Sick track! Deff following you." />
             <CommentReply name="Joel O." message="Sick track! Deff following you." />
             <CommentReply name="Joel O." message="Sick track! Deff following you." />
+            <AnimatedButton
+              onClick={() => null}
+              containerStyle={{
+                width: 278,
+                alignSelf: 'flex-start',
+                marginTop: 5,
+              }}
+              textStyle={{ color: '#777' }}
+            >
+              Show More Replies
+            </AnimatedButton>
           </div>
         )}
       </CommentDetails>

@@ -142,6 +142,9 @@ const CourseDetails = styled.div`
   flex-direction: row;
   background: #eee;
   padding-left: 42.5px;
+  @media (max-width: 520px) {
+    padding-left: 30px;
+  }
 `;
 const LessonDetails = styled.div`
   display: flex;
@@ -164,19 +167,34 @@ const LessonPlan = styled.div`
   @media (min-width: 1400px) {
     margin-right: 40px;
   }
+  @media (max-width: 976px) {
+    display: none;
+  }
   background-color: #ffffff;
   background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 `;
 
 const LessonTitle = styled.p`
+  font-family: neue-haas-grotesk-text, sans-serif;
+  font-weight: 700;
+  font-style: black;
+  font-size: 30px;
+  text-align: left;
+  opacity: 0.7;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  color: #111;
+`;
+
+const LessonTitleNumber = styled.p`
   font-family: proxima-nova;
   font-weight: 800;
   font-style: black;
-  font-size: 16px;
+  font-size: 14px;
   text-align: left;
-  opacity: 0.6;
+  opacity: 0.45;
   margin-top: 32.5px;
-  margin-bottom: 15px;
+  margin-bottom: 2.5px;
   letter-spacing: 5px;
   text-transform: uppercase;
   background: -webkit-linear-gradient(#777, #444);
@@ -255,19 +273,15 @@ const LessonNumber = styled.p`
   cursor: pointer;
 `;
 const LessonName = styled.p`
-  font-family: proxima-nova;
-  font-weight: 800;
-  font-size: 12px;
+  font-family: neue-haas-grotesk-text, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
   text-align: left;
-  color: #7a7a7a;
+  color: #555;
   opacity: 0.925;
   margin-bottom: 5px;
-  letter-spacing: 3.5px;
-  text-transform: uppercase;
+  margin-top: 0px;
   cursor: pointer;
-  background: -webkit-linear-gradient(#7c7c7c, #484a5f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 `;
 
 const LessonDescription = styled.p`
@@ -276,7 +290,7 @@ const LessonDescription = styled.p`
   font-size: 16px;
   margin-top: 0px;
   padding-right: 60px;
-  color: #222;
+  color: #111;
   text-shadow: 2px 2px 5px rgba(150, 150, 150, 0.15);
 `;
 
@@ -406,14 +420,21 @@ class CourseViewer extends Component {
         >
           {/* Profile Image */}
           <TrailerContainer>
-            <TrailerCard backgroundImage={StorchHero4}>
+            <TrailerCard
+              onClick={() => this.setState({ showTrailerModal: true })}
+              backgroundImage={StorchHero4}
+            >
               <PlayButton />
             </TrailerCard>
           </TrailerContainer>
 
           <CourseDetails>
             <LessonDetails>
-              <LessonTitle>Lesson 1 · Welcome to Ableton</LessonTitle>
+              <LessonTitleNumber>
+                <span style={{ fontSize: 12, letterSpacing: 2, marginRight: 10 }}>//</span>
+                Lesson 1
+              </LessonTitleNumber>
+              <LessonTitle>Welcome to Ableton</LessonTitle>
               <LessonDescription>
                 Thank you for being apart of my music production master class. I'm excited to show
                 you the endless possibilities of digital audio workstations and hopefully teach a
@@ -485,6 +506,7 @@ class CourseViewer extends Component {
                 </FileCard>
               </FilesSection>
 
+              {/* Share this Course */}
               <ShareText className="disable-selection">Share this course</ShareText>
               <SharingButtons>
                 <ShareIconButton>
@@ -530,6 +552,7 @@ class CourseViewer extends Component {
               </SharingButtons>
 
               <AnimatedButton
+                onClick={() => null}
                 containerStyle={{
                   width: 200,
                   alignSelf: 'flex-start',
