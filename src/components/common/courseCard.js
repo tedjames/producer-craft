@@ -73,6 +73,7 @@ const PreviewTitle = styled.p`
   @media (max-width: 900px) {
     font-size: 22px;
   }
+  text-align: ${props => (props.mini ? 'center' : 'left')};
 `;
 const PreviewTagline = styled.p`
   font-family: proxima-nova;
@@ -89,6 +90,7 @@ const PreviewTagline = styled.p`
   @media (max-width: 480px) {
     max-width: 280px;
   }
+  text-align: ${props => (props.mini ? 'center' : 'left')};
 `;
 
 const MiniCard = styled.div`
@@ -100,39 +102,25 @@ const MiniCard = styled.div`
   background-position: 70% 30%;
   background-color: #555;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
   border-radius: 5px;
   padding-left: 20px;
-  padding-bottom: 20px;
-  padding-right: 40px;
+  padding-right: 20px;
   margin-left: 25px;
   margin-right: 25px;
   box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.8);
   opacity: 0.95;
   transition: all 0.35s ease;
   cursor: pointer;
-  @media (max-width: 1400px) {
-    height: 130px;
-    width: 300px;
-  }
-  @media (max-width: 1300px) {
-    height: 130px;
-    width: 280px;
-  }
-  @media (max-width: 1240px) {
-    height: 130px;
-    width: 267.5px;
-  }
   @media (max-width: 1200px) {
     height: 130px;
     width: 100%;
     margin-bottom: 17.5px;
     border-radius: 15px;
-    padding-left: 120px;
-    padding-bottom: 30px;
-    padding-right: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
   @media (max-width: 900px) {
     width: 98%;
@@ -158,8 +146,12 @@ const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
       style={disabled && { opacity: 0.45, cursor: 'default' }}
       onClick={() => browserHistory.push('/preview/scott-storch-teaches-music-production')}
     >
-      <PreviewTitle className="disable-selection">{title}</PreviewTitle>
-      <PreviewTagline className="disable-selection">{tagline}</PreviewTagline>
+      <PreviewTitle style={{ marginTop: 5 }} className="disable-selection" mini>
+        {title}
+      </PreviewTitle>
+      <PreviewTagline style={{ marginBottom: 0 }} className="disable-selection" mini>
+        {tagline}
+      </PreviewTagline>
     </MiniCard>
   ) : (
     <Card

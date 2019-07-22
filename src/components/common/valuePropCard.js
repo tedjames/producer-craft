@@ -32,7 +32,7 @@ const Card = styled.div`
 const ValueTitle = styled.p`
   font-family: proxima-nova, sans-serif;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.3);
   cursor: default;
   margin-bottom: 10px;
@@ -46,7 +46,7 @@ const ValueDescription = styled.p`
   font-family: roboto-condensed, sans-serif;
   font-weight: 300;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.88);
+  color: #111;
   margin-top: 0px;
   margin-bottom: 0px;
   cursor: default;
