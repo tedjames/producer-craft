@@ -12,7 +12,7 @@ const CommentDetails = styled.div`
 `;
 const UserAvatar = styled.div`
   height: 48px;
-  width: 55px;
+  width: 48px;
   border-radius: 180px;
   margin-right: 15px;
   background-repeat: no-repeat;
@@ -21,7 +21,6 @@ const UserAvatar = styled.div`
   background-color: #555;
 `;
 const FieldCard = styled.div`
-  height: 56px;
   background: #fff;
   border-radius: 12px;
   width: 100%;
@@ -30,6 +29,8 @@ const FieldCard = styled.div`
   justify-content: flex-start;
   padding-left: 15px;
   padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   z-index: 10;
 `;
 
@@ -39,7 +40,7 @@ const CommentButtons = styled.div`
   justify-content: flex-end;
   margin-top: 12px;
   transform: ${props => (props.showButtons ? 'translateY(0px)' : 'translateY(-60px)')};
-  margin-bottom: ${props => (props.showButtons ? '0px' : '-60px')};
+  margin-bottom: ${props => (props.showButtons ? '10px' : '-20px')};
   opacity: ${props => (props.showButtons ? '1' : '0')};
   transition: all 0.35s ease;
 `;
@@ -58,23 +59,29 @@ const CommentSubmission = () => {
   return (
     <div>
       <CommentDetails>
-        <UserAvatar backgroundImage={StorchProfile} />
+        <div style={{ width: 58 }}>
+          <UserAvatar backgroundImage={StorchProfile} />
+        </div>
         <FieldCard>
           <InputField
             onFocus={() => toggleButtons(true)}
             onBlur={() => !message && toggleButtons(false)}
-            placeholder="Add a public comment..."
+            placeholder="Add a comment or share music..."
             inputProps={{
               'aria-label': 'Comment Submission',
             }}
             value={message}
             onChange={e => setMessage(e.target.value)}
             fullWidth
+            multiline
           />
         </FieldCard>
       </CommentDetails>
       <CommentButtons showButtons={message || showButtons}>
-        <FlatButton onClick={() => close()} style={{ backgroundColor: '#eee', width: 120 }}>
+        <FlatButton
+          onClick={() => close()}
+          style={{ backgroundColor: 'rgba(0,0,0,0)', width: 120 }}
+        >
           <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
         </FlatButton>
         <FlatButton>
