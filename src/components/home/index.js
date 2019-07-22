@@ -102,7 +102,7 @@ class Home extends Component {
         />
 
         {/* Recently Added Courses */}
-        <div style={{ background: '#fff', paddingTop: 40 }}>
+        <div style={{ background: '#fff', paddingTop: 40, paddingBottom: 40 }}>
           <SectionTitle style={{ marginTop: 0 }}>Recently Added</SectionTitle>
           <CardList mini>
             <CourseCard
@@ -136,35 +136,20 @@ class Home extends Component {
             <ValuePropCard
               icon={<MusicIcon />}
               title="Learn"
-              description="Enroll in courses taught by world-class producers, sound engineers and music
-                  artists."
+              description="Learn from world-class producers, sound engineers and music artists"
             />
             <ValuePropCard
               icon={<SubscribeIcon />}
-              title="Subscribe"
-              description="Support your favorite producers and gain early-access to courses, sample packs and
-                  more."
+              title="Engage"
+              description="Share your music for constructive feedback and a chance to work with a producer"
             />
             <ValuePropCard
               icon={<ShareIcon />}
-              title="Engage"
-              description="Share your musical works with peers and instructors for constructive feedback."
+              title="Subscribe"
+              description="Purchase an all-access pass to all of our courses and future content"
               style={{ borderRight: '0px', borderBottom: '0px' }}
             />
           </ValuePropositions>
-
-          {/* Instructors */}
-          <SectionTitle>Instructors</SectionTitle>
-          <HorizontalScrollView>
-            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
-            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
-            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-          </HorizontalScrollView>
 
           {/* Available Courses */}
           <SectionTitle>Available Courses</SectionTitle>
@@ -190,7 +175,7 @@ class Home extends Component {
 
           {/* Coming Soon */}
           <SectionTitle id="comingSoon">Coming Soon</SectionTitle>
-          <CardList style={{ paddingBottom: 80 }}>
+          <CardList>
             <CourseCard
               backgroundImage={HeroImage4}
               title="Southside"
@@ -210,6 +195,19 @@ class Home extends Component {
               disabled
             />
           </CardList>
+
+          {/* Instructors */}
+          <SectionTitle>Instructors</SectionTitle>
+          <HorizontalScrollView>
+            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
+            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
+            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
+            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
+            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
+            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
+            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
+            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
+          </HorizontalScrollView>
         </div>
 
         <Footer />
