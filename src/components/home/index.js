@@ -45,8 +45,8 @@ import HeroImage from '../../assets/hero-image-12.jpg';
 
 const FloatingActionBar = styled.div`
   position: fixed;
-  bottom: 0px;
-  transform: ${props => (props.show ? 'translateY(0px)' : 'translateY(80px)')};
+  top: 0px;
+  transform: ${props => (props.show ? 'translateY(0px)' : 'translateY(-80px)')};
   z-index: 100;
   flex-direction: column;
   align-items: center;
@@ -82,7 +82,7 @@ class Home extends Component {
 
   scrollListener() {
     if (window.scrollY >= 800) {
-      return window.scrollY >= document.getElementById('comingSoon').offsetTop
+      return window.scrollY >= document.getElementById('footer').offsetTop
         ? this.setState({ showFloatingActionBar: false })
         : this.setState({ showFloatingActionBar: true });
     }
@@ -213,6 +213,7 @@ class Home extends Component {
         </div>
 
         <Footer />
+
         <FloatingActionBar show={showFloatingActionBar}>
           <div
             style={{
@@ -233,6 +234,7 @@ class Home extends Component {
             </FlatButton>
           </div>
         </FloatingActionBar>
+
         {/* Modals */}
         <AuthModal />
         <TrailerModal
