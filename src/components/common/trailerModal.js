@@ -96,12 +96,13 @@ class TrailerModal extends PureComponent {
           <VideoContainer>
             <ReactJWPlayer
               playerId="my-jw-player-instance"
-              playerScript="https://cdn.jwplayer.com/libraries/Zel8X0GE.js"
-              file="https://content.jwplatform.com/videos/RyMYYAIp-LEbNYiQV.mp4"
+              playerScript="https://cdn.jwplayer.com/libraries/dYq2UTto.js"
+              playlist="https://cdn.jwplayer.com/v2/playlists/fxELLat1"
               image={VideoImage}
               onDisplayClick={this.onDisplayClick}
               primary="html5"
               isAutoPlay
+              displayMode="shelf"
             />
           </VideoContainer>
         </DialogContent>
