@@ -3,6 +3,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+import Slide from '@material-ui/core/Slide';
+import Dialog from '@material-ui/core/Dialog';
+import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
 // Redux
 import { connect } from 'react-redux';
 import { showAuthModal, showRegistrationModal } from '../../actions';
@@ -57,6 +63,21 @@ import StorchProfile from '../../assets/storch-profile-image-3.jpg';
 //   return console.log(response);
 // }
 
+// NOTE: For use with lesson plan on tablet/mobile devices
+const useStyles = makeStyles(theme => ({
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
+}));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const TrailerCard = styled.div`
   display: flex;
   align-items: center;
@@ -77,20 +98,21 @@ const TrailerCard = styled.div`
   @media (max-width: 1100px) {
     height: 360px;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 976px) {
     height: 320px;
+    width: 80%;
   }
   @media (max-width: 800px) {
     height: 300px;
-    width: 72.5%;
+    width: 80%;
   }
   @media (max-width: 700px) {
     height: 280px;
-    width: 75%;
+    width: 80%;
   }
   @media (max-width: 600px) {
     height: 240px;
-    width: 77.5%;
+    width: 80%;
   }
   @media (max-width: 568px) {
     height: 220px;
@@ -135,6 +157,9 @@ const TrailerContainer = styled.div`
     transform: translateY(-160px);
     margin-bottom: -160px;
   }
+  @media (max-width: 520px) {
+    padding-left: 28px;
+  }
 `;
 
 const CourseDetails = styled.div`
@@ -144,6 +169,15 @@ const CourseDetails = styled.div`
   padding-left: 42.5px;
   @media (max-width: 520px) {
     padding-left: 30px;
+  }
+  @media (max-width: 350px) {
+    padding-left: 20px;
+  }
+  @media (max-width: 335px) {
+    padding-left: 17.5px;
+  }
+  @media (max-width: 325px) {
+    padding-left: 12.5px;
   }
 `;
 const LessonDetails = styled.div`
@@ -155,7 +189,7 @@ const LessonPlan = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1.5;
-  margin-top: -200px;
+  margin-top: -190px;
   z-index: 1000;
   padding-left: 15px;
   padding-right: 15px;
@@ -163,15 +197,12 @@ const LessonPlan = styled.div`
   margin-right: 0px;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
-  box-shadow: 2px 2px 66px -35px rgba(0, 0, 0, 0.1);
   @media (min-width: 1400px) {
     margin-right: 40px;
   }
   @media (max-width: 976px) {
     display: none;
   }
-  background-color: #ffffff;
-  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 `;
 
 const LessonTitle = styled.p`
@@ -207,7 +238,7 @@ const LessonTitleNumber = styled.p`
 const LessonPlanTitle = styled.p`
   font-family: proxima-nova;
   font-weight: 900;
-  font-size: 11px;
+  font-size: 12px;
   text-align: left;
   padding-left: 5px;
   opacity: 0.75;
@@ -240,18 +271,16 @@ const LessonPreview = styled.div`
 `;
 const Thumbnail = styled.div`
   height: 94px;
-  width: 168px;
+  width: 160px;
+  min-width: 160px;
   border-radius: 4px;
-  background-repeat: no-repeat;
+  box-shadow: 2px 2px 66px -35px rgba(0, 0, 0, 0.1);
   background-repeat: no-repeat;
   background-image: ${props => `url(${props.backgroundImage})`};
   background-size: cover;
   background-position: 75% 25%;
   background-color: #555;
-  background-size: cover;
-  background-position: 75% 25%;
-  background-color: #555;
-  margin-right: 10px;
+  opacity: 0.9;
   cursor: pointer;
 `;
 
@@ -259,6 +288,7 @@ const LessonPreviewInfo = styled.div`
   width: 55%;
   cursor: pointer;
   padding-right: 20px;
+  padding-left: 10px;
 `;
 
 const LessonNumber = styled.p`
@@ -278,7 +308,6 @@ const LessonName = styled.p`
   font-size: 15px;
   text-align: left;
   color: #555;
-  opacity: 0.925;
   margin-bottom: 5px;
   margin-top: 0px;
   cursor: pointer;
@@ -311,6 +340,7 @@ const FileCard = styled.div`
   padding-right: 17.5px;
   background: #fff;
   border-radius: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
   cursor: pointer;
   box-shadow: 2px 2px 66px -35px rgba(0, 0, 0, 0.39);
   :hover {
@@ -389,19 +419,44 @@ const CommentSectionTitle = styled.div`
   text-transform: uppercase;
 `;
 
+const LessonPlanButton = styled.div`
+  display: none;
+  @media (max-width: 976px) {
+    display: flex;
+  }
+`;
+
+const LessonPlanModal = styled.div`
+  margin-left: 20px;
+  margin-right: 20px;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+`;
+
+const MainContainer = styled.div`
+  background: #eee;
+  padding-top: 65px;
+  padding-bottom: 30px;
+  @media (orientation: landscape) {
+    padding-top: 100px;
+  }
+`;
+
 class CourseViewer extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       showTrailerModal: false,
+      showLessonPlanModal: false,
     };
   }
 
   render() {
     // eslint-disable-next-line no-shadow
     const { showRegistrationModal } = this.props;
-    const { showTrailerModal } = this.state;
+    const { showTrailerModal, showLessonPlanModal } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
         {/* Hero Image, Title and Enroll/Follow Buttons */}
@@ -411,13 +466,7 @@ class CourseViewer extends Component {
           showRegistrationModal={showRegistrationModal}
         />
 
-        <div
-          style={{
-            background: '#eee',
-            paddingTop: 40,
-            paddingBottom: 30,
-          }}
-        >
+        <MainContainer>
           {/* Profile Image */}
           <TrailerContainer>
             <TrailerCard
@@ -550,18 +599,19 @@ class CourseViewer extends Component {
                   </svg>
                 </ShareIconButton>
               </SharingButtons>
-
-              <AnimatedButton
-                onClick={() => null}
-                containerStyle={{
-                  width: 200,
-                  alignSelf: 'flex-start',
-                  marginTop: 5,
-                }}
-                textStyle={{ color: '#777' }}
-              >
-                Next Lesson
-              </AnimatedButton>
+              <LessonPlanButton>
+                <AnimatedButton
+                  onClick={() => this.setState({ showLessonPlanModal: true })}
+                  containerStyle={{
+                    width: 200,
+                    alignSelf: 'flex-start',
+                    marginTop: 5,
+                  }}
+                  textStyle={{ color: '#777' }}
+                >
+                  Lesson Plan
+                </AnimatedButton>
+              </LessonPlanButton>
 
               {/* Comments Section */}
               <Comments>
@@ -658,7 +708,7 @@ class CourseViewer extends Component {
 
           {/* Return Home Button */}
           <ReturnSection />
-        </div>
+        </MainContainer>
         <Footer />
 
         {/* Modals */}
@@ -667,6 +717,95 @@ class CourseViewer extends Component {
           open={showTrailerModal}
           close={() => this.setState({ showTrailerModal: false })}
         />
+        <Dialog
+          fullScreen
+          open={showLessonPlanModal}
+          onClose={() => this.setState({ showLessonPlanModal: false })}
+          TransitionComponent={Transition}
+        >
+          <LessonPlanModal>
+            <IconButton
+              edge="start"
+              color="#777"
+              onClick={() => this.setState({ showLessonPlanModal: false })}
+              aria-label="Close"
+              style={{ float: 'right', position: 'relative', bottom: 15 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <LessonPlanTitle>Lesson Plan</LessonPlanTitle>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 1</LessonNumber>
+                <LessonName>Welcome to Ableton</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 2</LessonNumber>
+                <LessonName>Setting the vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 3</LessonNumber>
+                <LessonName>Organizing your sounds</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 4</LessonNumber>
+                <LessonName>Workflow</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+            <LessonPreview>
+              <Thumbnail backgroundImage={StorchHero4} />
+              <LessonPreviewInfo>
+                <LessonNumber>// 5</LessonNumber>
+                <LessonName>Establishing the right tempo and vibe</LessonName>
+              </LessonPreviewInfo>
+            </LessonPreview>
+          </LessonPlanModal>
+        </Dialog>
       </div>
     );
   }
