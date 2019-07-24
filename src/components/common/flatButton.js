@@ -20,9 +20,6 @@ const FlatButton = styled.button`
     opacity: 0.65;
     transform: scale(0.95);
   }
-  @media (max-width: 320px) {
-    transform: scale(0.95);
-  }
 `;
 
 export default FlatButton;
