@@ -10,53 +10,12 @@ import {
 } from '../common';
 
 const Container = styled.div`
-  height: 100vh;
-  width: 90vw;
+  height: none;
+  padding-bottom: 100px;
+  width: 100vw;
   position: relative;
   background-color: transparent;
   box-shadow: inset 420px -40px 700px 240px rgba(0, 0, 0, 0.775);
-  @media (max-width: 375px) {
-    width: 100vw;
-  }
-  @media (min-width: 376px) (max-width: 1024px) {
-    width: 90vw;
-  }
-  @media (min-width: 1025px) and (max-width: 1199px) {
-    width: 66vw;
-  }
-  @media (min-width: 1200px) {
-    height: 100vh;
-    width: 100vw;
-  }
-  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
-    height: 105vh;
-    width: 75vw;
-  }
-  @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
-    height: 100vh;
-  }
-
-  @media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
-    height: 100vh;
-  }
-  @media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
-    height: 100vh;
-  }
-
-  @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
-    height: 100vh;
-  }
-
-  @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
-    height: 100vh;
-  }
-
-  @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
-    height: 100vh;
-  }
-  @media screen and (device-width: 412px) and (device-height: 823px) and (-webkit-device-pixel-ratio: 3.5) and (orientation: landscape) {
-    height: 200vh !important;
-  }
 `;
 
 const BackgroundImage = styled.span`
@@ -328,7 +287,7 @@ const FeaturedCourse = styled.div`
   flex-direction: row;
   padding-left: 60px;
   padding-right: 60px;
-  margin-top: 60px;
+  margin-top: 50px;
   @media only screen and (min-width: 1024px) and (max-height: 1366px) {
     flex-direction: column-reverse;
   }
@@ -366,8 +325,8 @@ const PlayButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 70%;
-  padding-top: 100px;
-  padding-bottom: 60px;
+  padding-top: 40px;
+  padding-bottom: 40px;
   @media only screen and (min-width: 1024px) and (max-height: 1366px) {
     justify-content: flex-start;
   }
