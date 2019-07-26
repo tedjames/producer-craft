@@ -104,7 +104,7 @@ const FooterText = styled.a`
   cursor: default;
 `;
 
-const FooterTextButton = styled.a`
+const FooterTextButton = styled.span`
   font-family: roboto-condensed, sans-serif;
   font-size: 12px;
   text-decoration: underline;

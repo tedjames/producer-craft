@@ -35,9 +35,9 @@ const ReturnSectionMobile = styled.div`
   }
 `;
 
-const ReturnSection = ({ children, onClick }) => {
+const ReturnSection = ({ children, onClick, key }) => {
   return [
-    <ReturnSectionDesktop>
+    <ReturnSectionDesktop key="returnsection-desktop">
       <AnimatedButton
         containerStyle={{ alignItems: 'flex-end', justifyContent: 'flex-end' }}
         to="/"
@@ -46,7 +46,7 @@ const ReturnSection = ({ children, onClick }) => {
         {children || 'Return Home'}
       </AnimatedButton>
     </ReturnSectionDesktop>,
-    <ReturnSectionMobile>
+    <ReturnSectionMobile key="returnsection-mobile">
       <AnimatedButton containerStyle={{}} to="/" onClick={onClick}>
         {children || 'Return Home'}
       </AnimatedButton>

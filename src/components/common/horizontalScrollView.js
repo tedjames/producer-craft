@@ -137,10 +137,10 @@ export default class extends Component {
     const { children, style } = this.props;
     const { showLeftArrow, isTouchDevice } = this.state;
 
-    return [
-      <>
+    return (
+      <div key="horizonatal-scrollview-container">
         {!isTouchDevice && (
-          <ArrowScrolling>
+          <ArrowScrolling key="arrow-scrolling">
             <LeftArrowIcon onClick={this.handleArrowLeft} showLeftArrow={showLeftArrow}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -171,16 +171,17 @@ export default class extends Component {
             </RightArrowIcon>
           </ArrowScrolling>
         )}
-      </>,
 
-      <ScrollContainer
-        style={style}
-        className="horizontal-scroll"
-        onScroll={this.handleInstructorsScroll}
-      >
-        {children}
-        <div style={{ width: 20, height: 40, flex: '0 0 auto' }} />
-      </ScrollContainer>,
-    ];
+        <ScrollContainer
+          style={style}
+          className="horizontal-scroll"
+          onScroll={this.handleInstructorsScroll}
+          key="scroll-container"
+        >
+          {children}
+          <div style={{ width: 20, height: 40, flex: '0 0 auto' }} />
+        </ScrollContainer>
+      </div>
+    );
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import styled from 'styled-components';
-import { showAuthModal } from '../../actions';
+import { showAuthModal, logoutUser } from '../../actions';
 import Logo from './logo';
 
 const Container = styled.div`
@@ -55,18 +55,28 @@ const LoginButton = styled.p`
 `;
 
 // eslint-disable-next-line no-shadow
-const Header = ({ style, showAuthModal }) => {
+const Header = ({ style, showAuthModal, logoutUser, user }) => {
   return (
     <Container style={style}>
       <Logo onClick={() => browserHistory.push('/')} />
-      <LoginButton className="disable-selection" onClick={() => showAuthModal(true)}>
-        LOG IN
-      </LoginButton>
+      {user ? (
+        <LoginButton className="disable-selection" onClick={() => logoutUser()}>
+          LOG OUT
+        </LoginButton>
+      ) : (
+        <LoginButton className="disable-selection" onClick={() => showAuthModal(true)}>
+          LOG IN
+        </LoginButton>
+      )}
     </Container>
   );
 };
 
+const mapStateToProps = ({ auth }) => ({
+  user: auth.user,
+});
+
 export default connect(
-  null,
-  { showAuthModal },
+  mapStateToProps,
+  { showAuthModal, logoutUser },
 )(Header);

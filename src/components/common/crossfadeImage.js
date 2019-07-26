@@ -46,6 +46,7 @@ export default class CrossfadeImage extends Component {
         )}
         {bottomSrc && (
           <img
+            alt={alt}
             style={{
               ...defaultStyle,
               ...style,

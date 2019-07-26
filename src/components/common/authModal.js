@@ -19,8 +19,7 @@ import ForgotPasswordModal from './forgotPasswordModal';
 import {
   loginUser,
   logoutUser,
-  firstNameChanged,
-  lastNameChanged,
+  usernameChanged,
   emailChanged,
   passwordChanged,
   confirmPasswordChanged,
@@ -33,6 +32,7 @@ import {
   showRegistrationModal,
   showLoginModal,
   clearAuthForm,
+  authError,
 } from '../../actions';
 
 const DialogTitle = styled.p`
@@ -98,11 +98,87 @@ class AuthModal extends Component {
     super(props);
     this.handleExit = this.handleExit.bind(this);
     this.togglePasswordVisibility = this.togglePasswordVisibility.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.emailValid = this.emailValid.bind(this);
 
     this.state = {
       showForgotPassword: false,
       showPassword: false,
     };
+  }
+
+  emailValid(email) {
+    // uses regex to verify an email is valid
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  handleSubmit() {
+    console.log('HANDLING SUBMIT');
+
+    const {
+      username,
+      email,
+      password,
+      confirmPassword,
+      authError,
+      showRegistration,
+      loginUser,
+      createUser,
+    } = this.props;
+
+    // check to see if inputs are empty or contain whitespace
+    if (!email || /^\s*$/.test(email)) {
+      console.log('Please enter a valid email');
+      return authError({ error: 'Please enter a valid email' });
+    }
+    if (!password || /^\s*$/.test(password)) {
+      console.log('Please enter a password');
+      return authError({ error: 'Please enter a password' });
+    }
+
+    // run registration form validation only when registrationModal is open
+    if (showRegistration) {
+      if (!username || /^\s*$/.test(username)) {
+        console.log('Please enter a username. You can always change this later.');
+        return authError({ error: 'Please enter a username. You can always change this later.' });
+      }
+      if (!confirmPassword || /^\s*$/.test(confirmPassword)) {
+        console.log('Please confirm your password');
+        return authError({ error: 'Please confirm your password' });
+      }
+      // verify that email is valid
+      if (!this.emailValid(email)) {
+        console.log('Please enter a valid email');
+        return authError({ error: 'Please enter a valid email' });
+      }
+      // verify that confirmPassword matches password
+      if (confirmPassword !== password) {
+        console.log('Passwords do not match. Please try again.');
+        return authError({ error: 'Passwords do not match. Please try again.' });
+      }
+      // enforce min. password length of 8 characters
+      if (!/.{8,}/.test(password)) {
+        console.log('Password must be a least 8 characters long');
+        return authError({ error: 'Password must be a least 8 characters long' });
+      }
+      // enforce min. of 1 numeric character
+      if (!/.*[0-9]/.test(password)) {
+        console.log('Password must contain a number');
+        return authError({ error: 'Password must contain a number' });
+      }
+      // enforce min. of 1 uppercase chracter
+      if (!/.*[A-Z]/.test(password)) {
+        console.log('Password must contain an uppercase character');
+        return authError({ error: 'Password must contain an uppercase character' });
+      }
+      console.log('Creating user');
+
+      return createUser({ username, email, password });
+    }
+    console.log('Attempting login');
+
+    // if not registration modal, attempt login
+    return loginUser({ email, password });
   }
 
   handleExit() {
@@ -128,11 +204,14 @@ class AuthModal extends Component {
       showRegistration,
       showLoginModal,
       email,
+      username,
       password,
       confirmPassword,
       emailChanged,
       passwordChanged,
       confirmPasswordChanged,
+      usernameChanged,
+      error,
     } = this.props;
     const { showForgotPassword, showPassword } = this.state;
     return (
@@ -144,59 +223,49 @@ class AuthModal extends Component {
       >
         <DialogTitle>{showRegistration ? 'Sign Up' : 'Welcome Back'}</DialogTitle>
         <DialogContent>
-          <TextField
-            style={{ marginBottom: 12.5 }}
-            onChange={e => emailChanged(e.target.value)}
-            value={email}
-            type={showPassword ? 'text' : 'password'}
-            autoFocus
-            margin="dense"
-            id="emailAddress"
-            label="Email Address"
-            type="email"
-            placeholder="your@email.com"
-            fullWidth
-            variant="outlined"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            style={{ marginBottom: 12.5 }}
-            onChange={e => passwordChanged(e.target.value)}
-            value={password}
-            type={showPassword ? 'text' : 'password'}
-            margin="dense"
-            id="password"
-            label="Password"
-            placeholder="********"
-            fullWidth
-            variant="outlined"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    aria-label="Toggle password visibility"
-                    onClick={this.togglePasswordVisibility}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          {showRegistration && (
+          <form>
+            {showRegistration && (
+              <TextField
+                style={{ marginBottom: 12.5 }}
+                onChange={e => usernameChanged(e.target.value)}
+                value={username}
+                autoFocus
+                margin="dense"
+                id="username"
+                label="Username"
+                type="name"
+                placeholder="My Name"
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            )}
             <TextField
-              onChange={e => confirmPasswordChanged(e.target.value)}
-              value={confirmPassword}
+              style={{ marginBottom: 12.5 }}
+              onChange={e => emailChanged(e.target.value)}
+              value={email}
+              autoFocus
+              margin="dense"
+              id="emailAddress"
+              label="Email Address"
+              type="email"
+              placeholder="your@email.com"
+              fullWidth
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              onChange={e => passwordChanged(e.target.value)}
+              value={password}
               type={showPassword ? 'text' : 'password'}
               margin="dense"
-              id="confirmPassword"
-              label="Confirm Password"
+              id="password"
+              label="Password"
               placeholder="********"
               fullWidth
               variant="outlined"
@@ -217,7 +286,41 @@ class AuthModal extends Component {
                 ),
               }}
             />
-          )}
+            {showRegistration && (
+              <TextField
+                onChange={e => confirmPasswordChanged(e.target.value)}
+                value={confirmPassword}
+                type={showPassword ? 'text' : 'password'}
+                margin="dense"
+                id="confirmPassword"
+                label="Confirm Password"
+                placeholder="********"
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        edge="end"
+                        aria-label="Toggle password visibility"
+                        onClick={this.togglePasswordVisibility}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+            <DialogText
+              style={{ textDecoration: 'none', fontSize: 10, marginTop: 10, color: 'red' }}
+            >
+              {error}
+            </DialogText>
+          </form>
         </DialogContent>
         <DialogActions
           style={{
@@ -229,7 +332,7 @@ class AuthModal extends Component {
             paddingTop: 20,
           }}
         >
-          <FlatButton style={{ width: showRegistration ? 240 : 180 }}>
+          <FlatButton onClick={this.handleSubmit} style={{ width: showRegistration ? 240 : 180 }}>
             <ButtonText>{showRegistration ? 'Create Account' : 'Log In'}</ButtonText>
           </FlatButton>
           {!showRegistration && (
@@ -274,8 +377,7 @@ class AuthModal extends Component {
 const mapStateToProps = ({ auth }) => ({
   open: auth.showModal,
   showRegistration: auth.showRegistration,
-  firstName: auth.firstName,
-  lastName: auth.lastName,
+  username: auth.username,
   email: auth.email,
   password: auth.password,
   confirmPassword: auth.confirmPassword,
@@ -289,12 +391,12 @@ export default connect(
   mapStateToProps,
   {
     // Form Actions
-    firstNameChanged,
-    lastNameChanged,
+    usernameChanged,
     emailChanged,
     passwordChanged,
     confirmPasswordChanged,
     clearAuthForm,
+    authError,
     // User Account Management
     getUser,
     createUser,

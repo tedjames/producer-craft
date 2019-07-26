@@ -74,14 +74,20 @@ class TrailerModal extends PureComponent {
   }
 
   handleSignUp() {
-    const { showAuthModal, close, showRegistrationModal } = this.props;
+    const { close, showRegistrationModal } = this.props;
     showRegistrationModal(true);
+    close();
+  }
+
+  handleEnroll() {
+    const { showEnrollModal, close } = this.props;
+    showEnrollModal(true);
     close();
   }
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { open, close, showAuthModal } = this.props;
+    const { open, close, user } = this.props;
     return (
       <Dialog
         open={open}
@@ -107,8 +113,11 @@ class TrailerModal extends PureComponent {
           </VideoContainer>
         </DialogContent>
         <DialogActions2>
-          <FlatButton2 onClick={this.handleSignUp} style={{ width: 150 }}>
-            <ButtonText>SIGN UP</ButtonText>
+          <FlatButton2
+            onClick={user ? this.handleEnroll : this.handleSignUp}
+            style={{ width: 150 }}
+          >
+            <ButtonText>{user ? 'ENROLL' : 'SIGN UP'}</ButtonText>
           </FlatButton2>
           <FlatButton3
             onClick={() => close()}
