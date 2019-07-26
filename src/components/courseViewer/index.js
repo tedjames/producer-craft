@@ -18,19 +18,9 @@ import {
   AuthModal,
   TrailerModal,
   Footer,
-  SectionTitle,
-  LessonCard,
-  CardList,
-  MusicIcon,
-  SubscribeIcon,
-  ShareIcon,
-  ValuePropCard,
-  ValuePropositions,
   PlayButton,
   AnimatedButton,
   ReturnSection,
-  FlatButton,
-  ButtonText,
 } from '../common';
 import Hero from './hero';
 import ActionBar from './actionBar';
@@ -39,17 +29,7 @@ import CommentSubmission from './commentSubmission';
 import Comment from './comment';
 
 // Image Assets
-import HeroImage3 from '../../assets/hero-image-3.jpeg';
-import HeroImage4 from '../../assets/hero-image-8.jpg';
-import HeroImage5 from '../../assets/hero-image-10.png';
-import HeroImage from '../../assets/hero-image-12.jpg';
-import StorchHero from '../../assets/storch-hero-image.png';
-import StorchHero2 from '../../assets/storch-hero-image-2.png';
-import StorchHero3 from '../../assets/storch-hero-image-3.png';
 import StorchHero4 from '../../assets/storch-hero-image-4.png';
-import StorchHero5 from '../../assets/storch-hero-image-5.jpg';
-import StorchHero6 from '../../assets/storch-hero-image-6.png';
-import StorchProfile from '../../assets/storch-profile-image-3.jpg';
 
 // componentDidMount() {
 //   auth().onAuthStateChanged(user => {
@@ -62,17 +42,6 @@ import StorchProfile from '../../assets/storch-profile-image-3.jpg';
 //   const response = await testFunction({ message: 'Howdy!' });
 //   return console.log(response);
 // }
-
-// NOTE: For use with lesson plan on tablet/mobile devices
-const useStyles = makeStyles(theme => ({
-  appBar: {
-    position: 'relative',
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flex: 1,
-  },
-}));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;

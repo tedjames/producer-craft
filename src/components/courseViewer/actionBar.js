@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FlatButton, ButtonText, SectionTitle } from '../common';
-import GeniusLogo from '../../assets/genius-logo.png';
 
 const Container = styled.div`
   display: flex;
@@ -37,11 +36,6 @@ const SocialIconButton = styled.div`
   :active {
     opacity: 0.4;
   }
-`;
-
-const Genius = styled.img`
-  height: 50px;
-  opacity: 0.7;
 `;
 
 const ActionBar = ({ showRegistrationModal, showTrailerModal }) => {
