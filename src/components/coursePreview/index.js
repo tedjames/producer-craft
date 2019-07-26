@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 // Redux
 import { connect } from 'react-redux';
@@ -21,7 +20,6 @@ import {
   ValuePropCard,
   ValuePropositions,
   PlayButton,
-  AnimatedButton,
   ReturnSection,
 } from '../common';
 import Hero from './hero';
@@ -34,12 +32,8 @@ import HeroImage3 from '../../assets/hero-image-3.jpeg';
 import HeroImage4 from '../../assets/hero-image-8.jpg';
 import HeroImage5 from '../../assets/hero-image-10.png';
 import HeroImage from '../../assets/hero-image-12.jpg';
-import StorchHero from '../../assets/storch-hero-image.png';
 import StorchHero2 from '../../assets/storch-hero-image-2.png';
-import StorchHero3 from '../../assets/storch-hero-image-3.png';
 import StorchHero4 from '../../assets/storch-hero-image-4.png';
-import StorchHero5 from '../../assets/storch-hero-image-5.jpg';
-import StorchHero6 from '../../assets/storch-hero-image-6.png';
 
 // componentDidMount() {
 //   auth().onAuthStateChanged(user => {
@@ -228,7 +222,7 @@ class CourseDetails extends Component {
           />
 
           {/* Recommended Courses */}
-          <Recommended />
+          <Recommended key="recommended-courses" />
 
           {/* Return Home Button */}
           <ReturnSection />

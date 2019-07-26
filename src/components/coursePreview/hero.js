@@ -118,70 +118,40 @@ const CourseTitle = styled.p`
     margin-top: 30px;
   }
   @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
-    margin-top 30px;
+    margin-top: 30px;
   }
-  @media only screen
-    and (min-device-width: 320px)
-    and (max-device-width: 568px)
-    and (-webkit-min-device-pixel-ratio: 2)
-    and (orientation: portrait) {
-      margin-top: 40px;
+  @media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+    margin-top: 40px;
   }
-  @media only screen
-    and (min-device-width: 375px)
-    and (max-device-width: 667px)
-    and (-webkit-min-device-pixel-ratio: 2)
-    and (orientation: portrait) {
-      margin-top: 120px;
+  @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+    margin-top: 120px;
   }
 
-  @media only screen
-    and (min-device-width: 1024px)
-    and (max-device-width: 1024px)
-    and (orientation: portrait)
-    and (-webkit-min-device-pixel-ratio: 2) {
-        margin-top: 200px;
+  @media only screen and (min-device-width: 1024px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+    margin-top: 200px;
   }
-  @media only screen
-    and (min-device-width: 375px)
-    and (max-device-width: 812px)
-    and (-webkit-min-device-pixel-ratio: 3)
-    and (orientation: portrait) {
-      margin-top: 180px;
+  @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+    margin-top: 180px;
   }
-  @media only screen
-    and (min-device-width: 1366px)
-    and (max-device-width: 1366px)
-    and (orientation: landscape)
-    and (-webkit-min-device-pixel-ratio: 2) {
-      margin-top: 90px;
-    }
-    @media only screen
-  and (min-device-width: 375px)
-  and (max-device-width: 667px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: portrait) {
+  @media only screen and (min-device-width: 1366px) and (max-device-width: 1366px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2) {
+    margin-top: 90px;
+  }
+  @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
     margin-top: 80px;
-}
-@media only screen
-  and (min-device-width: 414px)
-  and (max-device-width: 736px)
-  and (-webkit-min-device-pixel-ratio: 3)
-  and (orientation: portrait) {
-margin-top: 100px;
-}
+  }
+  @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+    margin-top: 100px;
+  }
 
-@media (max-height: 860px) {
-  font-size: 32px;
-}
+  @media (max-height: 860px) {
+    font-size: 32px;
+  }
 
-@media (max-height: 730px) {
-  font-size: 24px;
-  line-height: 22px;
-  margin-bottom: 0px;
-}
-
-
+  @media (max-height: 730px) {
+    font-size: 24px;
+    line-height: 22px;
+    margin-bottom: 0px;
+  }
 `;
 const CourseTagline = styled.p`
   font-family: proxima-nova;
@@ -345,7 +315,7 @@ const HeroButtons = styled.div`
 
 export default class Hero extends PureComponent {
   render() {
-    const { showRegistrationModal, name, tagline, showTrailerModal } = this.props;
+    const { showRegistrationModal, name, tagline } = this.props;
     return (
       <Container>
         {/* Header Logo, Login and Instructor Buttons */}
