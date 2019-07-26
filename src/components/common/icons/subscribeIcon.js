@@ -1,14 +1,14 @@
 import React from 'react';
 import FooterIconButton from './footerIconButton';
 
-const SubscribeIcon = () => (
-  <FooterIconButton>
+const SubscribeIcon = ({ size, color, style }) => (
+  <FooterIconButton style={style}>
     <svg
-      width="28"
-      height="28"
+      width={size || '28'}
+      height={size || '28'}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#52bdff"
+      stroke={color || '#52bdff'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
