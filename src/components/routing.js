@@ -1,14 +1,14 @@
 import React, { Component, Suspense } from 'react';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
-// Firebase
-import firebase from 'firebase';
-
 // Redux
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import Reducers from '../reducers';
+
+// Wrapper Components
+import AuthListener from './authListener';
 
 // Higher Order Components
 // import RequireAuth from './hocs/requireAuth';
@@ -22,16 +22,6 @@ const CoursePreview = React.lazy(() => import('./coursePreview'));
 const CourseViewer = React.lazy(() => import('./courseViewer'));
 const StreamingTest = React.lazy(() => import('./streamingTest'));
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyC51eVN6j-fJoqVvNiig3v3hUdeQdvNdVE',
-  authDomain: 'producer-craft.firebaseapp.com',
-  databaseURL: 'https://producer-craft.firebaseio.com',
-  projectId: 'producer-craft',
-  storageBucket: 'producer-craft.appspot.com',
-  messagingSenderId: '495964428761',
-  appId: '1:495964428761:web:ca7330892d6cd34c',
-};
-
 const Loading = () => (
   <div
     style={{
@@ -41,14 +31,6 @@ const Loading = () => (
 );
 
 export default class App extends Component {
-  componentWillMount() {
-    // Firebase initialization
-    firebase.initializeApp(firebaseConfig);
-    const app = firebase.app();
-    const features = ['auth', 'functions'].filter(feature => typeof app[feature] === 'function');
-    console.log(`Firebase SDK loaded with ${features.join(', ')}. App Object: `, app);
-  }
-
   scrollRestore() {
     window.scrollTo(0, 0);
   }
@@ -69,7 +51,7 @@ export default class App extends Component {
       <Provider store={store}>
         <Suspense fallback={<Loading />}>
           <Router history={browserHistory}>
-            <Route path="/">
+            <Route path="/" component={AuthListener}>
               <IndexRoute component={Home} onEnter={this.scrollRestore} />
               <Route path="streaming" component={StreamingTest} onEnter={this.scrollRestore} />
               <Route path="preview">
