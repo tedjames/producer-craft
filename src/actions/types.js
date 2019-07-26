@@ -29,6 +29,10 @@ export const FORGOT_PASSWORD_MODAL = 'FORGOT_PASSWORD_MODAL';
 export const AUTH_MODAL = 'AUTH_MODAL';
 export const LOGIN_MODAL = 'LOGIN_MODAL';
 
+/* Payment & Subscribe Modals */
+export const SUBSCRIBE_MODAL = 'SUBSCRIBE_MODAL';
+export const PAYMENT_MODAL = 'PAYMENT_MODAL';
+
 /*  User Management  */
 export const CREATE_USER = 'CREATE_USER';
 export const GET_USERS = 'GET_USERS';
