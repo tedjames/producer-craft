@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { functions } from 'firebase';
 import { showAuthModal, showRegistrationModal } from '../../actions';
 import {
   AuthModal,
@@ -35,12 +36,6 @@ import HeroImage from '../../assets/hero-image-12.jpg';
 //   auth().onAuthStateChanged(user => {
 //     return user ? this.setState({ user }) : this.setState({ user: null });
 //   });
-// }
-
-// async handleFunction() {
-//   const testFunction = functions().httpsCallable('testFunction');
-//   const response = await testFunction({ message: 'Howdy!' });
-//   return console.log(response);
 // }
 
 const FloatingActionBar = styled.div`
@@ -79,6 +74,12 @@ class Home extends Component {
   componentWillUnmount() {
     window.removeEventListener('scroll', this.scrollListener);
   }
+
+  // async handleFunction() {
+  //   const testFunction = functions().httpsCallable('testFunction');
+  //   const response = await testFunction({ message: 'Howdy!' });
+  //   return console.log(response);
+  // }
 
   scrollListener() {
     if (window.scrollY >= 800) {
@@ -141,12 +142,12 @@ class Home extends Component {
             <ValuePropCard
               icon={<SubscribeIcon />}
               title="Engage"
-              description="Share your music for constructive feedback and a chance to work with a producer"
+              description="Share your music for helpful feedback and a chance to work with a producer"
             />
             <ValuePropCard
               icon={<ShareIcon />}
               title="Subscribe"
-              description="Purchase an all-access pass to all of our courses and future content"
+              description="Purchase an all-access pass to all of our classes, samples and future content"
               style={{ borderRight: '0px', borderBottom: '0px' }}
             />
           </ValuePropositions>
@@ -195,19 +196,6 @@ class Home extends Component {
               disabled
             />
           </CardList>
-
-          {/* Instructors */}
-          <SectionTitle>Instructors</SectionTitle>
-          <HorizontalScrollView>
-            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
-            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage3} name="BOI-1DA" />
-            <InstructorCard backgroundImage={HeroImage4} name="Southside" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-            <InstructorCard backgroundImage={HeroImage5} name="London on da track" />
-          </HorizontalScrollView>
         </div>
 
         <Footer />
@@ -221,7 +209,10 @@ class Home extends Component {
               justifyContent: 'center',
             }}
           >
-            <FlatButton onClick={showRegistrationModal} style={{ width: 160, marginRight: 10 }}>
+            <FlatButton
+              onClick={() => showRegistrationModal(true)}
+              style={{ width: 160, marginRight: 10 }}
+            >
               <ButtonText>Enroll</ButtonText>
             </FlatButton>
             <FlatButton

@@ -470,7 +470,7 @@ export default class Hero extends Component {
             <SubscriptionTagline className="disable-selection">
               Subscriptions starting at
             </SubscriptionTagline>
-            <Price className="disable-selection">$5 / monthly</Price>
+            <Price className="disable-selection">$12 / monthly</Price>
           </div>
           <PlayButtonContainer>
             <PlayButton onClick={toggleTrailerModal} />
