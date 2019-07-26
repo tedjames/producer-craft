@@ -3,14 +3,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { functions } from 'firebase';
-import { showAuthModal, showRegistrationModal } from '../../actions';
+import { showAuthModal, showRegistrationModal, toggleSubscribeModal } from '../../actions';
 import {
   AuthModal,
   TrailerModal,
   Footer,
-  HorizontalScrollView,
-  InstructorCard,
   SectionTitle,
   CourseCard,
   CardList,
@@ -21,6 +18,7 @@ import {
   ValuePropositions,
   FlatButton,
   ButtonText,
+  SubscribeModal,
 } from '../common';
 
 // Components
@@ -31,12 +29,6 @@ import HeroImage3 from '../../assets/hero-image-3.jpeg';
 import HeroImage4 from '../../assets/hero-image-8.jpg';
 import HeroImage5 from '../../assets/hero-image-10.png';
 import HeroImage from '../../assets/hero-image-12.jpg';
-
-// componentDidMount() {
-//   auth().onAuthStateChanged(user => {
-//     return user ? this.setState({ user }) : this.setState({ user: null });
-//   });
-// }
 
 const FloatingActionBar = styled.div`
   position: fixed;
@@ -92,7 +84,7 @@ class Home extends Component {
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal } = this.props;
+    const { showRegistrationModal, user, toggleSubscribeModal } = this.props;
     const { showTrailerModal, showFloatingActionBar } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
@@ -100,6 +92,8 @@ class Home extends Component {
         <Hero
           showRegistrationModal={showRegistrationModal}
           toggleTrailerModal={() => this.setState({ showTrailerModal: !showTrailerModal })}
+          user={user}
+          toggleSubscribeModal={toggleSubscribeModal}
         />
 
         {/* Recently Added Courses */}
@@ -200,7 +194,7 @@ class Home extends Component {
 
         <Footer />
 
-        <FloatingActionBar show={showFloatingActionBar}>
+        <FloatingActionBar show={user ? false : showFloatingActionBar}>
           <div
             style={{
               display: 'flex',
@@ -230,6 +224,7 @@ class Home extends Component {
           open={showTrailerModal}
           close={() => this.setState({ showTrailerModal: false })}
         />
+        <SubscribeModal />
       </div>
     );
   }
@@ -237,11 +232,7 @@ class Home extends Component {
 
 const mapStateToProps = state => ({
   user: state.auth.user,
-  firstName: state.auth.firstName,
-  lastName: state.auth.lastName,
   email: state.auth.email,
-  password: state.auth.password,
-  confirmPassword: state.auth.confirmPassword,
   error: state.auth.error,
   loading: state.auth.loading,
   showModal: state.auth.showModal,
@@ -249,5 +240,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, showRegistrationModal },
+  { showAuthModal, showRegistrationModal, toggleSubscribeModal },
 )(Home);

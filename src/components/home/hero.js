@@ -451,7 +451,7 @@ export default class Hero extends Component {
   }
 
   render() {
-    const { showRegistrationModal, toggleTrailerModal } = this.props;
+    const { showRegistrationModal, toggleTrailerModal, user, toggleSubscribeModal } = this.props;
     return (
       <Container>
         {/* Header Logo, Login and Instructor Buttons */}
@@ -478,16 +478,16 @@ export default class Hero extends Component {
         </FeaturedCourse>
         <HeroButtons>
           <FlatButton
-            onClick={() => showRegistrationModal(true)}
+            onClick={() => (user ? toggleSubscribeModal(true) : showRegistrationModal(true))}
             style={{ width: 200, marginRight: 20 }}
           >
-            <ButtonText>Sign Up</ButtonText>
+            <ButtonText>{user ? 'Subscribe' : 'Sign Up'}</ButtonText>
           </FlatButton>
           <FlatButton
             onClick={toggleTrailerModal}
             style={{ width: 220, backgroundColor: 'rgba(255, 255, 255, 0.275' }}
           >
-            <ButtonText>Learn More</ButtonText>
+            <ButtonText>{user ? 'My Courses' : 'Learn More'}</ButtonText>
           </FlatButton>
         </HeroButtons>
 
