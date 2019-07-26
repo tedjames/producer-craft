@@ -128,6 +128,7 @@ const dataModel = {
       email: 'werbel.ted@gmail.com',
       firstName: 'Ted',
       lastName: 'Werbel',
+      image: 'link to their profile picture',
       private: {
         stripe_customer_id: 'cus_EbaS729Ha8jfH',
         purchases: [
@@ -158,23 +159,29 @@ const dataModel = {
       reddit_url: 'https://REDDIT_URL',
       playlist: [
         ...{
-          video_id: 'vid_as7gsd2',
+          media_id: 'akh17ba',
+          lesson_index: 0,
+          title: 'Welcome to Ableton Live',
           thumbnail: 'https://THUMBNAIL_URL',
-          description: 'Description goes here...',
           comments: {
             comment_id: 'com_12908as',
-            message: 'Check it out - http://soundcloud.com/tjw/234naaa',
-            user_name: 'Ted Werbel',
             user_id: 'uid_23n98sdf',
+            message: 'Check it out - http://soundcloud.com/tjw/234naaa',
             likes: 0,
+            instructorLike: false,
+            replies: [
+              {
+                replyId: 'rep_j7sbba',
+                user_id: 'uid_23n98sdf',
+                message: 'Check it out - http://soundcloud.com/tjw/234naaa',
+              },
+            ],
           },
         },
       ],
       active: true,
     },
   ],
-  // ONLY ACCCESIBLE BY FIREBASE ADMIN
-  videos: [{ video_id: 'vid_as7gsd2', video_url: 'https://JWPLAYER_VIDEO_URL' }],
 };
 
 // MASTERCLASS.COM API RESPONSE EXAMPLE
