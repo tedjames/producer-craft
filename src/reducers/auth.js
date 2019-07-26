@@ -1,8 +1,7 @@
 import {
   PENDING,
   ERROR,
-  FIRST_NAME_CHANGED,
-  LAST_NAME_CHANGED,
+  USERNAME_CHANGED,
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
   CONFIRM_PASSWORD_CHANGED,
@@ -19,8 +18,7 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  firstName: '',
-  lastName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -44,10 +42,8 @@ export default (state = INITIAL_STATE, action) => {
     case REGISTRATION_MODAL:
       return { ...state, showModal: action.payload, showRegistration: action.payload };
     /*  Login / Registration Form Reducers  */
-    case FIRST_NAME_CHANGED:
-      return { ...state, firstName: action.payload };
-    case LAST_NAME_CHANGED:
-      return { ...state, lastName: action.payload };
+    case USERNAME_CHANGED:
+      return { ...state, username: action.payload };
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
     case PASSWORD_CHANGED:
@@ -58,6 +54,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ...INITIAL_STATE,
+        user: state.user,
         email: action.payload && action.payload.email ? state.email : INITIAL_STATE.email,
       };
     case AUTH_ERROR:
@@ -69,7 +66,7 @@ export default (state = INITIAL_STATE, action) => {
         case PENDING:
           return { ...state, loading: true };
         case ERROR:
-          return { ...state, error: 'Error authorizing user', loading: false };
+          return { ...state, error: '', loading: false };
         default:
           return {
             ...state,
@@ -83,14 +80,18 @@ export default (state = INITIAL_STATE, action) => {
         case PENDING:
           return { ...state, loading: true };
         case ERROR:
-          return { ...state, error: 'Error logging in user', loading: false };
+          return {
+            ...state,
+            password: '',
+            confirmPassword: '',
+            loading: false,
+          };
         default:
           return {
             ...state,
             success: 'Successfully logged in',
             user: action.payload,
-            firstName: '',
-            lastName: '',
+            username: '',
             email: '',
             password: '',
             confirmPassword: '',

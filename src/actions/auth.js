@@ -1,12 +1,12 @@
 // Firebase SDK
-import { auth, database } from 'firebase';
+import { auth } from 'firebase';
+import { db } from '../database';
 // Redux Action Types
 import {
   PENDING,
   ERROR,
   SUCCESS,
-  FIRST_NAME_CHANGED,
-  LAST_NAME_CHANGED,
+  USERNAME_CHANGED,
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
   CONFIRM_PASSWORD_CHANGED,
@@ -26,6 +26,8 @@ import {
   REGISTRATION_MODAL,
   LOGIN_MODAL,
 } from './types';
+
+// Snackbar
 
 // ////////////////////////////////////////////////////////////////////
 /*  Helper Functions  */
@@ -68,11 +70,20 @@ export const loginUser = ({ email, password }) => {
         // handle login success
         console.log('Successfully logged in: ', user);
         dispatch({ type: CLEAR_AUTH_FORM });
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'success', message: 'Successfully logged in' },
+        });
+        dispatch({ type: LOGIN_USER, payload: user });
       })
       .catch(error => {
         // handle login error
         console.log('Error logging in: ', error);
-        dispatch({ type: CLEAR_AUTH_FORM });
+        dispatch({ type: AUTH_ERROR, payload: error.message });
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'error', message: error.message },
+        });
         dispatch({ type: LOGIN_USER, payload: ERROR });
       });
   };
@@ -88,22 +99,26 @@ export const logoutUser = () => {
       .then(user => {
         // handle logout success
         console.log('Successfully logged user out: ', user);
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'success', message: 'Successfully logged out' },
+        });
         dispatch({ type: LOGOUT_USER, payload: SUCCESS });
       })
       .catch(error => {
         // handle logout error
         console.log('Error logging out: ', error);
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'error', message: 'Unable to log out. Please try again.' },
+        });
         dispatch({ type: LOGOUT_USER, payload: ERROR });
       });
   };
 };
 // login + registration form
-export const firstNameChanged = text => ({
-  type: FIRST_NAME_CHANGED,
-  payload: text,
-});
-export const lastNameChanged = text => ({
-  type: LAST_NAME_CHANGED,
+export const usernameChanged = text => ({
+  type: USERNAME_CHANGED,
   payload: text,
 });
 export const emailChanged = text => ({
@@ -152,10 +167,21 @@ export const resetPassword = ({ email }) => {
       .then(() => {
         console.log('Password reset email sent!');
         dispatch({ type: FORGOT_PASSWORD_MODAL, payload: false });
+        dispatch({
+          type: SNACKBAR,
+          payload: {
+            variant: 'success',
+            message: 'Password recovery email sent! Please check your email.',
+          },
+        });
         dispatch({ type: RESET_PASSWORD, payload: SUCCESS });
       })
-      .catch(() => {
-        console.log('ERROR: Password reset email unable to be sent...');
+      .catch(error => {
+        console.log('ERROR: Password reset email unable to be sent...', error);
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'error', message: error.message },
+        });
         dispatch({ type: RESET_PASSWORD, payload: ERROR });
       });
   };
@@ -171,8 +197,7 @@ export const getUser = () => {
     dispatch({ type: GET_USER, payload: PENDING });
 
     // listen to users object from db
-    database()
-      .collection('users')
+    db.collection('users')
       .doc(user.uid)
       .onSnapshot(doc => {
         // handle listen to users success
@@ -182,7 +207,7 @@ export const getUser = () => {
   };
 };
 // create new user
-export const createUser = ({ firstName, lastName, email, password }) => {
+export const createUser = ({ username, email, password }) => {
   return dispatch => {
     dispatch({ type: CREATE_USER, payload: PENDING });
 
@@ -201,41 +226,64 @@ export const createUser = ({ firstName, lastName, email, password }) => {
         const { uid } = userRecord.user;
 
         // Add reference to user in db
-        database()
-          .collection('users')
+        db.collection('users')
           .doc(uid)
-          .set({ uid, firstName, lastName, email, roles: ['student'] })
+          .set({ uid, username, email, roles: ['student'] })
           .then(() => {
-            // send verification email to user
             auth()
-              .currentUser()
-              .sendEmailVerification()
+              // update display name to show in confirmation email
+              .currentUser.updateProfile({
+                displayName: username,
+              })
               .then(() => {
-                console.log('Verification email sent!');
-                dispatch({ type: AUTH_MODAL, payload: false });
-                dispatch({
-                  type: SNACKBAR,
-                  payload: 'Verification email sent',
-                });
-                dispatch({ type: CREATE_USER, payload: SUCCESS });
+                auth()
+                  .currentUser.sendEmailVerification()
+                  .then(() => {
+                    console.log('Verification email sent!');
+                    dispatch({ type: AUTH_MODAL, payload: false });
+                    dispatch({
+                      type: SNACKBAR,
+                      payload: { variant: 'success', message: 'Verification email sent' },
+                    });
+                    dispatch({ type: CREATE_USER, payload: SUCCESS });
+                  })
+                  .catch(error => {
+                    console.log('Error sending verification email: ', error);
+                    dispatch({
+                      type: SNACKBAR,
+                      payload: { variant: 'error', message: 'Unable to send verification email' },
+                    });
+                    dispatch({ type: CREATE_USER, payload: ERROR });
+                  });
               })
               .catch(error => {
-                console.log('Error sending verification email: ', error);
-                dispatch({ type: SNACKBAR, payload: 'Unable to send verification email' });
+                console.log('Error assigning display name: ', error);
+                dispatch({
+                  type: SNACKBAR,
+                  payload: { variant: 'error', message: 'Unable to assign display name' },
+                });
                 dispatch({ type: CREATE_USER, payload: ERROR });
               });
+            // send verification email to user
           })
           .catch(error => {
             // handle adding db document error
             console.log('Error adding document to users collection: ', error);
-            dispatch({ type: SNACKBAR, payload: 'Unable to create user' });
+            dispatch({
+              type: SNACKBAR,
+              payload: { variant: 'error', message: 'Unable to create user' },
+            });
             dispatch({ type: CREATE_USER, payload: ERROR });
           });
       })
       .catch(error => {
         // handle error creating user w/ admin API
         console.log('Error creating new user: ', error);
-        dispatch({ type: SNACKBAR, payload: 'Unable to create user' });
+        dispatch({ type: AUTH_ERROR, payload: error.message });
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'error', message: 'Unable to create user' },
+        });
         dispatch({ type: CREATE_USER, payload: ERROR });
       });
   };
@@ -258,20 +306,26 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
             .then(() => {
               console.log('Updated email in firebase');
               // update email, firstName and lastName in db
-              database()
-                .collection('users')
+              db.collection('users')
                 .doc(user.uid)
                 .update({ firstName, lastName, email })
                 .then(() => {
                   // handle adding user reference to db success
                   console.log('User reference successfully updated in db!');
                   dispatch({ type: AUTH_MODAL, payload: false });
+                  dispatch({
+                    type: SNACKBAR,
+                    payload: { variant: 'success', message: 'Account updated' },
+                  });
                   dispatch({ type: UPDATE_USER, payload: SUCCESS });
                 })
                 .catch(error => {
                   // handle adding user reference to db error
                   console.log('Error updating reference to user in db: ', error);
-                  dispatch({ type: SNACKBAR, payload: 'Unable to update user' });
+                  dispatch({
+                    type: SNACKBAR,
+                    payload: { variant: 'error', message: 'Unable to update user' },
+                  });
                   dispatch({ type: UPDATE_USER, payload: ERROR });
                 });
             })
@@ -281,20 +335,26 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
             });
         } else {
           // Update firstName and lastName only in db
-          database()
-            .collection('users')
+          db.collection('users')
             .doc(user.uid)
             .update({ firstName, lastName })
             .then(() => {
               // handle adding user reference to db success
               console.log('User reference successfully updated in db!');
               dispatch({ type: AUTH_MODAL, payload: false });
+              dispatch({
+                type: SNACKBAR,
+                payload: { variant: 'success', message: 'Account updated' },
+              });
               dispatch({ type: UPDATE_USER, payload: SUCCESS });
             })
             .catch(error => {
               // handle adding user reference to db error
               console.log('Error updating reference to user in db: ', error);
-              dispatch({ type: SNACKBAR, payload: 'Unable to update user' });
+              dispatch({
+                type: SNACKBAR,
+                payload: { variant: 'error', message: 'Unable to update user' },
+              });
               dispatch({ type: UPDATE_USER, payload: ERROR });
             });
         }
@@ -316,30 +376,43 @@ export const deleteUser = ({ password }) => {
         user
           .delete()
           .then(() => {
-            database()
-              .collection('users')
+            db.collection('users')
               .doc(user.uid)
               .set({ disabled: true })
               .then(() => {
                 // handle delete user reference from db success
                 console.log('Successfully deleted user from db!');
-                dispatch({ type: SNACKBAR, payload: 'User deleted' });
+                dispatch({
+                  type: SNACKBAR,
+                  payload: { variant: 'success', message: 'Account deleted' },
+                });
                 dispatch({ type: AUTH_MODAL, payload: false });
                 dispatch({ type: DELETE_USER, payload: SUCCESS });
               })
               .catch(error => {
                 // handle delete user reference from db error
                 console.log('Error deleting user reference from db', error);
-                dispatch({ type: SNACKBAR, payload: 'Unable to delete user' });
+                dispatch({
+                  type: SNACKBAR,
+                  payload: { variant: 'error', message: 'Unable to delete user from database' },
+                });
                 dispatch({ type: DELETE_USER, payload: ERROR });
               });
           })
           .catch(error => {
             console.log('Error deleting user: ', error);
+            dispatch({
+              type: SNACKBAR,
+              payload: { variant: 'error', message: 'Unable to delete account' },
+            });
             dispatch({ type: DELETE_USER, payload: ERROR });
           });
       })
       .catch(error => {
+        dispatch({
+          type: SNACKBAR,
+          payload: { variant: 'error', message: 'Unable to reauthenticate' },
+        });
         console.log('Error re-authenticating user: ', error);
       });
   };
