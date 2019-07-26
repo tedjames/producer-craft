@@ -1,8 +1,6 @@
 export { default as PlayButton } from './playButton';
 export { default as ScrollDownIcon } from './ScrollDownIcon';
-export { default as AuthModal } from './authModal';
 export { default as ForgotPasswordModal } from './forgotPasswordModal';
-export { default as TrailerModal } from './trailerModal';
 export { default as FlatButton } from './flatButton';
 export { default as ButtonText } from './buttonText';
 export { default as CrossfadeImage } from './crossfadeImage';
@@ -25,3 +23,8 @@ export { default as ReturnSection } from './returnSection';
 export { default as MusicIcon } from './icons/musicIcon';
 export { default as ShareIcon } from './icons/shareIcon';
 export { default as SubscribeIcon } from './icons/subscribeIcon';
+
+// Modals
+export { default as SubscribeModal } from './modals/subscribeModal';
+export { default as AuthModal } from './modals/authModal';
+export { default as TrailerModal } from './modals/trailerModal';
