@@ -1,6 +1,9 @@
 import React, { Component, Suspense } from 'react';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
+// Stripe
+import { StripeProvider } from 'react-stripe-elements';
+
 // Redux
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -48,30 +51,32 @@ export default class App extends Component {
       <Route component={RequireAuth(Container)}>
     */
     return (
-      <Provider store={store}>
-        <Suspense fallback={<Loading />}>
-          <Router history={browserHistory}>
-            <Route path="/" component={AuthListener}>
-              <IndexRoute component={Home} onEnter={this.scrollRestore} />
-              <Route path="streaming" component={StreamingTest} onEnter={this.scrollRestore} />
-              <Route path="preview">
-                <Route
-                  path="scott-storch-teaches-music-production"
-                  component={CoursePreview}
-                  onEnter={this.scrollRestore}
-                />
+      <StripeProvider apiKey="pk_test_zKSfioQfpX4pSy7jZyWVQzKJ00s77w8RB2">
+        <Provider store={store}>
+          <Suspense fallback={<Loading />}>
+            <Router history={browserHistory}>
+              <Route path="/" component={AuthListener}>
+                <IndexRoute component={Home} onEnter={this.scrollRestore} />
+                <Route path="streaming" component={StreamingTest} onEnter={this.scrollRestore} />
+                <Route path="preview">
+                  <Route
+                    path="scott-storch-teaches-music-production"
+                    component={CoursePreview}
+                    onEnter={this.scrollRestore}
+                  />
+                </Route>
+                <Route path="courses">
+                  <Route
+                    path="scott-storch-teaches-music-production"
+                    component={CourseViewer}
+                    onEnter={this.scrollRestore}
+                  />
+                </Route>
               </Route>
-              <Route path="courses">
-                <Route
-                  path="scott-storch-teaches-music-production"
-                  component={CourseViewer}
-                  onEnter={this.scrollRestore}
-                />
-              </Route>
-            </Route>
-          </Router>
-        </Suspense>
-      </Provider>
+            </Router>
+          </Suspense>
+        </Provider>
+      </StripeProvider>
     );
   }
 }
