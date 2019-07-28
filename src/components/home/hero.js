@@ -484,7 +484,11 @@ export default class Hero extends Component {
             <ButtonText>{user ? 'Subscribe' : 'Sign Up'}</ButtonText>
           </FlatButton>
           <FlatButton
-            onClick={toggleTrailerModal}
+            onClick={
+              user
+                ? () => document.getElementById('my-classes').scrollIntoView({ behavior: 'smooth' })
+                : toggleTrailerModal
+            }
             style={{ width: 220, backgroundColor: 'rgba(255, 255, 255, 0.275' }}
           >
             <ButtonText>{user ? 'My Courses' : 'Learn More'}</ButtonText>

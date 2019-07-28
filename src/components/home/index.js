@@ -19,6 +19,7 @@ import {
   FlatButton,
   ButtonText,
   SubscribeModal,
+  PaymentModal,
 } from '../common';
 
 // Components
@@ -139,6 +140,7 @@ class Home extends Component {
               description="Share your music for helpful feedback and a chance to work with a producer"
             />
             <ValuePropCard
+              id="my-classes"
               icon={<ShareIcon />}
               title="Subscribe"
               description="Purchase an all-access pass to all of our classes, samples and future content"
@@ -146,8 +148,20 @@ class Home extends Component {
             />
           </ValuePropositions>
 
+          {/* My Classes */}
+          <SectionTitle>My Classes</SectionTitle>
+          <CardList>
+            <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
+
+            <CourseCard
+              backgroundImage={HeroImage4}
+              title="Southside"
+              tagline="Teaches Trap Production"
+            />
+          </CardList>
+
           {/* Available Courses */}
-          <SectionTitle>Available Courses</SectionTitle>
+          <SectionTitle>Now Available</SectionTitle>
           <CardList>
             <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
 
@@ -225,6 +239,7 @@ class Home extends Component {
           close={() => this.setState({ showTrailerModal: false })}
         />
         <SubscribeModal />
+        <PaymentModal />
       </div>
     );
   }
