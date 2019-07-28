@@ -60,9 +60,9 @@ const ValueDescription = styled.p`
   }
 `;
 
-const ValuePropCard = ({ icon, style, title, description }) => {
+const ValuePropCard = ({ id, icon, style, title, description }) => {
   return (
-    <Card style={style}>
+    <Card id={id} style={style}>
       {icon && icon}
       <div>
         <ValueTitle className="disable-selection">{title}</ValueTitle>
