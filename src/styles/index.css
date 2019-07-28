@@ -168,3 +168,105 @@ code {
 #subscriberModal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
   margin: 0px !important;
 }
+.inputElement,
+.StripeElement,
+.stripeCustomElement {
+  display: block;
+  margin: 10px 0 20px 0;
+  max-width: 500px;
+  padding: 10px 14px;
+  font-size: 1em;
+  font-family: roboto-condensed, monospace;
+  border: 1px solid #eee;
+  box-shadow: none;
+  outline: 0;
+  border-radius: 4px;
+  background: white;
+  color: #000;
+}
+
+.inputElement.StripeElement.empty,
+.StripeElement.StripeElement.empty,
+.stripeCustomElement.StripeElement.empty {
+  color: #757575;
+}
+
+.inputElement::placeholder,
+.StripeElement::placeholder,
+.stripeCustomElement::placeholder {
+  color: #757575;
+}
+
+.inputElement:focus,
+.StripeElement:focus,
+.StripeElement--focus,
+stripeCustomElement:focus,
+stripeCustomElement--focus {
+  border: 1px solid #ccc;
+  transition: all 150ms ease;
+}
+
+.StripeElement.IdealBankElement,
+.StripeElement.PaymentRequestButton {
+  padding: 0;
+}
+
+.cardExpire,
+.cardFirstName {
+  float: left;
+  width: 42.5%;
+}
+
+.cardCvc,
+.cardLastName {
+  float: right;
+  width: 42.5%;
+}
+
+@media (max-width: 486px) {
+  .cardCvc,
+  .cardLastName,
+  .cardExpire,
+  .cardFirstName {
+    width: 40%;
+  }
+}
+
+@media (max-width: 380px) {
+  .cardCvc,
+  .cardLastName,
+  .cardExpire,
+  .cardFirstName {
+    width: 39%;
+  }
+}
+
+@media (max-width: 360px) {
+  .cardCvc,
+  .cardLastName,
+  .cardExpire,
+  .cardFirstName {
+    width: 38%;
+  }
+}
+
+@media (max-width: 320px) {
+  .cardCvc,
+  .cardLastName,
+  .cardExpire,
+  .cardFirstName {
+    width: 37%;
+  }
+}
+
+.cardExpire,
+.cardCvc {
+  margin-top: 0px;
+}
+
+input[type='text'] {
+  /* Remove First */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
