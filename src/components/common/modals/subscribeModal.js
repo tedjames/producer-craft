@@ -11,8 +11,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import FlatButton from '../flatButton';
 import ButtonText from '../buttonText';
 
-import { toggleSubscribeModal } from '../../../actions';
-import { MusicIcon, ShareIcon, SubscribeIcon } from '..';
+import { toggleSubscribeModal, togglePaymentModal } from '../../../actions';
+import MusicIcon from '../icons/musicIcon';
+import ShareIcon from '../icons/shareIcon';
+import SubscribeIcon from '../icons/subscribeIcon';
 
 const DialogTitle = styled.p`
   font-family: proxima-nova, sans-serif;
@@ -128,6 +130,8 @@ class SubscriberModal extends Component {
 
   handleSubmit() {
     console.log('HANDLING SUBMIT');
+    const { togglePaymentModal } = this.props;
+    togglePaymentModal({ productId: 'Scott Storch Teaches Music Production', amount: '34.95' });
   }
 
   render() {
@@ -151,7 +155,7 @@ class SubscriberModal extends Component {
             marginRight: 30,
           }}
         >
-          <span style={{ display: 'flex', marginLeft: 27.5, alignItems: 'center' }}>
+          <span style={{ display: 'flex', marginLeft: 29, alignItems: 'center' }}>
             <SubscribeIcon size={17} style={{ marginRight: 10, position: 'relative', top: 1 }} />
             Most Popular
           </span>
@@ -167,7 +171,7 @@ class SubscriberModal extends Component {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="feather feather-x"
-              style={{ position: 'relative', top: 5 }}
+              style={{ position: 'relative', top: 0 }}
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -251,7 +255,7 @@ class SubscriberModal extends Component {
         <DialogActions>
           {productId ? (
             <DialogActionsContainer>
-              <TextButton>PURCHASE SINGLE COURSE</TextButton>
+              <TextButton onClick={this.handleSubmit}>PURCHASE SINGLE COURSE</TextButton>
               <FlatButton onClick={this.handleSubmit} style={{ width: 240, marginTop: 7.5 }}>
                 <ButtonText>GET ALL-ACCESS</ButtonText>
               </FlatButton>
@@ -305,6 +309,7 @@ export default connect(
   mapStateToProps,
   {
     toggleSubscribeModal,
+    togglePaymentModal,
   },
 )(SubscriberModal);
 
