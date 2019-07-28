@@ -26,5 +26,6 @@ export { default as SubscribeIcon } from './icons/subscribeIcon';
 
 // Modals
 export { default as SubscribeModal } from './modals/subscribeModal';
+export { default as PaymentModal } from './modals/paymentModal';
 export { default as AuthModal } from './modals/authModal';
 export { default as TrailerModal } from './modals/trailerModal';
