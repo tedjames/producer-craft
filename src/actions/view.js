@@ -12,5 +12,5 @@ export const toggleSubscribeModal = payload => ({
 
 export const togglePaymentModal = payload => ({
   type: PAYMENT_MODAL,
-  payload,
+  payload: payload ? { amount: payload.amount, productId: payload.productId } : false,
 });

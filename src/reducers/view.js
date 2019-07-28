@@ -6,6 +6,10 @@ const INITIAL_STATE = {
   showSnackbar: false,
   showSubscribeModal: false,
   showPaymentModal: false,
+  paymentDetails: {
+    productId: '',
+    amount: '',
+  },
   loading: false,
 };
 
@@ -20,7 +24,15 @@ export default (state = INITIAL_STATE, action) => {
     case SUBSCRIBE_MODAL:
       return { ...state, showSubscribeModal: action.payload };
     case PAYMENT_MODAL:
-      return { ...state, showPaymentModal: action.payload };
+      return {
+        ...state,
+        showPaymentModal: action.payload ? true : false,
+        showSubscribeModal: false,
+        paymentDetails: {
+          productId: action.payload ? action.payload.productId : '',
+          amount: action.payload ? action.payload.amount : '',
+        },
+      };
     default:
       return state;
   }
