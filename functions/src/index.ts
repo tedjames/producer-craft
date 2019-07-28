@@ -6,3 +6,5 @@ export const testFunction = functions.https.onCall(async (data, context) => {
 
   return `${uid} sent a message of ${message}`;
 });
+
+export { stripeAttachSource } from './sources';
