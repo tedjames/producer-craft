@@ -16,6 +16,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "child-process-promise": "^2.2.1",
     "firebase-admin": "^8.0.0",
     "firebase-functions": "^3.0.0",
     "firebase-functions-test": "^0.1.6",
