@@ -6,7 +6,7 @@ import { db, stripe } from './config';
  */
 export const getUser = async (uid: string) => {
   return await db
-    .collection('users')
+    .collection('accounts')
     .doc(uid)
     .get()
     .then(doc => doc.data());
@@ -27,7 +27,7 @@ export const getCustomer = async (uid: string) => {
  */
 export const updateUser = async (uid: string, data: Object) => {
   return await db
-    .collection('users')
+    .collection('accounts')
     .doc(uid)
     .set(data, { merge: true });
 };
