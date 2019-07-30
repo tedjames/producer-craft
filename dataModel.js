@@ -122,25 +122,63 @@ const dataModel2 = {
 
 // Version 2 data model (v2 is without instructor payouts and subscriptions)
 const dataModel = {
+  profiles: [
+    // read publicly, write only by user
+    ...{
+      uid: 'user_1239809u',
+      username: 'tedwerbel',
+      image: 'link to their profile picture',
+    },
+  ],
+  accounts: [
+    // read only by user, write only by admin sdk
+    ...{
+      uid: 'user_1239809u',
+      email: 'savedwhenaccounts@deleted.com',
+      subscribed: true,
+      stripe_customer_id: 'cus_EbaS729Ha8jfH',
+      roles: ['student', 'admin'],
+      purchases: [{ product_id: 'pro_Hkah7gJJ8a', charge: 'ch_xxxxxx' }],
+    },
+  ],
   users: [
+    // read and write only by user
     ...{
       uid: 'user_1239809u',
       email: 'werbel.ted@gmail.com',
       firstName: 'Ted',
       lastName: 'Werbel',
-      image: 'link to their profile picture',
-      private: {
-        stripe_customer_id: 'cus_EbaS729Ha8jfH',
-        purchases: [
-          { stripe_product_id: 'pro_Hkah7gJJ8a', charge: 'ch_xxxxxx', productName: 'course_name' },
-        ],
-        subscriptions: [{ stripeSubscriptionId: 'sub_jk1h32kjh', active: true }],
-      },
-      roles: ['student', 'admin'],
+    },
+  ],
+  lessons: [
+    {
+      lesson_id: 'asldkjlakdj',
+      description: 'Thanks for checking out my first lesson...',
+      files: [
+        // sub collection
+        { file_id: 'asdasdasd', name: 'Ableton Template Pack', storage_id: 'asdasdasd' },
+      ],
+      comments: [
+        // sub collection
+        {
+          comment_id: 'com_12908as',
+          user_id: 'uid_23n98sdf',
+          message: 'Check it out - http://soundcloud.com/tjw/234naaa',
+          likes: 0,
+          instructorLike: false,
+          replies: [
+            {
+              replyId: 'rep_j7sbba',
+              user_id: 'uid_23n98sdf',
+              message: 'Check it out - http://soundcloud.com/tjw/234naaa',
+            },
+          ],
+        },
+      ],
     },
   ],
   courses: [
-    {
+    ...{
       course_id: 'course_197ga27d',
       stripe_product_id: 'prod_akjsd87k',
       url: '/courses/scott-storch-teaches-music-production',
@@ -157,26 +195,13 @@ const dataModel = {
       facebook_url: 'https://FACEBOOK_URL',
       twitter_url: 'https://TWITTER_URL',
       reddit_url: 'https://REDDIT_URL',
-      playlist: [
+      lessons: [
         ...{
           media_id: 'akh17ba',
+          lesson_id: '4ka1ffa',
           lesson_index: 0,
           title: 'Welcome to Ableton Live',
           thumbnail: 'https://THUMBNAIL_URL',
-          comments: {
-            comment_id: 'com_12908as',
-            user_id: 'uid_23n98sdf',
-            message: 'Check it out - http://soundcloud.com/tjw/234naaa',
-            likes: 0,
-            instructorLike: false,
-            replies: [
-              {
-                replyId: 'rep_j7sbba',
-                user_id: 'uid_23n98sdf',
-                message: 'Check it out - http://soundcloud.com/tjw/234naaa',
-              },
-            ],
-          },
         },
       ],
       active: true,
