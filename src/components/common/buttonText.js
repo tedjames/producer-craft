@@ -12,8 +12,8 @@ const Text = styled.div`
   cursor: pointer;
 `;
 
-const ButtonText = ({ children, style }) => (
-  <Text style={style} className="disable-selection">
+const ButtonText = ({ children, style, onClick }) => (
+  <Text onClick={onClick} style={style} className="disable-selection">
     {children}
   </Text>
 );
