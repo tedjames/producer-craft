@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -16,6 +15,14 @@ import MusicIcon from '../icons/musicIcon';
 import ShareIcon from '../icons/shareIcon';
 import SubscribeIcon from '../icons/subscribeIcon';
 
+const ProductName = styled.span`
+  background: -webkit-linear-gradient(#888, #333);
+  color: #888;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
 const DialogTitle = styled.p`
   font-family: proxima-nova, sans-serif;
   font-size: 12px;
@@ -27,52 +34,6 @@ const DialogTitle = styled.p`
   text-align: center;
   padding-top: 15px;
   padding-bottom: 10px;
-`;
-
-const SignUpText = styled.p`
-  font-family: roboto-condensed, sans-serif;
-  color: #222;
-  font-size: 14px;
-  margin-top: 20px;
-  margin-bottom: 15px;
-  cursor: default;
-`;
-
-const SignUpButton = styled.a`
-  text-decoration: underline;
-  text-decoration-color: #bebebe;
-  color: #555;
-  cursor: pointer;
-  :hover,
-  :active {
-    opacity: 0.65;
-  }
-`;
-
-const DialogTextButton = styled.a`
-  font-family: roboto-condensed, sans-serif;
-  font-size: 12px;
-  text-align: center;
-  color: #888;
-  text-decoration: underline;
-  text-decoration-color: #bebebe;
-  margin-top: 5px;
-  cursor: pointer;
-  :hover,
-  :active {
-    opacity: 0.65;
-  }
-`;
-
-const DialogText = styled.p`
-  font-family: roboto-condensed, sans-serif;
-  font-size: 12px;
-  text-align: center;
-  color: #888;
-  text-decoration: underline;
-  text-decoration-color: #bebebe;
-  margin-top: 5px;
-  cursor: default;
 `;
 
 const TextButton = styled.p`
@@ -122,28 +83,42 @@ const DialogActionsContainer = styled.div`
   }
 `;
 
-class SubscriberModal extends Component {
+class SubscribeModal extends Component {
   constructor(props) {
     super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubscriptionPurchase = this.handleSubscriptionPurchase.bind(this);
+    this.handleCoursePurchase = this.handleCoursePurchase.bind(this);
   }
 
-  handleSubmit() {
-    console.log('HANDLING SUBMIT');
+  handleSubscriptionPurchase() {
     const { togglePaymentModal } = this.props;
-    togglePaymentModal({ productId: 'Scott Storch Teaches Music Production', amount: '34.95' });
+
+    togglePaymentModal({
+      subscription: 'plan_FW6JkaZ4V59Q1e',
+      amount: '120.00',
+      productName: 'All-Access Pass (1 Year)',
+    });
+  }
+
+  handleCoursePurchase() {
+    const { togglePaymentModal, productDetails } = this.props;
+
+    togglePaymentModal({
+      subscription: false,
+      ...productDetails,
+    });
   }
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { open, toggleSubscribeModal, productId, error } = this.props;
+    const { open, toggleSubscribeModal, productDetails, error } = this.props;
     return (
       <Dialog
         open={open}
         onClose={() => toggleSubscribeModal(false)}
         aria-labelledby="form-dialog-title"
         style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-        id="subscriberModal"
+        id="subscribeModal"
       >
         <DialogTitle
           style={{
@@ -194,42 +169,12 @@ class SubscriberModal extends Component {
             justifyContent: 'space-between',
           }}
         >
-          <span>All-Access Pass</span>
-          <span style={{ fontSize: 14, color: '#aaa', marginTop: 10 }}>$120 / year</span>
+          <ProductName style={{ fontWeight: '800' }}>All-Access Pass</ProductName>
+          <span style={{ fontSize: 14, color: '#aaa', marginTop: 10 }}>
+            $12 a month · billed annually
+          </span>
         </DialogTitle>
         <DialogContent style={{ paddingTop: 0 }}>
-          {/* <form>
-            <TextField
-              style={{ marginBottom: 12.5 }}
-              margin="dense"
-              id="emailAddress"
-              label="Email Address"
-              type="email"
-              placeholder="your@email.com"
-              fullWidth
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              style={{ marginBottom: 12.5 }}
-              margin="dense"
-              id="password"
-              label="Password"
-              placeholder="********"
-              fullWidth
-              variant="outlined"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <DialogText
-              style={{ textDecoration: 'none', fontSize: 10, marginTop: 10, color: 'red' }}
-            >
-              {error}
-            </DialogText>
-          </form> */}
           <Description>
             Feel free to purchase our classes individually or consider subscribing for access to all
             of our content, samples and exclusive perks.
@@ -253,10 +198,13 @@ class SubscriberModal extends Component {
           </ValuePropSection>
         </DialogContent>
         <DialogActions>
-          {productId ? (
+          {productDetails ? (
             <DialogActionsContainer>
-              <TextButton onClick={this.handleSubmit}>PURCHASE SINGLE COURSE</TextButton>
-              <FlatButton onClick={this.handleSubmit} style={{ width: 240, marginTop: 7.5 }}>
+              <TextButton onClick={this.handleCoursePurchase}>PURCHASE SINGLE COURSE</TextButton>
+              <FlatButton
+                onClick={this.handleSubscriptionPurchase}
+                style={{ width: 240, marginTop: 7.5 }}
+              >
                 <ButtonText>GET ALL-ACCESS</ButtonText>
               </FlatButton>
             </DialogActionsContainer>
@@ -270,27 +218,13 @@ class SubscriberModal extends Component {
               }}
             >
               <FlatButton
-                onClick={this.handleSubmit}
+                onClick={this.handleSubscriptionPurchase}
                 style={{ width: 240, marginTop: 7.5, alignSelf: 'flex-start', marginBottom: 10 }}
               >
                 <ButtonText>GET ALL-ACCESS</ButtonText>
               </FlatButton>
             </div>
           )}
-
-          {/* <DialogText
-            style={{ textDecoration: 'none', fontSize: 10, marginTop: 0, color: '#bebebe' }}
-          >
-            By purchasing a subscription, you agree to our{' '}
-            <DialogTextButton style={{ fontSize: 10, color: '#bebebe' }}>
-              Privacy Policy
-            </DialogTextButton>{' '}
-            and{' '}
-            <DialogTextButton style={{ fontSize: 10, color: '#bebebe' }}>
-              Terms of Service
-            </DialogTextButton>
-            .
-          </DialogText> */}
         </DialogActions>
       </Dialog>
     );
@@ -303,6 +237,7 @@ const mapStateToProps = ({ auth, view }) => ({
   loading: view.loading,
   userDetails: auth.userDetails,
   user: auth.user,
+  productDetails: view.productDetails,
 });
 
 export default connect(
@@ -311,7 +246,7 @@ export default connect(
     toggleSubscribeModal,
     togglePaymentModal,
   },
-)(SubscriberModal);
+)(SubscribeModal);
 
 // VALUE PROP COMPONENTS
 
