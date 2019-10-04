@@ -17,6 +17,7 @@ export const getUser = async (uid: string) => {
  */
 
 export const getCustomer = async (uid: string) => {
+  console.log('UID RECEIVED BY getCustomer', uid);
   const user = await getUser(uid);
   // If customer ID does not exists, return an error
   return assert(user, 'stripeCustomerId');
@@ -51,13 +52,19 @@ export const createCustomer = async (uid: any) => {
 
 export const getOrCreateCustomer = async (uid: string) => {
   // Read the stripe customer ID from firestore
+  console.log('UID RECEIVED BY getOrCreateCustomer', uid);
+
   const user = await getUser(uid);
+  console.log('USER RECEIVED BY getOrCreateCustomer', user);
   const customerId = user && user.stripeCustomerId;
+  console.log('CUSTOMER ID RECEIVED BY getOrCreateCustomer', customerId);
 
   // Create a new one if customerId is missing from db
   if (!customerId) {
+    console.log('NO CUSTOMER FOUND BY getOrCreateCustomer... CREATING NEW CUSTOMER');
     return createCustomer(uid);
   } else {
+    console.log('CUSTOMER ID FOUND BY getOrCreateCustomer... RETRIEVING', user);
     return stripe.customers.retrieve(customerId);
   }
 };
