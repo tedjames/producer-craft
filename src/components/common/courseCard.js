@@ -144,7 +144,9 @@ const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
       title={title}
       tagline={tagline}
       style={disabled && { opacity: 0.45, cursor: 'default' }}
-      onClick={() => browserHistory.push('/preview/scott-storch-teaches-music-production')}
+      onClick={() =>
+        !disabled && browserHistory.push('/preview/scott-storch-teaches-music-production')
+      }
     >
       <PreviewTitle style={{ marginTop: 5 }} className="disable-selection" mini>
         {title}
@@ -159,7 +161,9 @@ const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
       title={title}
       tagline={tagline}
       style={disabled && { opacity: 0.45, cursor: 'default' }}
-      onClick={() => browserHistory.push('/preview/scott-storch-teaches-music-production')}
+      onClick={() =>
+        !disabled && browserHistory.push('/preview/scott-storch-teaches-music-production')
+      }
     >
       <PreviewTitle style={disabled && { cursor: 'default' }} className="disable-selection">
         {title}
