@@ -315,7 +315,7 @@ const HeroButtons = styled.div`
 
 export default class Hero extends PureComponent {
   render() {
-    const { showRegistrationModal, name, tagline } = this.props;
+    const { showRegistrationModal, name, tagline, handleEnroll, user } = this.props;
     return (
       <Container>
         {/* Header Logo, Login and Instructor Buttons */}
@@ -329,7 +329,7 @@ export default class Hero extends PureComponent {
         </FeaturedCourse>
         <HeroButtons>
           <FlatButton
-            onClick={() => showRegistrationModal(true)}
+            onClick={() => (user ? handleEnroll() : showRegistrationModal(true))}
             style={{ width: 180, marginRight: 10 }}
           >
             <ButtonText>Enroll</ButtonText>
