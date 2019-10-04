@@ -134,7 +134,7 @@ const dataModel = {
     // read only by user, write only by admin sdk
     ...{
       uid: 'user_1239809u',
-      email: 'savedwhenaccounts@deleted.com',
+      email: 'savedwhenaccounts@deleted.com', // saved here when a user deletes their account
       subscribed: true,
       stripe_customer_id: 'cus_EbaS729Ha8jfH',
       roles: ['student', 'admin'],
@@ -153,10 +153,18 @@ const dataModel = {
   lessons: [
     {
       lesson_id: 'asldkjlakdj',
+      media_id: 'gL7fha8',
+      course_id: 'course_197ga27d',
       description: 'Thanks for checking out my first lesson...',
+      trailer_image_url: '',
+      thumbnail_url: '',
       files: [
         // sub collection
-        { file_id: 'asdasdasd', name: 'Ableton Template Pack', storage_id: 'asdasdasd' },
+        {
+          file_id: 'asdasdasd',
+          name: 'Ableton Template Pack',
+          storage_id: 'asdasdasd',
+        },
       ],
       comments: [
         // sub collection
@@ -178,10 +186,33 @@ const dataModel = {
     },
   ],
   courses: [
+    {
+      course_id: 'course_197ga27d',
+      course_name: 'Scott Storch Teaches Music Production',
+      price: '44.95',
+      stripe_product_id: 'prod_akjsd87k',
+      slug: 'scott-storch-teaches-music-production',
+      instructor_name: 'Scott Storch',
+      tagline: 'Teaches Music Production',
+      cover_image: 'https://IMAGE_URL',
+      trailer_url: 'https://TRAILER_URL',
+      thumbnail_image: 'https://THUMBNAIL_URL',
+      viewer_cover_image: 'https://IMAGE_URL',
+      bio_title: 'Experience the Lengend',
+      bio_description: 'Description goes here...',
+      bio_image: 'https://BIO_IMAGE_URL',
+      read_more_url: 'https://GENIUS_URL',
+      facebook_url: 'https://FACEBOOK_URL',
+      twitter_url: 'https://TWITTER_URL',
+      reddit_url: 'https://REDDIT_URL',
+    },
+  ],
+  // NOT IN DATABASE
+  // COURSES OBJECT DEFINED AS DEFAULT STATE IN REACT ONLY
+  courses: [
     ...{
       course_id: 'course_197ga27d',
-      stripe_product_id: 'prod_akjsd87k',
-      url: '/courses/scott-storch-teaches-music-production',
+      slug: 'scott-storch-teaches-music-production',
       instructor_name: 'Scott Storch',
       tagline: 'Teaches Music Production',
       cover_image: 'https://IMAGE_URL',
@@ -195,7 +226,7 @@ const dataModel = {
       facebook_url: 'https://FACEBOOK_URL',
       twitter_url: 'https://TWITTER_URL',
       reddit_url: 'https://REDDIT_URL',
-      lessons: [
+      playlist: [
         ...{
           media_id: 'akh17ba',
           lesson_id: '4ka1ffa',
@@ -204,7 +235,6 @@ const dataModel = {
           thumbnail: 'https://THUMBNAIL_URL',
         },
       ],
-      active: true,
     },
   ],
 };
