@@ -4,21 +4,47 @@ import * as functions from 'firebase-functions';
 export const stripeWebhookSignature = functions.config().stripe.webhook_signature;
 
 export const webhookHandler = async (data: any) => {
+  console.log('Request data: ', data);
+
   const customerId = data.customer;
-  const subId = data.subscription;
+  const subId = data.subscription || data.id;
   const customer = await stripe.customers.retrieve(customerId);
   const uid = customer.metadata.firebaseUID;
 
-  const subscription = await stripe.subscriptions.retrieve(subId);
+  try {
+    // Get subscription info from strip
+    console.log('Fetching sub from stipe with: ', data);
 
-  const isActive = subscription.status === 'active';
+    const subscription = await stripe.subscriptions.retrieve(subId);
+    console.log('Subscription retrieved');
 
-  const docData = {
-    subscribed: isActive ? true : false,
-    [subscription.id]: subscription.status,
-  };
+    // Prepare batch write
+    const batch = db.batch();
 
-  return await db.doc(`accounts/${uid}`).set(docData, { merge: true });
+    // Update subscription status
+    const subscriptionsRef = await db
+      .doc(`accounts/${uid}`)
+      .collection('subscriptions')
+      .doc(`${subId}`);
+
+    batch.set(subscriptionsRef, {
+      [subId]: subscription.status,
+    });
+
+    // Set subscribed to false
+    const accountsRef = await db.doc(`accounts/${uid}`);
+    batch.set(
+      accountsRef,
+      { subscribed: subscription.status === 'active' ? true : false },
+      { merge: true },
+    );
+
+    // Run batch write
+    await batch.commit();
+  } catch (err) {
+    console.log('Error: ', err);
+    throw new functions.https.HttpsError('permission-denied', err);
+  }
 };
 
 export const invoiceWebhookEndpoint = functions.https.onRequest(async (req, res) => {
@@ -31,6 +57,7 @@ export const invoiceWebhookEndpoint = functions.https.onRequest(async (req, res)
 
     res.sendStatus(200);
   } catch (err) {
+    console.log('Error caught elsewhere: ', err);
     res.status(400).send(err);
   }
 });
