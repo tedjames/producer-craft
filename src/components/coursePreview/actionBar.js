@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { browserHistory } from 'react-router';
 import { FlatButton, ButtonText, SectionTitle } from '../common';
-import GeniusLogo from '../../assets/genius-logo.png';
 
 const Container = styled.div`
   display: flex;
@@ -44,7 +44,7 @@ const Genius = styled.img`
   opacity: 0.7;
 `;
 
-const ActionBar = ({ showRegistrationModal, showTrailerModal }) => {
+const ActionBar = ({ showRegistrationModal, slug, user, handleEnroll }) => {
   return (
     <Container>
       <div
@@ -55,11 +55,14 @@ const ActionBar = ({ showRegistrationModal, showTrailerModal }) => {
           justifyContent: 'center',
         }}
       >
-        <FlatButton onClick={showRegistrationModal} style={{ width: 160, marginRight: 10 }}>
+        <FlatButton
+          onClick={user ? handleEnroll : showRegistrationModal}
+          style={{ width: 160, marginRight: 10 }}
+        >
           <ButtonText>Enroll</ButtonText>
         </FlatButton>
         <FlatButton
-          onClick={showTrailerModal}
+          onClick={() => browserHistory.push(`/courses/${slug}`)}
           style={{ width: 160, backgroundColor: 'rgba(0, 0, 0, 0.275' }}
         >
           <ButtonText>Preview</ButtonText>
