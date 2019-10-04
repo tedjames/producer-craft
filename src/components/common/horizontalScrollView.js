@@ -1,3 +1,4 @@
+// BUG: Arrow scrolling does not work for multiple instances of this component
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
@@ -11,6 +12,11 @@ const ScrollContainer = styled.div`
     display: none;
   }
   -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar-track {
+    display: none;
+  }
+  scrollbar-color: transparent;
+  z-index: 180;
 `;
 
 const LeftArrowIcon = styled.div`
@@ -18,8 +24,9 @@ const LeftArrowIcon = styled.div`
   position: absolute;
   left: 10px;
   top: 130px;
-  z-index: 20;
-  opacity: ${props => (props.showLeftArrow ? '0.35' : '0')};
+  z-index: 200;
+  opacity: ${props => (props.showLeftArrow ? '0.2' : '0')};
+  transition: opacity 300ms ease;
 `;
 
 const RightArrowIcon = styled.div`
@@ -27,12 +34,14 @@ const RightArrowIcon = styled.div`
   position: absolute;
   right: 10px;
   top: 130px;
-  z-index: 20;
-  opacity: 0.35;
+  z-index: 200;
+  opacity: ${props => (props.showRightArrow ? '0.2' : '0')};
+  transition: opacity 300ms ease;
 `;
 
 const ArrowScrolling = styled.div`
   position: relative;
+  z-index: 190;
 `;
 
 export default class extends Component {
@@ -45,6 +54,7 @@ export default class extends Component {
     this.state = {
       isTouchDevice: false,
       showLeftArrow: false,
+      showRightArrow: true,
     };
   }
 
@@ -115,54 +125,65 @@ export default class extends Component {
   handleArrowRight() {
     const slider = document.querySelector('.horizontal-scroll');
     slider.scrollBy(500, 0);
+    console.log('Handling arrow right', slider);
   }
 
   handleArrowLeft() {
     const slider = document.querySelector('.horizontal-scroll');
     slider.scrollBy(-500, 0);
+    console.log('Handling arrow left', slider);
   }
 
   handleInstructorsScroll(e) {
     const { isTouchDevice } = this.state;
+
     if (!isTouchDevice) {
       if (e.target.scrollLeft > 0) {
-        return this.setState({ showLeftArrow: true });
+        this.setState({ showLeftArrow: true });
+      } else {
+        this.setState({ showLeftArrow: false });
       }
-      return e.target.scrollLeft === 0 && this.setState({ showLeftArrow: false });
+      if (e.target.scrollLeft > e.target.scrollWidth - 500) {
+        this.setState({ showRightArrow: false });
+      } else {
+        this.setState({ showRightArrow: true });
+      }
     }
     return null;
   }
 
   render() {
-    const { children, style } = this.props;
-    const { showLeftArrow, isTouchDevice } = this.state;
+    const { children, style, arrowColor } = this.props;
+    const { showLeftArrow, isTouchDevice, showRightArrow } = this.state;
 
     return (
       <div key="horizonatal-scrollview-container">
         {!isTouchDevice && (
           <ArrowScrolling key="arrow-scrolling">
-            <LeftArrowIcon onClick={this.handleArrowLeft} showLeftArrow={showLeftArrow}>
+            <LeftArrowIcon showLeftArrow={showLeftArrow}>
               <svg
+                onClick={this.handleArrowLeft}
                 xmlns="http://www.w3.org/2000/svg"
                 width="100"
                 height="100"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#fff"
+                stroke={arrowColor || '#fff'}
                 strokeWidth="1.5"
                 className="feather feather-arrow-left"
               >
                 <polyline points="12 19 5 12 12 5" />
               </svg>
             </LeftArrowIcon>
-            <RightArrowIcon onClick={this.handleArrowRight}>
+            <RightArrowIcon showRightArrow={showRightArrow}>
               <svg
+                onClick={this.handleArrowRight}
                 xmlns="http://www.w3.org/2000/svg"
                 width="100"
                 height="100"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#fff"
+                stroke={arrowColor || '#fff'}
                 strokeWidth="1.5"
                 className="feather feather-arrow-left"
               >
