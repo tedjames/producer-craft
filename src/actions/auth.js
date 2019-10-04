@@ -1,3 +1,7 @@
+// Sweetalert Modals
+import Swal from 'sweetalert2';
+// React Router
+import { browserHistory } from 'react-router';
 // Firebase SDK
 import { auth } from 'firebase';
 import { db } from '../database';
@@ -26,8 +30,6 @@ import {
   REGISTRATION_MODAL,
   LOGIN_MODAL,
 } from './types';
-
-// Snackbar
 
 // ////////////////////////////////////////////////////////////////////
 /*  Helper Functions  */
@@ -75,6 +77,19 @@ export const loginUser = ({ email, password }) => {
           payload: { variant: 'success', message: 'Successfully logged in' },
         });
         dispatch({ type: LOGIN_USER, payload: user });
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'SUCCESS',
+          text: 'You are now logged in!',
+          type: 'success',
+          confirmButtonText: 'Continue',
+          timer: 4000,
+          onClose: () => {
+            window.scrollTo(0, 0);
+          },
+        });
       })
       .catch(error => {
         // handle login error
@@ -104,6 +119,19 @@ export const logoutUser = () => {
           payload: { variant: 'success', message: 'Successfully logged out' },
         });
         dispatch({ type: LOGOUT_USER, payload: SUCCESS });
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'See you later',
+          text: 'You are now logged out',
+          type: 'success',
+          confirmButtonText: 'Continue',
+          timer: 4000,
+          onClose: () => {
+            browserHistory.push('/');
+          },
+        });
       })
       .catch(error => {
         // handle logout error
@@ -167,22 +195,21 @@ export const resetPassword = ({ email }) => {
       .then(() => {
         console.log('Password reset email sent!');
         dispatch({ type: FORGOT_PASSWORD_MODAL, payload: false });
-        dispatch({
-          type: SNACKBAR,
-          payload: {
-            variant: 'success',
-            message: 'Password recovery email sent! Please check your email.',
-          },
-        });
         dispatch({ type: RESET_PASSWORD, payload: SUCCESS });
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Reset Email Sent',
+          text: 'Please check your email for a link to reset your password',
+          type: 'success',
+          confirmButtonText: 'Okay',
+        });
       })
       .catch(error => {
         console.log('ERROR: Password reset email unable to be sent...', error);
-        dispatch({
-          type: SNACKBAR,
-          payload: { variant: 'error', message: error.message },
-        });
         dispatch({ type: RESET_PASSWORD, payload: ERROR });
+        dispatch({ type: AUTH_ERROR, payload: error.message });
       });
   };
 };
@@ -226,9 +253,9 @@ export const createUser = ({ username, email, password }) => {
         const { uid } = userRecord.user;
 
         // Add reference to user in db
-        db.collection('users')
+        db.collection('profiles')
           .doc(uid)
-          .set({ uid, username, email, roles: ['student'] })
+          .set({ uid, username })
           .then(() => {
             auth()
               // update display name to show in confirmation email
@@ -246,6 +273,16 @@ export const createUser = ({ username, email, password }) => {
                       payload: { variant: 'success', message: 'Verification email sent' },
                     });
                     dispatch({ type: CREATE_USER, payload: SUCCESS });
+                    Swal.fire({
+                      customClass: {
+                        container: 'my-swal',
+                      },
+                      title: 'Account Created',
+                      text:
+                        'Welcome to Producer Craft! Feel free to preview some of our classes and if you like what you see, consider subscribing for all-access or purchase our classes individually.',
+                      type: 'success',
+                      confirmButtonText: 'Continue',
+                    });
                   })
                   .catch(error => {
                     console.log('Error sending verification email: ', error);
@@ -254,6 +291,16 @@ export const createUser = ({ username, email, password }) => {
                       payload: { variant: 'error', message: 'Unable to send verification email' },
                     });
                     dispatch({ type: CREATE_USER, payload: ERROR });
+                    Swal.fire({
+                      customClass: {
+                        container: 'my-swal',
+                      },
+                      title: 'Account Created',
+                      text:
+                        'Your account was successfully created but we could not send out a verification email to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
+                      type: 'success',
+                      confirmButtonText: 'Continue',
+                    });
                   });
               })
               .catch(error => {
@@ -263,6 +310,16 @@ export const createUser = ({ username, email, password }) => {
                   payload: { variant: 'error', message: 'Unable to assign display name' },
                 });
                 dispatch({ type: CREATE_USER, payload: ERROR });
+                Swal.fire({
+                  customClass: {
+                    container: 'my-swal',
+                  },
+                  title: 'Account Created',
+                  text:
+                    'Your account was successfully created but we could not send out a verification email or assign a display name to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
+                  type: 'success',
+                  confirmButtonText: 'Continue',
+                });
               });
             // send verification email to user
           })
@@ -274,6 +331,16 @@ export const createUser = ({ username, email, password }) => {
               payload: { variant: 'error', message: 'Unable to create user' },
             });
             dispatch({ type: CREATE_USER, payload: ERROR });
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              title: 'Internal Error',
+              text:
+                'Your account was successfully created but we could not save your information in our database for some unforeseen reason. Please make another account or email us for assistance.',
+              type: 'error',
+              confirmButtonText: 'OKAY',
+            });
           });
       })
       .catch(error => {
@@ -284,7 +351,16 @@ export const createUser = ({ username, email, password }) => {
           type: SNACKBAR,
           payload: { variant: 'error', message: 'Unable to create user' },
         });
-        dispatch({ type: CREATE_USER, payload: ERROR });
+        dispatch({ type: CREATE_USER, payload: { ERROR: true, message: error.message } });
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Error Creating Account',
+          text: error.message,
+          type: 'error',
+          confirmButtonText: 'OKAY',
+        });
       });
   };
 };
@@ -313,11 +389,16 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
                   // handle adding user reference to db success
                   console.log('User reference successfully updated in db!');
                   dispatch({ type: AUTH_MODAL, payload: false });
-                  dispatch({
-                    type: SNACKBAR,
-                    payload: { variant: 'success', message: 'Account updated' },
-                  });
                   dispatch({ type: UPDATE_USER, payload: SUCCESS });
+                  Swal.fire({
+                    customClass: {
+                      container: 'my-swal',
+                    },
+                    title: 'Success',
+                    text: 'Account info has been updated!',
+                    type: 'success ',
+                    confirmButtonText: 'OKAY',
+                  });
                 })
                 .catch(error => {
                   // handle adding user reference to db error
@@ -327,11 +408,30 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
                     payload: { variant: 'error', message: 'Unable to update user' },
                   });
                   dispatch({ type: UPDATE_USER, payload: ERROR });
+                  Swal.fire({
+                    customClass: {
+                      container: 'my-swal',
+                    },
+                    title: 'Internal Error',
+                    text:
+                      'Your account was successfully created but we could not save your information in our database for some unforeseen reason. Please email us for assistance.',
+                    type: 'error',
+                    confirmButtonText: 'OKAY',
+                  });
                 });
             })
             .catch(error => {
               console.log('Error updating email in firebase: ', error);
               dispatch({ type: UPDATE_USER, payload: ERROR });
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                title: 'Internal Error',
+                text: error.message,
+                type: 'error',
+                confirmButtonText: 'OKAY',
+              });
             });
         } else {
           // Update firstName and lastName only in db
@@ -342,11 +442,17 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
               // handle adding user reference to db success
               console.log('User reference successfully updated in db!');
               dispatch({ type: AUTH_MODAL, payload: false });
-              dispatch({
-                type: SNACKBAR,
-                payload: { variant: 'success', message: 'Account updated' },
-              });
               dispatch({ type: UPDATE_USER, payload: SUCCESS });
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                title: 'Account updated',
+                text: 'Successfully updated your account info',
+                type: 'success',
+                confirmButtonText: 'Continue',
+                timer: 8000,
+              });
             })
             .catch(error => {
               // handle adding user reference to db error
@@ -356,6 +462,16 @@ export const updateUser = ({ firstName, lastName, email, password }) => {
                 payload: { variant: 'error', message: 'Unable to update user' },
               });
               dispatch({ type: UPDATE_USER, payload: ERROR });
+              Swal.fire({
+                customClass: {
+                  container: 'my-swal',
+                },
+                title: 'Internal Error',
+                text:
+                  'Your account was successfully created but we could not save your information in our database for some unforeseen reason. Please make another account or email us for assistance.',
+                type: 'error',
+                confirmButtonText: 'OKAY',
+              });
             });
         }
       })
@@ -388,6 +504,16 @@ export const deleteUser = ({ password }) => {
                 });
                 dispatch({ type: AUTH_MODAL, payload: false });
                 dispatch({ type: DELETE_USER, payload: SUCCESS });
+                Swal.fire({
+                  customClass: {
+                    container: 'my-swal',
+                  },
+                  title: 'Account Deleted',
+                  text: 'Your account has successfully been deleted. Goodbye!',
+                  type: 'success',
+                  confirmButtonText: 'Continue',
+                  timer: 8000,
+                });
               })
               .catch(error => {
                 // handle delete user reference from db error
@@ -397,6 +523,16 @@ export const deleteUser = ({ password }) => {
                   payload: { variant: 'error', message: 'Unable to delete user from database' },
                 });
                 dispatch({ type: DELETE_USER, payload: ERROR });
+                Swal.fire({
+                  customClass: {
+                    container: 'my-swal',
+                  },
+                  title: 'Internal Error',
+                  text:
+                    'Your account was deleted but we could not remove your information from our database for some unforeseen reason. Please make another account or email us for assistance.',
+                  type: 'error',
+                  confirmButtonText: 'OKAY',
+                });
               });
           })
           .catch(error => {
@@ -406,6 +542,15 @@ export const deleteUser = ({ password }) => {
               payload: { variant: 'error', message: 'Unable to delete account' },
             });
             dispatch({ type: DELETE_USER, payload: ERROR });
+            Swal.fire({
+              customClass: {
+                container: 'my-swal',
+              },
+              title: 'Internal Error',
+              text: error.message,
+              type: 'error',
+              confirmButtonText: 'OKAY',
+            });
           });
       })
       .catch(error => {
@@ -414,6 +559,19 @@ export const deleteUser = ({ password }) => {
           payload: { variant: 'error', message: 'Unable to reauthenticate' },
         });
         console.log('Error re-authenticating user: ', error);
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Internal Error',
+          text: 'Unable to reauthenticate! Please log in again to delete your account.',
+          type: 'error',
+          confirmButtonText: 'OKAY',
+          timer: 12000,
+          onClose: () => {
+            browserHistory.push('/');
+          },
+        });
       });
   };
 };
