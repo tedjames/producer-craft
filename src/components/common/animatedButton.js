@@ -121,9 +121,7 @@ const AnimatedButton = ({ children, containerStyle, textStyle, to, onClick }) =>
         <div>
           <a
             href={to}
-            target="_blank"
             className="disable-selection"
-            rel="noopener noreferrer"
             style={{
               fontFamily: 'proxima-nova, sans-serif',
               fontWeight: 800,
