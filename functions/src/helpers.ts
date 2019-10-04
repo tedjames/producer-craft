@@ -26,12 +26,25 @@ export const assertUID = (context: any) => {
 };
 
 /**
+Validates an email for callable function
+*/
+export const assertEmail = (data: any, key: string) => {
+  const email = data[key];
+  if (!email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return email;
+  } else {
+    throw new functions.https.HttpsError('permission-denied', 'Invalid email');
+  }
+};
+
+/**
 Sends a descriptive error response when running a callable function
 */
 export const catchErrors = async (promise: Promise<any>) => {
   try {
     return await promise;
   } catch (err) {
+    console.log(err);
     throw new functions.https.HttpsError('unknown', err);
   }
 };
