@@ -38,7 +38,13 @@ const SocialIconButton = styled.div`
   }
 `;
 
-const ActionBar = ({ showRegistrationModal, showTrailerModal }) => {
+const ActionBar = ({
+  showRegistrationModal,
+  handlePreview,
+  handleEnroll,
+  showTrailerModal,
+  user,
+}) => {
   return (
     <Container>
       <div
@@ -49,7 +55,10 @@ const ActionBar = ({ showRegistrationModal, showTrailerModal }) => {
           justifyContent: 'center',
         }}
       >
-        <FlatButton onClick={showRegistrationModal} style={{ width: 160, marginRight: 10 }}>
+        <FlatButton
+          onClick={user ? handleEnroll : showRegistrationModal}
+          style={{ width: 160, marginRight: 10 }}
+        >
           <ButtonText>Enroll</ButtonText>
         </FlatButton>
         <FlatButton
