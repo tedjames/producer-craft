@@ -139,6 +139,35 @@ code {
 
 .horizontal-scroll {
   scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
+}
+
+/* Track */
+.horizontal-scroll ::-webkit-scrollbar-track {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Handle */
+.horizontal-scroll ::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Handle on hover */
+.horizontal-scroll ::-webkit-scrollbar-thumb:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Handle iOS Safari */
+.horizontal-scroll::-webkit-scrollbar {
+  background-color: transparent !important;
+  -webkit-appearance: none;
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .designBox {
@@ -214,13 +243,13 @@ stripeCustomElement--focus {
 .cardExpire,
 .cardFirstName {
   float: left;
-  width: 42.5%;
+  width: 41.5%;
 }
 
 .cardCvc,
 .cardLastName {
   float: right;
-  width: 42.5%;
+  width: 41.5%;
 }
 
 @media (max-width: 486px) {
@@ -228,7 +257,7 @@ stripeCustomElement--focus {
   .cardLastName,
   .cardExpire,
   .cardFirstName {
-    width: 40%;
+    width: 38.5%;
   }
 }
 
@@ -237,7 +266,7 @@ stripeCustomElement--focus {
   .cardLastName,
   .cardExpire,
   .cardFirstName {
-    width: 39%;
+    width: 37.5%;
   }
 }
 
@@ -246,7 +275,7 @@ stripeCustomElement--focus {
   .cardLastName,
   .cardExpire,
   .cardFirstName {
-    width: 38%;
+    width: 37%;
   }
 }
 
@@ -255,7 +284,7 @@ stripeCustomElement--focus {
   .cardLastName,
   .cardExpire,
   .cardFirstName {
-    width: 37%;
+    width: 36%;
   }
 }
 
@@ -269,4 +298,99 @@ input[type='text'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+#subscribeModal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+#PaymentModal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+@media (max-width: 320px) {
+  #subscribeModal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  #PaymentModal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  #subscribeModal
+    > div.MuiDialog-container.MuiDialog-scrollPaper
+    > div
+    > div.MuiDialogActions-root.MuiDialogActions-spacing {
+    position: relative;
+    left: 9px;
+  }
+}
+
+/* SweetAlert */
+.swal2-container {
+  z-index: 10000 !important;
+}
+
+.swal2-title {
+  font-family: proxima-nova, sans-serif;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  margin-bottom: 15px !important;
+  letter-spacing: 5px;
+  text-transform: uppercase !important;
+}
+
+.swal2-content {
+  font-family: roboto-condensed, sans-serif;
+  font-size: 14px;
+}
+
+.swal2-styled {
+  border-radius: 18px !important;
+  font-family: proxima-nova, sans-serif;
+  font-weight: 700 !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  font-size: 13px !important;
+  background-color: #eee !important;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #595959 !important;
+  outline: none !important;
+  border: 0px none !important;
+}
+
+#menu-modal > div.MuiDialog-container.MuiDialog-scrollPaper > div {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+#account-modal > .rccs {
+  margin-left: 0px !important;
+}
+
+@media (min-width: 1200px) {
+  #account-modal > .rccs {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #account-modal > .rccs {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+}
+
+.MuiFormLabel-filled {
+  background: #fff;
 }
