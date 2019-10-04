@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
+import Spinner from 'react-spinkit';
 
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,7 +15,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 
 import FlatButton from '../flatButton';
 import ButtonText from '../buttonText';
-import ForgotPasswordModal from '../forgotPasswordModal';
+import ForgotPasswordModal from './forgotPasswordModal';
 
 import {
   loginUser,
@@ -212,6 +213,7 @@ class AuthModal extends Component {
       confirmPasswordChanged,
       usernameChanged,
       error,
+      loading,
     } = this.props;
     const { showForgotPassword, showPassword } = this.state;
     return (
@@ -320,7 +322,7 @@ class AuthModal extends Component {
               />
             )}
             <DialogText
-              style={{ textDecoration: 'none', fontSize: 10, marginTop: 10, color: 'red' }}
+              style={{ textDecoration: 'none', fontSize: 14, marginTop: 10, color: 'red' }}
             >
               {error}
             </DialogText>
@@ -336,9 +338,32 @@ class AuthModal extends Component {
             paddingTop: 20,
           }}
         >
-          <FlatButton onClick={this.handleSubmit} style={{ width: showRegistration ? 240 : 180 }}>
-            <ButtonText>{showRegistration ? 'Create Account' : 'Log In'}</ButtonText>
-          </FlatButton>
+          {loading ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+              }}
+            >
+              <Spinner
+                style={{ transform: 'scale(0.5)', opacity: 0.65 }}
+                name="line-scale"
+                color="blue"
+                fadeIn="quarter"
+              />
+              <DialogText
+                style={{ textDecoration: 'none', fontSize: 16, marginTop: 0, color: '#aaa' }}
+              >
+                Authenticating...
+              </DialogText>
+            </div>
+          ) : (
+            <FlatButton onClick={this.handleSubmit} style={{ width: showRegistration ? 240 : 180 }}>
+              <ButtonText>{showRegistration ? 'Create Account' : 'Log In'}</ButtonText>
+            </FlatButton>
+          )}
           {!showRegistration && (
             <SignUpText>
               Need an account?{' '}
