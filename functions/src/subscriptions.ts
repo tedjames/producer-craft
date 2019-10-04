@@ -44,14 +44,23 @@ export const createSubscription = async (
   const batch = db.batch();
   // Add subscription id to accounts and set subscribed to true
   const accountsRef = await db.doc(`accounts/${uid}`);
+
   batch.set(
     accountsRef,
     {
       subscribed: true,
-      [subscription.id]: 'active',
     },
     { merge: true },
   );
+
+  const subscriptionsRef = await db
+    .doc(`accounts/${uid}`)
+    .collection('subscriptions')
+    .doc(`${[subscription.id]}`);
+
+  batch.set(subscriptionsRef, {
+    [subscription.id]: 'active',
+  });
 
   // Update firstName and lastName if provided
   if (firstName && lastName) {
@@ -85,6 +94,7 @@ export async function cancelSubscription(uid: string, subId: string): Promise<an
     { merge: true },
   );
 
+  // TODO: Update with new data structure of storing subs in subscollection
   // Run batch write
   await batch.commit();
   return subscription;
@@ -96,7 +106,10 @@ export const stripeCreateSubscription = functions.https.onCall(async (data, cont
   const uid = assertUID(context);
   const source = assert(data, 'source');
   const plan = assert(data, 'plan');
-  return catchErrors(createSubscription(uid, source, plan, data.coupon));
+
+  // Optional parameters
+  const { coupon, firstName, lastName } = data;
+  return catchErrors(createSubscription(uid, source, plan, coupon, firstName, lastName));
 });
 
 export const stripeCancelSubscription = functions.https.onCall(async (data, context) => {
