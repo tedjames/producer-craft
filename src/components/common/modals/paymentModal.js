@@ -1,21 +1,27 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable no-shadow */
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import { injectStripe, Elements } from 'react-stripe-elements';
 import { functions } from 'firebase';
+import Swal from 'sweetalert2';
 
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 
-import FlatButton from '../flatButton';
-import ButtonText from '../buttonText';
-
-import { togglePaymentModal } from '../../../actions';
+import { togglePaymentModal, togglePaymentLoading } from '../../../actions';
 
 import PaymentForm from './paymentForm';
+
+const ProductName = styled.span`
+  background: -webkit-linear-gradient(#888, #333);
+  color: #888;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
 
 const DialogTitle = styled.p`
   font-family: proxima-nova, sans-serif;
@@ -30,32 +36,6 @@ const DialogTitle = styled.p`
   padding-bottom: 10px;
 `;
 
-const DialogTextButton = styled.a`
-  font-family: roboto-condensed, sans-serif;
-  font-size: 12px;
-  text-align: center;
-  color: #888;
-  text-decoration: underline;
-  text-decoration-color: #bebebe;
-  margin-top: 5px;
-  cursor: pointer;
-  :hover,
-  :active {
-    opacity: 0.65;
-  }
-`;
-
-const DialogText = styled.p`
-  font-family: roboto-condensed, sans-serif;
-  font-size: 12px;
-  text-align: center;
-  color: #888;
-  text-decoration: underline;
-  text-decoration-color: #bebebe;
-  margin-top: 5px;
-  cursor: default;
-`;
-
 class FormContainer extends Component {
   constructor(props) {
     super(props);
@@ -64,17 +44,27 @@ class FormContainer extends Component {
     this.state = {
       firstName: '',
       lastName: '',
+      loading: false,
+      error: '',
     };
   }
 
+  handleError(error) {
+    this.setState({ error, loading: false });
+  }
+
   async handleSubmit(e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
+
     const { firstName, lastName } = this.state;
-    const { stripe, handleError } = this.props;
+    const { stripe, productId, amount, togglePaymentModal } = this.props;
+    this.setState({ loading: true });
 
     // Verify that first and last names have been provided
     if (!firstName || !lastName) {
-      return handleError('Please include a first and last name');
+      return this.handleError('Please include a first and last name');
     }
 
     // Create source with Stripe API
@@ -86,22 +76,83 @@ class FormContainer extends Component {
       },
     });
     console.log('Source received: ', source);
-
+    // Handle source creation errors
     if (error) {
-      // Handle source creation errors
       console.log('Error creating source: ', error);
-      return handleError(`Error: ${error}`);
+      this.setState({ loading: false });
+      return this.handleError(`${error.message}`);
     }
 
-    // Send to cloud function
-    console.log('Sending source to cloud function...');
-    const stripeAttachSource = functions().httpsCallable('stripeAttachSource');
-    const res = await stripeAttachSource({ source: source.id });
-    return console.log('Sent source to cloud function and received reponse: ', res);
+    if (productId) {
+      // Single course purchase if product ID is present
+      // Send charge to cloud function
+      console.log('Sending source to cloud function...');
+      const stripeAmount = amount.split('.').join('');
+      try {
+        // Create strip charge
+        const stripeCreateCharge = functions().httpsCallable('stripeCreateCharge');
+        const res = await stripeCreateCharge({
+          source: source.id,
+          amount: stripeAmount,
+          product_id: productId,
+          firstName,
+          lastName,
+        });
+        togglePaymentModal(false);
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Payment Success',
+          text: 'Taking you to your class now!',
+          type: 'success',
+          confirmButtonText: 'Continue',
+          timer: 8000,
+          onClose: () => {
+            browserHistory.push('/courses/scott-storch-teaches-music-production#course-viewer');
+          },
+        });
+        // Remove loading indicator
+        this.setState({ loading: false });
+        return console.log('Customer charge was successful: ', res);
+      } catch (error) {
+        console.log('Error: ', error);
+        return this.handleError('Error encountered. Please try again.');
+      }
+    }
+
+    // Subscriptions
+    // Create charge for specified amount
+    console.log('Creating subscription...');
+    const stripeCreateSubscription = functions().httpsCallable('stripeCreateSubscription');
+    const res = await stripeCreateSubscription({
+      plan: 'plan_FW6JkaZ4V59Q1e',
+      source: source.id,
+      firstName,
+      lastName,
+    });
+    // Remove loading indicator
+    this.setState({ loading: false });
+    togglePaymentModal(false);
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      title: 'Payment Success',
+      text:
+        'Welcome to Producer Craft, a community of like-minded producers who strive to master their craft and learn from some of the greatest talent in the world. You now have access to all of our content, perks and sample packs!',
+      type: 'success',
+      confirmButtonText: 'Continue',
+      onClose: () => {
+        browserHistory.push('/#my-classes');
+      },
+    });
+
+    return console.log('Subscription created: ', res);
   }
 
   render() {
-    const { firstName, lastName } = this.state;
+    const { firstName, lastName, loading, error } = this.state;
     return (
       <PaymentForm
         firstName={firstName}
@@ -109,6 +160,8 @@ class FormContainer extends Component {
         setFirstName={firstName => this.setState({ firstName })}
         setLastName={lastName => this.setState({ lastName })}
         handleSubmit={this.handleSubmit}
+        error={error}
+        loading={loading}
       />
     );
   }
@@ -116,26 +169,17 @@ class FormContainer extends Component {
 
 const InjectedForm = injectStripe(FormContainer);
 
-class SubscriberModal extends Component {
-  constructor(props) {
-    super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit() {
-    console.log('HANDLING SUBMIT');
-  }
-
+class PaymentModal extends PureComponent {
   render() {
     // eslint-disable-next-line no-shadow
-    const { open, togglePaymentModal, productId, amount } = this.props;
+    const { open, togglePaymentModal, amount, productName, productId, subscription } = this.props;
     return (
       <Dialog
         open={open}
         onClose={() => togglePaymentModal(false)}
         aria-labelledby="form-dialog-title"
         style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-        id="subscriberModal"
+        id="PaymentModal"
       >
         <DialogTitle
           style={{
@@ -202,7 +246,7 @@ class SubscriberModal extends Component {
             justifyContent: 'space-between',
           }}
         >
-          <span>{productId}</span>
+          <ProductName style={{ fontWeight: '800' }}>{productName}</ProductName>
           <span style={{ fontSize: 14, color: '#aaa', marginTop: 10 }}>
             Total Billed Today: ${amount}
           </span>
@@ -211,7 +255,12 @@ class SubscriberModal extends Component {
           <Elements
             fonts={[{ cssSrc: 'https://fonts.googleapis.com/css?family=Roboto+Condensed' }]}
           >
-            <InjectedForm />
+            <InjectedForm
+              amount={amount}
+              productId={productId}
+              subscription={subscription}
+              togglePaymentModal={togglePaymentModal}
+            />
           </Elements>
         </DialogContent>
       </Dialog>
@@ -222,16 +271,19 @@ class SubscriberModal extends Component {
 const mapStateToProps = ({ auth, view }) => ({
   open: view.showPaymentModal,
   error: auth.error,
-  loading: view.loading,
+  loading: view.paymentLoading,
   userDetails: auth.userDetails,
   user: auth.user,
   productId: view.paymentDetails.productId,
   amount: view.paymentDetails.amount,
+  productName: view.paymentDetails.productName,
+  subscription: view.paymentDetails.subscription,
 });
 
 export default connect(
   mapStateToProps,
   {
     togglePaymentModal,
+    togglePaymentLoading,
   },
-)(SubscriberModal);
+)(PaymentModal);
