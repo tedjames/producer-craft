@@ -1,4 +1,4 @@
-export { stripeAttachSource } from './sources';
+export { stripeAttachSource, stripeGetSources } from './sources';
 export { stripeCreateCharge, stripeGetCharges } from './charges';
 export {
   stripeCreateSubscription,
@@ -7,5 +7,5 @@ export {
 } from './subscriptions';
 export { invoiceWebhookEndpoint } from './webhooks';
 export { stripeGetCoupon } from './coupons';
-export { createUserEvent, deleteUserEvent } from './accounts';
+export { createUserEvent, deleteUserEvent, saveAnonymousUser } from './accounts';
 export { generateThumbnail } from './thumbnails';
