@@ -34,8 +34,29 @@ const Loading = () => (
 );
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.hashLinkScroll = this.hashLinkScroll.bind(this);
+    this.scrollRestore = this.scrollRestore.bind(this);
+  }
+
   scrollRestore() {
     window.scrollTo(0, 0);
+  }
+
+  hashLinkScroll() {
+    // Enables hash-based scrolling when routing
+    const { hash } = window.location;
+    if (hash !== '') {
+      // Push onto callback queue so it runs after the DOM is updated,
+      // this is required when navigating from a different page so that
+      // the element is rendered on the page before trying to getElementById.
+      setTimeout(() => {
+        const id = hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView();
+      }, 0);
+    }
   }
 
   render() {
@@ -51,10 +72,10 @@ export default class App extends Component {
       <Route component={RequireAuth(Container)}>
     */
     return (
-      <StripeProvider apiKey="pk_test_zKSfioQfpX4pSy7jZyWVQzKJ00s77w8RB2">
+      <StripeProvider apiKey="pk_test_eT5ipOGQVLdsEyixNbb5S6QP00p5nA6wPN">
         <Provider store={store}>
           <Suspense fallback={<Loading />}>
-            <Router history={browserHistory}>
+            <Router history={browserHistory} onUpdate={this.hashLinkScroll}>
               <Route path="/" component={AuthListener}>
                 <IndexRoute component={Home} onEnter={this.scrollRestore} />
                 <Route path="streaming" component={StreamingTest} onEnter={this.scrollRestore} />
