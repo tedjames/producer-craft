@@ -76,6 +76,7 @@ class TrailerModal extends PureComponent {
   constructor(props) {
     super(props);
     this.handleSignUp = this.handleSignUp.bind(this);
+    this.handleEnroll = this.handleEnroll.bind(this);
   }
 
   handleSignUp() {
