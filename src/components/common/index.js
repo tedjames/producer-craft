@@ -1,6 +1,5 @@
 export { default as PlayButton } from './playButton';
 export { default as ScrollDownIcon } from './ScrollDownIcon';
-export { default as ForgotPasswordModal } from './forgotPasswordModal';
 export { default as FlatButton } from './flatButton';
 export { default as ButtonText } from './buttonText';
 export { default as CrossfadeImage } from './crossfadeImage';
@@ -29,3 +28,10 @@ export { default as SubscribeModal } from './modals/subscribeModal';
 export { default as PaymentModal } from './modals/paymentModal';
 export { default as AuthModal } from './modals/authModal';
 export { default as TrailerModal } from './modals/trailerModal';
+export { default as ForgotPasswordModal } from './modals/forgotPasswordModal';
+export { default as AddCourseModal } from './modals/addCourseModal';
+export { default as EditCourseModal } from './modals/editCourseModal';
+export { default as AddLessonModal } from './modals/addLessonModal';
+export { default as EditLessonModal } from './modals/editLessonModal';
+export { default as AddFileModal } from './modals/addFileModal';
+export { default as EditFileModal } from './modals/editFileModal';
