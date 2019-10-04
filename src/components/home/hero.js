@@ -453,7 +453,7 @@ export default class Hero extends Component {
   render() {
     const { showRegistrationModal, toggleTrailerModal, user, toggleSubscribeModal } = this.props;
     return (
-      <Container>
+      <Container id="home-hero">
         {/* Header Logo, Login and Instructor Buttons */}
         <Header />
         {/* Featured Course */}
