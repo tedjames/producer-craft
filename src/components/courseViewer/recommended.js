@@ -9,7 +9,7 @@ const Reccomended = () => {
   return [
     <SectionTitle key="SectionTitle-recommended">Recommended for You</SectionTitle>,
     <HorizontalScrollView
-      key="HorizontalScrollView"
+      key=".horizontal-scroll-reccomended-2"
       style={{ borderBottom: 'dotted 1px #bebebe', paddingBottom: 30, marginBottom: 10 }}
     >
       <InstructorCard
