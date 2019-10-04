@@ -33,11 +33,17 @@ export const createCharge = async (
   lastName?: string,
   idempotency_key?: string,
 ) => {
+  console.log('Creating customer...');
+
+  console.log('UID FOR TESTING: ', uid);
+
   const customer = await getOrCreateCustomer(uid);
 
   await attachSource(uid, source);
 
   // TODO: Verify that product_id exists in DB, if not return error
+
+  console.log('Creating charge....');
 
   const charge = await stripe.charges.create(
     {
@@ -51,9 +57,12 @@ export const createCharge = async (
     { idempotency_key },
   );
 
+  console.log('Creating batch write...');
+
   // [START: Batch write purchase info and name ]
   const batch = db.batch();
   // Add purchase info to accounts doc
+
   const accountsRef = await db.doc(`accounts/${uid}`);
   batch.update(accountsRef, { purchases: admin.firestore.FieldValue.arrayUnion(product_id) });
 
@@ -64,6 +73,8 @@ export const createCharge = async (
   }
 
   // Run batch write
+  console.log('Committing batch write');
+
   await batch.commit();
   return charge;
 };
@@ -71,15 +82,19 @@ export const createCharge = async (
 // DEPLOYABLE FUNCTIONS //
 
 export const stripeCreateCharge = functions.https.onCall(async (data, context) => {
+  console.log('Fetching parameters...');
+
   const uid = assertUID(context);
   const source = assert(data, 'source');
   const amount = assert(data, 'amount');
   const product_id = assert(data, 'product_id');
 
   // Optional
-  const idempotency_key = data.itempotency_key;
+  const { firstName, lastName, idempotency_key } = data;
 
-  return catchErrors(createCharge(uid, product_id, source, amount, idempotency_key));
+  return catchErrors(
+    createCharge(uid, product_id, source, amount, firstName, lastName, idempotency_key),
+  );
 });
 
 export const stripeGetCharges = functions.https.onCall(async (data, context) => {
