@@ -5,13 +5,22 @@ import styled from 'styled-components';
 
 import Slide from '@material-ui/core/Slide';
 import Dialog from '@material-ui/core/Dialog';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 // Redux
 import { connect } from 'react-redux';
-import { showAuthModal, showRegistrationModal } from '../../actions';
+import {
+  showAuthModal,
+  showRegistrationModal,
+  toggleSubscribeModal,
+  togglePaymentModal,
+  toggleAddLessonModal,
+  toggleEditLessonModal,
+  toggleEditCourseModal,
+  toggleAddFileModal,
+  toggleEditFileModal,
+} from '../../actions';
 
 // Components
 import {
@@ -21,6 +30,15 @@ import {
   PlayButton,
   AnimatedButton,
   ReturnSection,
+  SubscribeModal,
+  PaymentModal,
+  FlatButton,
+  ButtonText,
+  EditLessonModal,
+  AddLessonModal,
+  EditCourseModal,
+  AddFileModal,
+  EditFileModal,
 } from '../common';
 import Hero from './hero';
 import ActionBar from './actionBar';
@@ -323,12 +341,12 @@ const FileIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #49a1eb;
+  background: #fafafa;
+  border: 1px #eee dotted;
   border-radius: 80px;
   height: 40px;
   width: 40px;
   margin-right: 12.5px;
-  opacity: 0.8;
 `;
 const FileName = styled.div`
   font-family: roboto-condensed;
@@ -415,6 +433,7 @@ const MainContainer = styled.div`
 class CourseViewer extends Component {
   constructor(props) {
     super(props);
+    this.handleEnroll = this.handleEnroll.bind(this);
 
     this.state = {
       showTrailerModal: false,
@@ -422,12 +441,30 @@ class CourseViewer extends Component {
     };
   }
 
+  handleEnroll() {
+    const { toggleSubscribeModal } = this.props;
+    const productDetails = {
+      productId: '7cba5002b23d11e9a2a3',
+      productName: 'Scott Storch Teaches Music Production',
+      amount: '44.95',
+    };
+    toggleSubscribeModal({ productDetails });
+  }
+
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal } = this.props;
+    const {
+      showRegistrationModal,
+      user,
+      toggleAddLessonModal,
+      toggleEditLessonModal,
+      toggleEditCourseModal,
+      toggleAddFileModal,
+      toggleEditFileModal,
+    } = this.props;
     const { showTrailerModal, showLessonPlanModal } = this.state;
     return (
-      <div style={{ overflowX: 'hidden' }}>
+      <div style={{ overflowX: 'hidden' }} id="course-viewer">
         {/* Hero Image, Title and Enroll/Follow Buttons */}
         <Hero
           name="Scott Storch"
@@ -462,7 +499,7 @@ class CourseViewer extends Component {
               </LessonDescription>
 
               <FilesSection>
-                <FileCard>
+                <FileCard onClick={() => toggleEditFileModal(true)}>
                   <FileIcon>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -470,7 +507,7 @@ class CourseViewer extends Component {
                       height="19"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#f5f5f5"
+                      stroke="#37d6ff"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -490,7 +527,7 @@ class CourseViewer extends Component {
                       height="19"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#f5f5f5"
+                      stroke="#37d6ff"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -510,7 +547,7 @@ class CourseViewer extends Component {
                       height="19"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#f5f5f5"
+                      stroke="#37d6ff"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -581,6 +618,51 @@ class CourseViewer extends Component {
                   Lesson Plan
                 </AnimatedButton>
               </LessonPlanButton>
+
+              <ShareText className="disable-selection" style={{ marginBottom: 5 }}>
+                Admin Options
+              </ShareText>
+              <div
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <FlatButton
+                  onClick={() => toggleEditLessonModal(true)}
+                  style={{
+                    width: 260,
+                    marginTop: 7.5,
+                    marginRight: 10,
+                    marginBottom: 0,
+                  }}
+                >
+                  <ButtonText>EDIT LESSON</ButtonText>
+                </FlatButton>
+
+                <FlatButton
+                  onClick={() => toggleEditCourseModal(true)}
+                  style={{
+                    width: 260,
+                    marginTop: 7.5,
+                    marginRight: 10,
+                    marginBottom: 0,
+                    background: '#ddd',
+                  }}
+                >
+                  <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
+                </FlatButton>
+
+                <FlatButton
+                  onClick={() => toggleAddFileModal(true)}
+                  style={{ width: 260, marginTop: 7.5, marginBottom: 0, background: '#ddd' }}
+                >
+                  <ButtonText style={{ color: '#555' }}>+ ADD FILE</ButtonText>
+                </FlatButton>
+              </div>
 
               {/* Comments Section */}
               <Comments>
@@ -666,11 +748,32 @@ class CourseViewer extends Component {
                   <LessonName>Establishing the right tempo and vibe</LessonName>
                 </LessonPreviewInfo>
               </LessonPreview>
+              <div
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FlatButton
+                  onClick={() => toggleAddLessonModal(true)}
+                  style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
+                >
+                  <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
+                </FlatButton>
+              </div>
             </LessonPlan>
           </CourseDetails>
 
           {/*  Action Bar: (Purchase Course, Follow, Social Media, View Profile) */}
-          <ActionBar onClick={() => showRegistrationModal(true)} />
+          <ActionBar
+            handlePreview={() => this.setState({ showTrailerModal: !showTrailerModal })}
+            handleEnroll={this.handleEnroll}
+            showRegistrationModal={() => showRegistrationModal(true)}
+            showTrailerModal={() => this.setState({ showTrailerModal: true })}
+            user={user}
+          />
 
           {/* Recommended Courses */}
           <Recommended />
@@ -685,6 +788,7 @@ class CourseViewer extends Component {
         <TrailerModal
           open={showTrailerModal}
           close={() => this.setState({ showTrailerModal: false })}
+          showEnrollModal={this.handleEnroll}
         />
         <Dialog
           fullScreen
@@ -773,8 +877,30 @@ class CourseViewer extends Component {
                 <LessonName>Establishing the right tempo and vibe</LessonName>
               </LessonPreviewInfo>
             </LessonPreview>
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FlatButton
+                onClick={() => toggleAddLessonModal(true)}
+                style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
+              >
+                <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
+              </FlatButton>
+            </div>
           </LessonPlanModal>
         </Dialog>
+        <SubscribeModal />
+        <PaymentModal />
+        <EditLessonModal />
+        <AddLessonModal />
+        <EditCourseModal />
+        <AddFileModal />
+        <EditFileModal />
       </div>
     );
   }
@@ -794,5 +920,15 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, showRegistrationModal },
+  {
+    showAuthModal,
+    showRegistrationModal,
+    toggleSubscribeModal,
+    togglePaymentModal,
+    toggleAddLessonModal,
+    toggleEditLessonModal,
+    toggleEditCourseModal,
+    toggleAddFileModal,
+    toggleEditFileModal,
+  },
 )(CourseViewer);
