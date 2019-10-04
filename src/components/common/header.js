@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import styled from 'styled-components';
-import { showAuthModal, logoutUser } from '../../actions';
+import { showAuthModal, toggleAccountModal, logoutUser } from '../../actions';
 import Logo from './logo';
+import MenuModal from './modals/menuModal';
+import AccountModal from './modals/accountModal';
 
 const Container = styled.div`
   display: flex;
@@ -55,28 +57,71 @@ const LoginButton = styled.p`
 `;
 
 // eslint-disable-next-line no-shadow
-const Header = ({ style, showAuthModal, logoutUser, user }) => {
+const Header = ({
+  style,
+  showAuthModal,
+  logoutUser,
+  user,
+  toggleAccountModal,
+  showAccountModal,
+}) => {
+  const [showMenu, toggleMenu] = useState(false);
+  const handleLogout = () => {
+    logoutUser();
+    toggleMenu(false);
+  };
+  const handleCloseAccountModal = () => {
+    toggleAccountModal(false);
+    toggleMenu(false);
+  };
   return (
     <Container style={style}>
       <Logo onClick={() => browserHistory.push('/')} />
       {user ? (
-        <LoginButton className="disable-selection" onClick={() => logoutUser()}>
-          LOG OUT
+        <LoginButton className="disable-selection" onClick={() => toggleMenu(true)}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#e7edf1"
+            strokeWidth="1.25"
+            strokeOpacity="0.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="18" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
         </LoginButton>
       ) : (
         <LoginButton className="disable-selection" onClick={() => showAuthModal(true)}>
           LOG IN
         </LoginButton>
       )}
+      <MenuModal
+        open={showMenu}
+        onClose={() => toggleMenu(false)}
+        toggleAccountModal={toggleAccountModal}
+        handleLogout={handleLogout}
+      />
+      <AccountModal
+        open={showAccountModal}
+        toggleMenu={() => toggleMenu(true)}
+        onClose={() => handleCloseAccountModal()}
+      />
     </Container>
   );
 };
 
-const mapStateToProps = ({ auth }) => ({
+const mapStateToProps = ({ auth, view }) => ({
   user: auth.user,
+  showAccountModal: view.showAccountModal,
 });
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, logoutUser },
+  { showAuthModal, toggleAccountModal, logoutUser },
 )(Header);
