@@ -15,6 +15,7 @@ import {
   GET_USER,
   REGISTRATION_MODAL,
   LOGIN_MODAL,
+  RESET_PASSWORD,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -114,30 +115,39 @@ export default (state = INITIAL_STATE, action) => {
           };
       }
 
-    /*  Account Creation Reducers  */
-    case CREATE_USER:
+    /*  Account Management Reducers  */
+    case RESET_PASSWORD:
       switch (action.payload) {
         case PENDING:
-          return { ...state, loading: true };
+          return { ...state, forgotPasswordLoading: true };
         case ERROR:
-          return {
-            ...state,
-            error: 'Error creating user',
-            loading: false,
-          };
+          return { ...state, forgotPasswordLoading: false };
         default:
-          return {
-            ...state,
-            success: 'Successfully created user',
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            error: '',
-            loading: false,
-          };
+          return { ...state, forgotPasswordLoading: false, showModal: false };
       }
+    case CREATE_USER:
+      if (action.payload === PENDING) {
+        return { ...state, loading: true };
+      }
+      // eslint-disable-next-line no-prototype-builtins
+      if (action.payload.hasOwnProperty(ERROR)) {
+        return {
+          ...state,
+          error: action.payload.message,
+          loading: false,
+        };
+      }
+      return {
+        ...state,
+        success: 'Successfully created user',
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        error: '',
+        loading: false,
+      };
     default:
       return state;
   }
