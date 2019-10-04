@@ -280,9 +280,8 @@ const Comment = () => {
         </div>
         <CommentMessage className="linkify">
           <Linkify options={{ attributes: linkProps }}>
-            Lorem insum dolor sit amet, consectetur adipicing elit, sed do eiusmod tempor incididunt
-            ut labrore et dolore google.com aliqua. ut enim ad miim veniam, quis nostrud
-            exercitaition ullamco laboris nisi ut
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua.
           </Linkify>
         </CommentMessage>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
