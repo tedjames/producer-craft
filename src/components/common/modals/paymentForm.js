@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+import Spinner from 'react-spinkit';
 import { CardNumberElement, CardExpiryElement, CardCvcElement } from 'react-stripe-elements';
 
 import FlatButton from '../flatButton';
@@ -50,7 +51,15 @@ const DialogText = styled.p`
   cursor: default;
 `;
 
-const PaymentForm = ({ handleSubmit, firstName, lastName, setFirstName, setLastName }) => {
+const PaymentForm = ({
+  handleSubmit,
+  firstName,
+  lastName,
+  setFirstName,
+  setLastName,
+  loading,
+  error,
+}) => {
   return (
     <form>
       <Divider />
@@ -61,6 +70,7 @@ const PaymentForm = ({ handleSubmit, firstName, lastName, setFirstName, setLastN
         className="stripeCustomElement cardFirstName"
         type="text"
         placeholder="First Name"
+        onKeyPress={e => e.key === 'Enter' && handleSubmit()}
       />
       <input
         onChange={e => setLastName(e.target.value)}
@@ -68,6 +78,7 @@ const PaymentForm = ({ handleSubmit, firstName, lastName, setFirstName, setLastN
         className="stripeCustomElement cardLastName"
         type="text"
         placeholder="Last Name"
+        onKeyPress={e => e.key === 'Enter' && handleSubmit()}
       />
       <FormLabel>Card Details</FormLabel>
       <CardNumberElement
@@ -103,8 +114,12 @@ const PaymentForm = ({ handleSubmit, firstName, lastName, setFirstName, setLastN
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexDirection: 'column',
         }}
       >
+        <DialogText style={{ textDecoration: 'none', fontSize: 14, marginTop: 10, color: 'red' }}>
+          {error}
+        </DialogText>
         <DialogText
           style={{ textDecoration: 'none', fontSize: 10, marginTop: 0, color: '#bebebe' }}
         >
@@ -122,17 +137,40 @@ const PaymentForm = ({ handleSubmit, firstName, lastName, setFirstName, setLastN
       <div
         style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
-        <FlatButton
-          onClick={handleSubmit}
-          style={{
-            width: 280,
-            marginTop: 7.5,
-            alignSelf: 'center',
-            marginBottom: 10,
-          }}
-        >
-          <ButtonText>COMPLETE PURCHASE</ButtonText>
-        </FlatButton>
+        {loading ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            <Spinner
+              style={{ transform: 'scale(0.5)', opacity: 0.65 }}
+              name="line-scale"
+              color="blue"
+              fadeIn="quarter"
+            />
+            <DialogText
+              style={{ textDecoration: 'none', fontSize: 16, marginTop: 0, color: '#aaa' }}
+            >
+              Processing Payment...
+            </DialogText>
+          </div>
+        ) : (
+          <FlatButton
+            onClick={handleSubmit}
+            style={{
+              width: 280,
+              marginTop: 7.5,
+              alignSelf: 'center',
+              marginBottom: 10,
+            }}
+          >
+            <ButtonText>COMPLETE PURCHASE</ButtonText>
+          </FlatButton>
+        )}
       </div>
     </form>
   );
