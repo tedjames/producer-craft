@@ -3,7 +3,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { showAuthModal, showRegistrationModal, toggleSubscribeModal } from '../../actions';
+import {
+  showAuthModal,
+  showRegistrationModal,
+  toggleSubscribeModal,
+  toggleAddCourseModal,
+} from '../../actions';
 import {
   AuthModal,
   TrailerModal,
@@ -20,6 +25,7 @@ import {
   ButtonText,
   SubscribeModal,
   PaymentModal,
+  AddCourseModal,
 } from '../common';
 
 // Components
@@ -85,7 +91,7 @@ class Home extends Component {
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal, user, toggleSubscribeModal } = this.props;
+    const { showRegistrationModal, user, toggleSubscribeModal, toggleAddCourseModal } = this.props;
     const { showTrailerModal, showFloatingActionBar } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
@@ -96,9 +102,25 @@ class Home extends Component {
           user={user}
           toggleSubscribeModal={toggleSubscribeModal}
         />
-
         {/* Recently Added Courses */}
         <div style={{ background: '#fff', paddingTop: 40, paddingBottom: 40 }}>
+          <SectionTitle style={{ marginTop: 0, marginBottom: 17.5 }}>ADMIN TOOLS</SectionTitle>
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <FlatButton
+              onClick={() => toggleAddCourseModal(true)}
+              style={{ width: 260, marginTop: 0, marginBottom: 20 }}
+            >
+              <ButtonText>+ ADD NEW COURSE</ButtonText>
+            </FlatButton>
+          </div>
+
           <SectionTitle style={{ marginTop: 0 }}>Recently Added</SectionTitle>
           <CardList mini>
             <CourseCard
@@ -128,28 +150,29 @@ class Home extends Component {
           </CardList>
 
           {/* Value Propositions */}
-          <ValuePropositions>
-            <ValuePropCard
-              icon={<MusicIcon />}
-              title="Learn"
-              description="Learn from world-class producers, sound engineers and music artists"
-            />
-            <ValuePropCard
-              icon={<SubscribeIcon />}
-              title="Engage"
-              description="Share your music for helpful feedback and a chance to work with a producer"
-            />
-            <ValuePropCard
-              id="my-classes"
-              icon={<ShareIcon />}
-              title="Subscribe"
-              description="Purchase an all-access pass to all of our classes, samples and future content"
-              style={{ borderRight: '0px', borderBottom: '0px' }}
-            />
-          </ValuePropositions>
+          {!user && (
+            <ValuePropositions>
+              <ValuePropCard
+                icon={<MusicIcon />}
+                title="Learn"
+                description="Learn from world-class producers, sound engineers and music artists"
+              />
+              <ValuePropCard
+                icon={<SubscribeIcon />}
+                title="Engage"
+                description="Share your music for helpful feedback and a chance to work with a producer"
+              />
+              <ValuePropCard
+                icon={<ShareIcon />}
+                title="Subscribe"
+                description="Purchase an all-access pass to all of our classes, samples and future content"
+                style={{ borderRight: '0px', borderBottom: '0px' }}
+              />
+            </ValuePropositions>
+          )}
 
           {/* My Classes */}
-          <SectionTitle>My Classes</SectionTitle>
+          <SectionTitle id="my-classes">My Classes</SectionTitle>
           <CardList>
             <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
 
@@ -204,10 +227,30 @@ class Home extends Component {
               disabled
             />
           </CardList>
+          {/* Value Propositions */}
+          {user && (
+            <ValuePropositions>
+              <ValuePropCard
+                icon={<MusicIcon />}
+                title="Learn"
+                description="Learn from world-class producers, sound engineers and music artists"
+              />
+              <ValuePropCard
+                icon={<SubscribeIcon />}
+                title="Engage"
+                description="Share your music for helpful feedback and a chance to work with a producer"
+              />
+              <ValuePropCard
+                icon={<ShareIcon />}
+                title="Subscribe"
+                description="Purchase an all-access pass to all of our classes, samples and future content"
+                style={{ borderRight: '0px', borderBottom: '0px' }}
+              />
+            </ValuePropositions>
+          )}
         </div>
-
         <Footer />
-
+        {/* Floating Buttons for Enrolling / Viewing a Preview */}
         <FloatingActionBar show={user ? false : showFloatingActionBar}>
           <div
             style={{
@@ -231,7 +274,6 @@ class Home extends Component {
             </FlatButton>
           </div>
         </FloatingActionBar>
-
         {/* Modals */}
         <AuthModal />
         <TrailerModal
@@ -240,6 +282,7 @@ class Home extends Component {
         />
         <SubscribeModal />
         <PaymentModal />
+        <AddCourseModal />
       </div>
     );
   }
@@ -255,5 +298,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, showRegistrationModal, toggleSubscribeModal },
+  { showAuthModal, showRegistrationModal, toggleSubscribeModal, toggleAddCourseModal },
 )(Home);
