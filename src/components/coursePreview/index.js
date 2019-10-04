@@ -4,7 +4,14 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 // Redux
 import { connect } from 'react-redux';
-import { showAuthModal, showRegistrationModal } from '../../actions';
+import {
+  showAuthModal,
+  showRegistrationModal,
+  toggleSubscribeModal,
+  togglePaymentModal,
+  toggleAddLessonModal,
+  toggleEditCourseModal,
+} from '../../actions';
 
 // Components
 import {
@@ -21,6 +28,12 @@ import {
   ValuePropositions,
   PlayButton,
   ReturnSection,
+  SubscribeModal,
+  PaymentModal,
+  FlatButton,
+  ButtonText,
+  AddLessonModal,
+  EditCourseModal,
 } from '../common';
 import Hero from './hero';
 import ActionBar from './actionBar';
@@ -126,18 +139,30 @@ const TrailerContainer = styled.div`
   }
 `;
 
-class CourseDetails extends Component {
+class CoursePreview extends Component {
   constructor(props) {
     super(props);
+    this.handleEnroll = this.handleEnroll.bind(this);
 
     this.state = {
       showTrailerModal: false,
     };
   }
 
+  handleEnroll() {
+    // eslint-disable-next-line no-shadow
+    const { toggleSubscribeModal } = this.props;
+    const productDetails = {
+      productId: 'prod_oofmeiseterg9ub9u',
+      productName: 'Scott Storch Teaches Music Production',
+      amount: '44.95',
+    };
+    toggleSubscribeModal({ productDetails });
+  }
+
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal } = this.props;
+    const { showRegistrationModal, user, toggleAddLessonModal, toggleEditCourseModal } = this.props;
     const { showTrailerModal } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
@@ -147,8 +172,9 @@ class CourseDetails extends Component {
           tagline="Teaches Music Production"
           showRegistrationModal={showRegistrationModal}
           showTrailerModal={() => this.setState({ showTrailerModal: true })}
+          handleEnroll={this.handleEnroll}
+          user={user}
         />
-
         <div
           style={{
             background: '#eee',
@@ -172,11 +198,34 @@ class CourseDetails extends Component {
             description="8x Grammy award winning producer Scott Storch teaches music production based on his
         experience working with artists including, Dr. Dre, Eminem, Timbaland, Justin Timberlake, 50
         Cent, The Game, Christina Aguilera, Beyoncé, Nas, Snoop Dogg, A$AP Ferg and many more."
-            buttonText="Read more on Genius.com"
+            buttonText="Read more"
             backgroundImage={StorchHero2}
             onClick={() => window.open('https://genius.com/artists/Scott-storch', '_blank')}
-            to="https://genius.com/artists/Scott-storch"
           />
+
+          {/* Admin Tools */}
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 20,
+            }}
+          >
+            <FlatButton
+              onClick={() => toggleEditCourseModal(true)}
+              style={{
+                width: 260,
+                marginTop: 7.5,
+                marginRight: 10,
+                marginBottom: 0,
+                background: '#ddd',
+              }}
+            >
+              <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
+            </FlatButton>
+          </div>
 
           {/* Value Propositions */}
           <ValuePropositions style={{ paddingTop: 0 }}>
@@ -213,12 +262,30 @@ class CourseDetails extends Component {
             <LessonCard backgroundImage={HeroImage5} title="10" tagline="Setting the vibe" />
             <LessonCard backgroundImage={HeroImage} title="11" tagline="Sound selection" />
             <LessonCard backgroundImage={HeroImage3} title="12" tagline="Drumming" />
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FlatButton
+                onClick={() => toggleAddLessonModal(true)}
+                style={{ width: 260, marginTop: 10, marginBottom: 0 }}
+              >
+                <ButtonText>+ ADD NEW LESSON</ButtonText>
+              </FlatButton>
+            </div>
           </CardList>
 
           {/*  Action Bar: (Purchase Course, Follow, Social Media, View Profile) */}
           <ActionBar
             showRegistrationModal={() => showRegistrationModal(true)}
             showTrailerModal={() => this.setState({ showTrailerModal: true })}
+            handleEnroll={this.handleEnroll}
+            user={user}
+            slug="scott-storch-teaches-music-production"
           />
 
           {/* Recommended Courses */}
@@ -228,31 +295,42 @@ class CourseDetails extends Component {
           <ReturnSection />
         </div>
         <Footer />
-
         {/* Modals */}
         <AuthModal />
         <TrailerModal
           open={showTrailerModal}
           close={() => this.setState({ showTrailerModal: false })}
+          showEnrollModal={this.handleEnroll}
         />
+        <SubscribeModal />
+        <PaymentModal />
+        <EditCourseModal />
+        <AddLessonModal />
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.auth.user,
-  firstName: state.auth.firstName,
-  lastName: state.auth.lastName,
-  email: state.auth.email,
-  password: state.auth.password,
-  confirmPassword: state.auth.confirmPassword,
-  error: state.auth.error,
-  loading: state.auth.loading,
-  showModal: state.auth.showModal,
+const mapStateToProps = ({ auth }) => ({
+  user: auth.user,
+  firstName: auth.firstName,
+  lastName: auth.lastName,
+  email: auth.email,
+  password: auth.password,
+  confirmPassword: auth.confirmPassword,
+  error: auth.error,
+  loading: auth.loading,
+  showModal: auth.showModal,
 });
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, showRegistrationModal },
-)(CourseDetails);
+  {
+    showAuthModal,
+    showRegistrationModal,
+    toggleSubscribeModal,
+    togglePaymentModal,
+    toggleAddLessonModal,
+    toggleEditCourseModal,
+  },
+)(CoursePreview);
