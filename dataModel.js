@@ -205,6 +205,7 @@ const dataModel = {
       facebook_url: 'https://FACEBOOK_URL',
       twitter_url: 'https://TWITTER_URL',
       reddit_url: 'https://REDDIT_URL',
+      dateCreated: '1239140124',
     },
   ],
   // NOT IN DATABASE
