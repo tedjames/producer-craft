@@ -1,9 +1,9 @@
-/*  API Request States  */
+//  API Request States
 export const PENDING = 'PENDING';
 export const SUCCESS = 'SUCCESS';
 export const ERROR = 'ERROR';
 
-/*  Form Error Handling  */
+//  Form Error Handling
 export const FORM_ERROR = 'FORM_ERROR';
 export const CLEAR_FORM_ERROR = 'CLEAR_FORM_ERROR';
 export const ADMIN_FORM_ERROR = 'FORM_ERROR';
@@ -49,26 +49,47 @@ export const DELETE_REGISTRATION = 'DELETE_REGISTRATION';
 // user + registration form
 export const USER_NAME_CHANGED = 'USER_NAME_CHANGED';
 export const USER_EMAIL_CHANGED = 'USER_EMAIL_CHANGED';
-export const USER_POSITION_CHANGED = 'USER_POSITION_CHANGED';
-export const USER_COMPANY_CHANGED = 'USER_COMPANY_CHANGED';
-export const USER_IS_ADMIN_CHANGED = 'USER_IS_ADMIN_CHANGED';
 
 export const SET_USER_FORM = 'SET_USER_FORM';
 export const CLEAR_USER_FORM = 'CLEAR_USER_FORM';
 export const ADMIN_ERROR = 'ADMIN_ERROR';
 
-/*  Common View Management  */
+// Common Modals and Snackbars
 export const SNACKBAR = 'SNACKBAR';
 export const MENU_MODAL = 'MENU_MODAL';
 
-/*  Admin Modals  */
+// Auth Modals
 export const USER_MODAL = 'USER_MODAL';
 export const REGISTRATION_MODAL = 'REGISTRATION_MODAL';
 
-/* Course / Lesson Management */
+// Admin Modals
 export const ADD_COURSE_MODAL = 'ADD_COURSE_MODAL';
 export const EDIT_COURSE_MODAL = 'EDIT_COURSE_MODAL';
 export const ADD_LESSON_MODAL = 'ADD_LESSON_MODAL';
 export const EDIT_LESSON_MODAL = 'EDIT_LESSON_MODAL';
 export const ADD_FILE_MODAL = 'ADD_FILE_MODAL';
 export const EDIT_FILE_MODAL = 'EDIT_FILE_MODAL';
+
+// Course Management
+export const CREATE_COURSE = 'CREATE_COURSE';
+export const FETCH_COURSES = 'FETCH_COURSES';
+export const UPDATE_COURSE = 'UPDATE_COURSE';
+export const DELETE_COURSE = 'DELETE_COURSE';
+
+// File Management
+export const CREATE_FILE = 'CREATE_FILE';
+export const FETCH_FILES = 'FETCH_FILES';
+export const UPDATE_FILE = 'UPDATE_FILE';
+export const DELETE_FILE = 'DELETE_FILE';
+
+// Comment Management
+export const CREATE_COMMENT = 'CREATE_COMMENT';
+export const FETCH_COMMENTS = 'FETCH_COMMENTS';
+export const UPDATE_COMMENT = 'UPDATE_COMMENT';
+export const DELETE_COMMENT = 'DELETE_COMMENT';
+
+// Lesson Management
+export const CREATE_LESSON = 'CREATE_LESSON';
+export const FETCH_LESSONS = 'FETCH_LESSONS';
+export const UPDATE_LESSON = 'UPDATE_LESSON';
+export const DELETE_LESSON = 'DELETE_LESSON';
