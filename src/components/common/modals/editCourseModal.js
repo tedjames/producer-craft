@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,7 +9,7 @@ import styled, { keyframes } from 'styled-components';
 import { RemoveScroll } from 'react-remove-scroll';
 import Swal from 'sweetalert2';
 
-import { toggleEditCourseModal } from '../../../actions';
+import { toggleEditCourseModal, updateCourse, deleteCourse } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -67,26 +67,91 @@ const MobileAccountInfoRow = styled.div`
   }
 `;
 
-const EditCourseModal = ({ open, toggleEditCourseModal }) => {
-  const [courseName, setCourseName] = useState('');
-  const [instructorName, setInstructorName] = useState('');
-  const [price, setPrice] = useState('');
-  const [productId, setProductId] = useState('');
-  const [slug, setSlug] = useState('');
-  const [tagline, setTagline] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [bioImage, setBioImage] = useState('');
-  const [trailerUrl, setTrailerUrl] = useState('');
-  const [thumbnailImage, setThumbnailImage] = useState('');
-  const [bioTitle, setBioTitle] = useState('');
-  const [bioDescription, setBioDescription] = useState('');
-  const [readMoreUrl, setReadMoreUrl] = useState('');
-  const [twitterUrl, setTwitterUrl] = useState('');
-  const [facebookUrl, setFacebookUrl] = useState('');
-  const [redditUrl, setRedditUrl] = useState('');
+const EditCourseModal = ({ open, toggleEditCourseModal, updateCourse, deleteCourse, course }) => {
+  const [courseNumber, setCourseNumber] = useState(course.courseNumber || '');
+  const [courseName, setCourseName] = useState(course.courseName || '');
+  const [instructorName, setInstructorName] = useState(course.instructorName || '');
+  const [price, setPrice] = useState(course.price || '');
+  const [productId, setProductId] = useState(course.productId || '');
+  const [urlSlug, setSlug] = useState(course.urlSlug || '');
+  const [tagline, setTagline] = useState(course.tagline || '');
+  const [coverImage, setCoverImage] = useState(course.coverImage || '');
+  const [bioImage, setBioImage] = useState(course.bioImage || '');
+  const [trailerUrl, setTrailerUrl] = useState(course.trailerUrl || '');
+  const [thumbnailImage, setThumbnailImage] = useState(course.thumbnailImage || '');
+  const [bioTitle, setBioTitle] = useState(course.bioTitle || '');
+  const [bioDescription, setBioDescription] = useState(course.bioDescription || '');
+  const [readMoreUrl, setReadMoreUrl] = useState(course.readMoreUrl || '');
+  const [twitterUrl, setTwitterUrl] = useState(course.twitterUrl || '');
+  const [facebookUrl, setFacebookUrl] = useState(course.facebookUrl || '');
+  const [redditUrl, setRedditUrl] = useState(course.redditUrl || '');
+  const [valuePropTitle, setValuePropTitle] = useState(course.valuePropTitle || '');
+  const [valuePropTitle2, setValuePropTitle2] = useState(course.valuePropTitle2 || '');
+  const [valuePropTitle3, setValuePropTitle3] = useState(course.valuePropTitle3 || '');
+  const [valuePropDescription, setValuePropDescription] = useState(
+    course.valuePropDescription || '',
+  );
+  const [valuePropDescription2, setValuePropDescription2] = useState(
+    course.valuePropDescription2 || '',
+  );
+  const [valuePropDescription3, setValuePropDescription3] = useState(
+    course.valuePropDescription3 || '',
+  );
+
+  if (open && !courseNumber) {
+    console.log('RESETING PROPS: ', course);
+    setCourseNumber(course.courseNumber);
+    setCourseName(course.courseName);
+    setInstructorName(course.instructorName);
+    setPrice(course.price);
+    setProductId(course.productId);
+    setSlug(course.urlSlug);
+    setTagline(course.tagline);
+    setCoverImage(course.coverImage);
+    setBioImage(course.bioImage);
+    setTrailerUrl(course.trailerUrl);
+    setThumbnailImage(course.thumbnailImage);
+    setBioTitle(course.bioTitle);
+    setBioDescription(course.bioDescription);
+    setReadMoreUrl(course.readMoreUrl);
+    setTwitterUrl(course.twitterUrl);
+    setFacebookUrl(course.facebookUrl);
+    setRedditUrl(course.redditUrl);
+    setValuePropTitle(course.valuePropTitle);
+    setValuePropTitle2(course.valuePropTitle2);
+    setValuePropTitle3(course.valuePropTitle3);
+    setValuePropDescription(course.valuePropDescription);
+    setValuePropDescription2(course.valuePropDescription2);
+    setValuePropDescription3(course.valuePropDescription3);
+  }
 
   const handleSubmit = () => {
-    return console.log('handling add course submit');
+    updateCourse({
+      courseId: course.courseId,
+      courseName,
+      courseNumber,
+      instructorName,
+      price,
+      productId,
+      urlSlug,
+      tagline,
+      coverImage,
+      trailerUrl,
+      thumbnailImage,
+      bioImage,
+      bioTitle,
+      bioDescription,
+      readMoreUrl,
+      twitterUrl,
+      facebookUrl,
+      redditUrl,
+      valuePropTitle,
+      valuePropTitle2,
+      valuePropTitle3,
+      valuePropDescription,
+      valuePropDescription2,
+      valuePropDescription3,
+    });
   };
 
   const handleDelete = () => {
@@ -100,11 +165,7 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(result => {
       if (result.value) {
-        Swal.fire(
-          'Course Deleted!',
-          'Be sure to delete the course playlist in JW Player.',
-          'success',
-        );
+        deleteCourse({ courseId: course.courseId });
       }
     });
   };
@@ -119,6 +180,22 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
       <DialogContent style={{ margin: 0, padding: 0 }}>
         <Container>
           <SectionTitle>Edit Course Details</SectionTitle>
+          <TextField
+            style={{ marginBottom: 12.5 }}
+            // onChange={e => usernameChanged(e.target.value)}
+            //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+            value={courseNumber}
+            onChange={e => setCourseNumber(e.target.value)}
+            margin="dense"
+            id="course-number"
+            label="Course Number"
+            type="name"
+            placeholder="Course Number"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
           <AccountInfoRow>
             <TextField
               style={{ marginBottom: 12.5, marginRight: 10 }}
@@ -192,7 +269,7 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
               style={{ marginBottom: 12.5, marginRight: 10 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value={slug}
+              value={urlSlug}
               onChange={e => setSlug(e.target.value)}
               margin="dense"
               id="course-slug"
@@ -391,6 +468,110 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
               }}
             />
           </AccountInfoRow>
+          {/* Value Proposition */}
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle}
+              onChange={e => setValuePropTitle(e.target.value)}
+              margin="dense"
+              id="value-prop-title"
+              label="Value Prop Title"
+              type="text"
+              placeholder="22 Lessons"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription}
+              onChange={e => setValuePropDescription(e.target.value)}
+              margin="dense"
+              id="value-prop-description"
+              label="Value Prop Description"
+              type="text"
+              placeholder="Exclusive acccess to..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle2}
+              onChange={e => setValuePropTitle2(e.target.value)}
+              margin="dense"
+              id="value-prop-title-2"
+              label="Value Prop Title 2"
+              type="text"
+              placeholder="Sample Pack"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription2}
+              onChange={e => setValuePropDescription2(e.target.value)}
+              margin="dense"
+              id="value-prop-description-2"
+              label="Value Prop Description 2"
+              type="text"
+              placeholder="Over 24 samples..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle3}
+              onChange={e => setValuePropTitle3(e.target.value)}
+              margin="dense"
+              id="value-prop-title-3"
+              label="Value Prop Title 3"
+              type="text"
+              placeholder="Competition"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription3}
+              onChange={e => setValuePropDescription3(e.target.value)}
+              margin="dense"
+              id="value-prop-description-3"
+              label="Value Prop Description 3"
+              type="text"
+              placeholder="Share your musical works..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+
           {/* NOTE: Mobile Responsive - Account Info Field */}
           <MobileAccountInfoRow>
             <TextField
@@ -465,7 +646,7 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
               style={{ marginBottom: 12.5 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value={slug}
+              value={urlSlug}
               onChange={e => setSlug(e.target.value)}
               margin="dense"
               id="course-slug"
@@ -664,7 +845,111 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
               }}
             />
           </MobileAccountInfoRow>
+          {/* Value Proposition */}
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle}
+              onChange={e => setValuePropTitle(e.target.value)}
+              margin="dense"
+              id="value-prop-title"
+              label="Value Prop Title"
+              type="text"
+              placeholder="22 Lessons"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription}
+              onChange={e => setValuePropDescription(e.target.value)}
+              margin="dense"
+              id="value-prop-description"
+              label="Value Prop Description"
+              type="text"
+              placeholder="Exclusive acccess to..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle2}
+              onChange={e => setValuePropTitle2(e.target.value)}
+              margin="dense"
+              id="value-prop-title-2"
+              label="Value Prop Title 2"
+              type="text"
+              placeholder="Sample Pack"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription2}
+              onChange={e => setValuePropDescription2(e.target.value)}
+              margin="dense"
+              id="value-prop-description-2"
+              label="Value Prop Description 2"
+              type="text"
+              placeholder="Over 24 samples..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle3}
+              onChange={e => setValuePropTitle3(e.target.value)}
+              margin="dense"
+              id="value-prop-title-3"
+              label="Value Prop Title 3"
+              type="text"
+              placeholder="Competition"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription3}
+              onChange={e => setValuePropDescription3(e.target.value)}
+              margin="dense"
+              id="value-prop-description-3"
+              label="Value Prop Description 3"
+              type="text"
+              placeholder="Share your musical works..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
           <FlatButton
+            onClick={handleSubmit}
             style={{
               width: 260,
               minHeight: 45,
@@ -703,9 +988,10 @@ const EditCourseModal = ({ open, toggleEditCourseModal }) => {
 
 const mapStateToProps = ({ view }) => ({
   open: view.showEditCourseModal,
+  course: view.selectedCourse,
 });
 
 export default connect(
   mapStateToProps,
-  { toggleEditCourseModal },
+  { toggleEditCourseModal, updateCourse, deleteCourse },
 )(EditCourseModal);
