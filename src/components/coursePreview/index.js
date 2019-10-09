@@ -11,6 +11,9 @@ import {
   togglePaymentModal,
   toggleAddLessonModal,
   toggleEditCourseModal,
+  fetchCourseBySlug,
+  fetchLessons,
+  clearLessons,
 } from '../../actions';
 
 // Components
@@ -39,14 +42,6 @@ import Hero from './hero';
 import ActionBar from './actionBar';
 import Recommended from './recommended';
 import Bio from './bio';
-
-// Image Assets
-import HeroImage3 from '../../assets/hero-image-3.jpeg';
-import HeroImage4 from '../../assets/hero-image-8.jpg';
-import HeroImage5 from '../../assets/hero-image-10.png';
-import HeroImage from '../../assets/hero-image-12.jpg';
-import StorchHero2 from '../../assets/storch-hero-image-2.png';
-import StorchHero4 from '../../assets/storch-hero-image-4.png';
 
 // componentDidMount() {
 //   auth().onAuthStateChanged(user => {
@@ -146,7 +141,33 @@ class CoursePreview extends Component {
 
     this.state = {
       showTrailerModal: false,
+      lessonFetchAttempts: 0,
     };
+  }
+
+  componentDidMount() {
+    const { course, fetchCourseBySlug, fetchLessons, lessons, clearLessons } = this.props;
+
+    // Get urlSlug - for case where url is typed in
+    const pathArray = window.location.pathname.split('/');
+    const urlSlug = pathArray[2];
+    clearLessons();
+
+    if (!lessons && course.courseId) {
+      fetchLessons({ courseId: course.courseId });
+    }
+
+    if (!course) {
+      fetchCourseBySlug({ urlSlug });
+    }
+  }
+
+  componentDidUpdate() {
+    const { course, fetchLessons, lessons } = this.props;
+
+    if (!lessons) {
+      fetchLessons({ courseId: course.courseId });
+    }
   }
 
   handleEnroll() {
@@ -162,18 +183,27 @@ class CoursePreview extends Component {
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal, user, toggleAddLessonModal, toggleEditCourseModal } = this.props;
+    const {
+      showRegistrationModal,
+      user,
+      toggleAddLessonModal,
+      toggleEditCourseModal,
+      course,
+      lessons,
+      courses,
+    } = this.props;
     const { showTrailerModal } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
         {/* Hero Image, Title and Enroll/Follow Buttons */}
         <Hero
-          name="Scott Storch"
-          tagline="Teaches Music Production"
+          name={course.instructorName}
+          tagline={course.tagline}
           showRegistrationModal={showRegistrationModal}
           showTrailerModal={() => this.setState({ showTrailerModal: true })}
           handleEnroll={this.handleEnroll}
           user={user}
+          course={course}
         />
         <div
           style={{
@@ -186,7 +216,7 @@ class CoursePreview extends Component {
           <TrailerContainer>
             <TrailerCard
               onClick={() => this.setState({ showTrailerModal: true })}
-              backgroundImage={StorchHero4}
+              backgroundImage={course.thumbnailImage}
             >
               <PlayButton />
             </TrailerCard>
@@ -194,13 +224,11 @@ class CoursePreview extends Component {
 
           {/* Instructor Bio */}
           <Bio
-            title="Experience the legend"
-            description="8x Grammy award winning producer Scott Storch teaches music production based on his
-        experience working with artists including, Dr. Dre, Eminem, Timbaland, Justin Timberlake, 50
-        Cent, The Game, Christina Aguilera, Beyoncé, Nas, Snoop Dogg, A$AP Ferg and many more."
+            title={course.bioTitle}
+            description={course.bioDescription}
             buttonText="Read more"
-            backgroundImage={StorchHero2}
-            onClick={() => window.open('https://genius.com/artists/Scott-storch', '_blank')}
+            backgroundImage={course.bioImage}
+            onClick={() => window.open(course.readMoreUrl, '_blank')}
           />
 
           {/* Admin Tools */}
@@ -231,18 +259,18 @@ class CoursePreview extends Component {
           <ValuePropositions style={{ paddingTop: 0 }}>
             <ValuePropCard
               icon={<MusicIcon />}
-              title="22 Lessons"
-              description="Experience a glimpse into the world of Scott Storch where he breaks down some of his greatest hits and teaches what he's learned along the way"
+              title={course.valuePropTitle}
+              description={course.valuePropDescription}
             />
             <ValuePropCard
               icon={<SubscribeIcon />}
-              title="Sample Packs"
-              description="Subscribers gain access to an exclusive sample pack with over 40 drum hits, 20 percussion loops and 12 melodic loops."
+              title={course.valuePropTitle2}
+              description={course.valuePropDescription2}
             />
             <ValuePropCard
               icon={<ShareIcon />}
-              title="Competition"
-              description="Share your musical works with the community and compete for a chance to work with the legend himself"
+              title={course.valuePropTitle3}
+              description={course.valuePropDescription3}
               style={{ borderRight: '0px', borderBottom: '0px' }}
             />
           </ValuePropositions>
@@ -250,18 +278,18 @@ class CoursePreview extends Component {
           {/* Lesson Plan */}
           <SectionTitle>Lesson Plan</SectionTitle>
           <CardList>
-            <LessonCard backgroundImage={HeroImage4} title="1" tagline="Welcome to the studio" />
-            <LessonCard backgroundImage={HeroImage5} title="2" tagline="Setting the vibe" />
-            <LessonCard backgroundImage={HeroImage} title="3" tagline="Sound selection" />
-            <LessonCard backgroundImage={HeroImage3} title="4" tagline="Drumming" />
-            <LessonCard backgroundImage={HeroImage4} title="5" tagline="Welcome to the studio" />
-            <LessonCard backgroundImage={HeroImage5} title="6" tagline="Setting the vibe" />
-            <LessonCard backgroundImage={HeroImage} title="7" tagline="Sound selection" />
-            <LessonCard backgroundImage={HeroImage3} title="8" tagline="Drumming" />
-            <LessonCard backgroundImage={HeroImage4} title="9" tagline="Welcome to the studio" />
-            <LessonCard backgroundImage={HeroImage5} title="10" tagline="Setting the vibe" />
-            <LessonCard backgroundImage={HeroImage} title="11" tagline="Sound selection" />
-            <LessonCard backgroundImage={HeroImage3} title="12" tagline="Drumming" />
+            {lessons &&
+              lessons.map(lesson => {
+                return (
+                  <LessonCard
+                    backgroundImage={lesson.thumbnailImage}
+                    title={lesson.lessonNumber}
+                    tagline={lesson.lessonName}
+                    lesson={lesson}
+                    course={course}
+                  />
+                );
+              })}
             <div
               style={{
                 display: 'flex',
@@ -286,10 +314,11 @@ class CoursePreview extends Component {
             handleEnroll={this.handleEnroll}
             user={user}
             slug="scott-storch-teaches-music-production"
+            course={course}
           />
 
           {/* Recommended Courses */}
-          <Recommended key="recommended-courses" />
+          <Recommended courses={courses} key="recommended-courses" />
 
           {/* Return Home Button */}
           <ReturnSection />
@@ -311,7 +340,7 @@ class CoursePreview extends Component {
   }
 }
 
-const mapStateToProps = ({ auth }) => ({
+const mapStateToProps = ({ auth, view, admin }) => ({
   user: auth.user,
   firstName: auth.firstName,
   lastName: auth.lastName,
@@ -321,6 +350,9 @@ const mapStateToProps = ({ auth }) => ({
   error: auth.error,
   loading: auth.loading,
   showModal: auth.showModal,
+  course: view.selectedCourse,
+  lessons: admin.lessons,
+  courses: admin.courses,
 });
 
 export default connect(
@@ -332,5 +364,8 @@ export default connect(
     togglePaymentModal,
     toggleAddLessonModal,
     toggleEditCourseModal,
+    fetchCourseBySlug,
+    fetchLessons,
+    clearLessons,
   },
 )(CoursePreview);

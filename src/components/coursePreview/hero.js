@@ -53,7 +53,7 @@ const Container = styled.div`
   @media only screen and (min-device-width: 411px) and (max-device-width: 731px) and (-webkit-min-device-pixel-ratio: 1) and (orientation: landscape) {
     height: 75vh;
   }
-  background-image: url(${StorchHero});
+  background-image: url(${props => props.backgroundImage});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -315,9 +315,9 @@ const HeroButtons = styled.div`
 
 export default class Hero extends PureComponent {
   render() {
-    const { showRegistrationModal, name, tagline, handleEnroll, user } = this.props;
+    const { showRegistrationModal, name, tagline, handleEnroll, user, course } = this.props;
     return (
-      <Container>
+      <Container backgroundImage={course.coverImage}>
         {/* Header Logo, Login and Instructor Buttons */}
         <Header />
         {/* Featured Course */}
