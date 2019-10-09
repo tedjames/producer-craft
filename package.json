@@ -29,7 +29,7 @@
     "slick-carousel": "^1.8.1",
     "styled-components": "^4.3.2",
     "sweetalert2": "^8.14.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
