@@ -68,13 +68,7 @@ const Container = styled.div`
   @media only screen and (min-device-width: 411px) and (max-device-width: 731px) and (-webkit-min-device-pixel-ratio: 1) and (orientation: portrait) {
     height: 32.5vh;
   }
-  background-image: url(${StorchHero});
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-`;
-
-const BackgroundImage = styled.span`
+  background-image: url(${props => props.backgroundImage});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -82,27 +76,11 @@ const BackgroundImage = styled.span`
 
 export default class Hero extends PureComponent {
   render() {
-    const { showRegistrationModal, name, tagline } = this.props;
+    const { backgroundImage } = this.props;
     return (
-      <Container>
+      <Container backgroundImage={backgroundImage}>
         {/* Header Logo, Login and Instructor Buttons */}
         <Header />
-        <div className="cb-slideshow">
-          <li>
-            <BackgroundImage />
-          </li>
-
-          <li>
-            <BackgroundImage />
-          </li>
-
-          <li>
-            <BackgroundImage />
-          </li>
-          <li>
-            <BackgroundImage />
-          </li>
-        </div>
       </Container>
     );
   }

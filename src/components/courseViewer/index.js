@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { browserHistory } from 'react-router';
 
 import Slide from '@material-ui/core/Slide';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,6 +21,11 @@ import {
   toggleEditCourseModal,
   toggleAddFileModal,
   toggleEditFileModal,
+  setSelectedLesson,
+  clearLessons,
+  fetchLessons,
+  fetchCourseBySlug,
+  fetchCourses,
 } from '../../actions';
 
 // Components
@@ -210,16 +216,12 @@ const LessonTitleNumber = styled.p`
   font-style: black;
   font-size: 14px;
   text-align: left;
-  opacity: 0.45;
+  opacity: 0.3;
   margin-top: 32.5px;
   margin-bottom: 2.5px;
   letter-spacing: 5px;
   text-transform: uppercase;
-  background: -webkit-linear-gradient(#777, #444);
   color: #444;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 `;
 
 const LessonPlanTitle = styled.p`
@@ -434,11 +436,67 @@ class CourseViewer extends Component {
   constructor(props) {
     super(props);
     this.handleEnroll = this.handleEnroll.bind(this);
+    this.handleLessonChange = this.handleLessonChange.bind(this);
 
     this.state = {
       showTrailerModal: false,
       showLessonPlanModal: false,
     };
+  }
+
+  componentDidMount() {
+    const {
+      course,
+      fetchCourseBySlug,
+      fetchLessons,
+      lessons,
+      clearLessons,
+      selectedCourse,
+      selectedLesson,
+      setSelectedLesson,
+      courses,
+    } = this.props;
+
+    // Get urlSlug - for case where url is typed in
+    const pathArray = window.location.pathname.split('/');
+    const urlSlug = pathArray[2];
+    const lessonNumber = pathArray[3];
+
+    if (!course) {
+      fetchCourseBySlug({ urlSlug });
+    }
+
+    if (!lessons && course.courseId) {
+      fetchLessons({ courseId: course.courseId });
+    }
+
+    if (!selectedLesson && lessons) {
+      console.log('SETTING SELECTED LESSON', lessons);
+
+      setSelectedLesson(lessons[lessonNumber]);
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      course,
+      fetchLessons,
+      fetchCourses,
+      lessons,
+      selectedLesson,
+      setSelectedLesson,
+      courses,
+    } = this.props;
+    const pathArray = window.location.pathname.split('/');
+    const lessonNumber = pathArray[3];
+
+    if (!lessons && course) {
+      fetchLessons({ courseId: course.courseId });
+    }
+
+    if (!selectedLesson && lessons) {
+      setSelectedLesson(lessons[lessonNumber - 1]);
+    }
   }
 
   handleEnroll() {
@@ -451,6 +509,13 @@ class CourseViewer extends Component {
     toggleSubscribeModal({ productDetails });
   }
 
+  handleLessonChange(lesson) {
+    const { course, setSelectedLesson } = this.props;
+    browserHistory.push(`/courses/${course.urlSlug}/${lesson.lessonNumber}`);
+    setSelectedLesson(lesson);
+    return this.setState({ showLessonPlanModal: false });
+  }
+
   render() {
     // eslint-disable-next-line no-shadow
     const {
@@ -461,15 +526,18 @@ class CourseViewer extends Component {
       toggleEditCourseModal,
       toggleAddFileModal,
       toggleEditFileModal,
+      selectedLesson,
+      course,
+      courses,
+      lessons,
     } = this.props;
     const { showTrailerModal, showLessonPlanModal } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }} id="course-viewer">
         {/* Hero Image, Title and Enroll/Follow Buttons */}
         <Hero
-          name="Scott Storch"
-          tagline="Teaches Music Production"
           showRegistrationModal={showRegistrationModal}
+          backgroundImage="https://tedwerbel.netlify.com/static/media/redBackground7.1bfbece9.png"
         />
 
         <MainContainer>
@@ -477,7 +545,7 @@ class CourseViewer extends Component {
           <TrailerContainer>
             <TrailerCard
               onClick={() => this.setState({ showTrailerModal: true })}
-              backgroundImage={StorchHero4}
+              backgroundImage={selectedLesson ? selectedLesson.trailerImage : null}
             >
               <PlayButton />
             </TrailerCard>
@@ -487,15 +555,13 @@ class CourseViewer extends Component {
             <LessonDetails>
               <LessonTitleNumber>
                 <span style={{ fontSize: 12, letterSpacing: 2, marginRight: 10 }}>//</span>
-                Lesson 1
+                Lesson {selectedLesson ? selectedLesson.lessonNumber : ''}
               </LessonTitleNumber>
-              <LessonTitle>Welcome to Ableton</LessonTitle>
+              <LessonTitle>
+                {selectedLesson ? selectedLesson.lessonName : 'Loading title'}
+              </LessonTitle>
               <LessonDescription>
-                Thank you for being apart of my music production master class. I'm excited to show
-                you the endless possibilities of digital audio workstations and hopefully teach a
-                few unique tricks along the way. If this is your first time using ableton, we
-                reccomend you skim through the manual for a quick run through of the basic
-                functionality you need to get up and running.{' '}
+                {selectedLesson ? selectedLesson.description : '...'}
               </LessonDescription>
 
               <FilesSection>
@@ -564,7 +630,9 @@ class CourseViewer extends Component {
               {/* Share this Course */}
               <ShareText className="disable-selection">Share this course</ShareText>
               <SharingButtons>
-                <ShareIconButton>
+                <ShareIconButton
+                  onClick={() => window.open(`http://${course.twitterUrl}`, '_blank')}
+                >
                   <svg
                     enableBackground="new 0 0 56.693 56.693"
                     height="24"
@@ -578,17 +646,25 @@ class CourseViewer extends Component {
                     <path d="M52.837,15.065c-1.811,0.805-3.76,1.348-5.805,1.591c2.088-1.25,3.689-3.23,4.444-5.592c-1.953,1.159-4.115,2-6.418,2.454  c-1.843-1.964-4.47-3.192-7.377-3.192c-5.581,0-10.106,4.525-10.106,10.107c0,0.791,0.089,1.562,0.262,2.303  c-8.4-0.422-15.848-4.445-20.833-10.56c-0.87,1.492-1.368,3.228-1.368,5.082c0,3.506,1.784,6.6,4.496,8.412  c-1.656-0.053-3.215-0.508-4.578-1.265c-0.001,0.042-0.001,0.085-0.001,0.128c0,4.896,3.484,8.98,8.108,9.91  c-0.848,0.23-1.741,0.354-2.663,0.354c-0.652,0-1.285-0.063-1.902-0.182c1.287,4.015,5.019,6.938,9.441,7.019  c-3.459,2.711-7.816,4.327-12.552,4.327c-0.815,0-1.62-0.048-2.411-0.142c4.474,2.869,9.786,4.541,15.493,4.541  c18.591,0,28.756-15.4,28.756-28.756c0-0.438-0.009-0.875-0.028-1.309C49.769,18.873,51.483,17.092,52.837,15.065z" />
                   </svg>
                 </ShareIconButton>
-                <ShareIconButton>
+                <ShareIconButton
+                  onClick={() => window.open(`http://${course.facebookUrl}`, '_blank')}
+                >
                   <svg width="17" height="17" fill="#3f5996" fillOpacity="0.65" viewBox="0 0 24 24">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                   </svg>
                 </ShareIconButton>
-                <ShareIconButton>
+                <ShareIconButton
+                  onClick={() => window.open(`http://${course.redditUrl}`, '_blank')}
+                >
                   <svg width="20" height="20" fill="red" fillOpacity="0.55" viewBox="0 0 24 24">
                     <path d="M24 11.779c0-1.459-1.192-2.645-2.657-2.645-.715 0-1.363.286-1.84.746-1.81-1.191-4.259-1.949-6.971-2.046l1.483-4.669 4.016.941-.006.058c0 1.193.975 2.163 2.174 2.163 1.198 0 2.172-.97 2.172-2.163s-.975-2.164-2.172-2.164c-.92 0-1.704.574-2.021 1.379l-4.329-1.015c-.189-.046-.381.063-.44.249l-1.654 5.207c-2.838.034-5.409.798-7.3 2.025-.474-.438-1.103-.712-1.799-.712-1.465 0-2.656 1.187-2.656 2.646 0 .97.533 1.811 1.317 2.271-.052.282-.086.567-.086.857 0 3.911 4.808 7.093 10.719 7.093s10.72-3.182 10.72-7.093c0-.274-.029-.544-.075-.81.832-.447 1.405-1.312 1.405-2.318zm-17.224 1.816c0-.868.71-1.575 1.582-1.575.872 0 1.581.707 1.581 1.575s-.709 1.574-1.581 1.574-1.582-.706-1.582-1.574zm9.061 4.669c-.797.793-2.048 1.179-3.824 1.179l-.013-.003-.013.003c-1.777 0-3.028-.386-3.824-1.179-.145-.144-.145-.379 0-.523.145-.145.381-.145.526 0 .65.647 1.729.961 3.298.961l.013.003.013-.003c1.569 0 2.648-.315 3.298-.962.145-.145.381-.144.526 0 .145.145.145.379 0 .524zm-.189-3.095c-.872 0-1.581-.706-1.581-1.574 0-.868.709-1.575 1.581-1.575s1.581.707 1.581 1.575-.709 1.574-1.581 1.574z" />
                   </svg>
                 </ShareIconButton>
-                <ShareIconButton>
+                <ShareIconButton
+                  onClick={() =>
+                    (document.location = `mailto:?subject=${course.instructorName}%20is%20now%20on%20ProducerCraft.com&body=${course.instructorName}%20just%20launched%20a%20masterclass%20on: https://producercraft.com/preview/${course.urlSlug}%0d%0a%0d%0aProducer Craft offers producers a chance to work with and learn from top industry talent. Each course features break downs of an artist's biggest hits, their techniques, free sample packs and a chance to collab on a track with the artist or producer!`)
+                  }
+                >
                   <svg
                     width="24"
                     height="24"
@@ -678,76 +754,18 @@ class CourseViewer extends Component {
             {/* Floating LessonPlan Card */}
             <LessonPlan>
               <LessonPlanTitle>Lesson Plan</LessonPlanTitle>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 1</LessonNumber>
-                  <LessonName>Welcome to Ableton</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 2</LessonNumber>
-                  <LessonName>Setting the vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 3</LessonNumber>
-                  <LessonName>Organizing your sounds</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 4</LessonNumber>
-                  <LessonName>Workflow</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
-              <LessonPreview>
-                <Thumbnail backgroundImage={StorchHero4} />
-                <LessonPreviewInfo>
-                  <LessonNumber>// 5</LessonNumber>
-                  <LessonName>Establishing the right tempo and vibe</LessonName>
-                </LessonPreviewInfo>
-              </LessonPreview>
+              {lessons &&
+                lessons.map(lesson => {
+                  return (
+                    <LessonPreview onClick={() => this.handleLessonChange(lesson)}>
+                      <Thumbnail backgroundImage={lesson.thumbnailImage} />
+                      <LessonPreviewInfo>
+                        <LessonNumber>// {lesson.lessonNumber}</LessonNumber>
+                        <LessonName>{lesson.lessonName}</LessonName>
+                      </LessonPreviewInfo>
+                    </LessonPreview>
+                  );
+                })}
               <div
                 style={{
                   display: 'flex',
@@ -773,10 +791,12 @@ class CourseViewer extends Component {
             showRegistrationModal={() => showRegistrationModal(true)}
             showTrailerModal={() => this.setState({ showTrailerModal: true })}
             user={user}
+            course={course}
           />
 
           {/* Recommended Courses */}
-          <Recommended />
+
+          {courses && <Recommended courses={courses} />}
 
           {/* Return Home Button */}
           <ReturnSection />
@@ -807,76 +827,18 @@ class CourseViewer extends Component {
               <CloseIcon />
             </IconButton>
             <LessonPlanTitle>Lesson Plan</LessonPlanTitle>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 1</LessonNumber>
-                <LessonName>Welcome to Ableton</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 2</LessonNumber>
-                <LessonName>Setting the vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 3</LessonNumber>
-                <LessonName>Organizing your sounds</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 4</LessonNumber>
-                <LessonName>Workflow</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
-            <LessonPreview>
-              <Thumbnail backgroundImage={StorchHero4} />
-              <LessonPreviewInfo>
-                <LessonNumber>// 5</LessonNumber>
-                <LessonName>Establishing the right tempo and vibe</LessonName>
-              </LessonPreviewInfo>
-            </LessonPreview>
+            {lessons &&
+              lessons.map(lesson => {
+                return (
+                  <LessonPreview onClick={() => this.handleLessonChange(lesson)}>
+                    <Thumbnail backgroundImage={lesson.thumbnailImage} />
+                    <LessonPreviewInfo>
+                      <LessonNumber>// {lesson.lessonNumber}</LessonNumber>
+                      <LessonName>{lesson.lessonName}</LessonName>
+                    </LessonPreviewInfo>
+                  </LessonPreview>
+                );
+              })}
             <div
               style={{
                 display: 'flex',
@@ -906,16 +868,20 @@ class CourseViewer extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.auth.user,
-  firstName: state.auth.firstName,
-  lastName: state.auth.lastName,
-  email: state.auth.email,
-  password: state.auth.password,
-  confirmPassword: state.auth.confirmPassword,
-  error: state.auth.error,
-  loading: state.auth.loading,
-  showModal: state.auth.showModal,
+const mapStateToProps = ({ auth, view, admin }) => ({
+  user: auth.user,
+  firstName: auth.firstName,
+  lastName: auth.lastName,
+  email: auth.email,
+  password: auth.password,
+  confirmPassword: auth.confirmPassword,
+  error: auth.error,
+  loading: auth.loading,
+  showModal: auth.showModal,
+  selectedLesson: view.selectedLesson,
+  course: view.selectedCourse,
+  lessons: admin.lessons,
+  courses: admin.courses,
 });
 
 export default connect(
@@ -930,5 +896,10 @@ export default connect(
     toggleEditCourseModal,
     toggleAddFileModal,
     toggleEditFileModal,
+    clearLessons,
+    fetchLessons,
+    setSelectedLesson,
+    fetchCourseBySlug,
+    fetchCourses,
   },
 )(CourseViewer);
