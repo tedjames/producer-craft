@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
+
+import { setSelectedLesson } from '../../actions';
 
 const Card = styled.div`
   height: 160px;
@@ -86,14 +89,26 @@ const PreviewTagline = styled.p`
   background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
 `;
 
-const LessonCard = ({ backgroundImage, title, tagline, disabled }) => {
+const LessonCard = ({
+  backgroundImage,
+  title,
+  tagline,
+  disabled,
+  course,
+  lesson,
+  setSelectedLesson,
+}) => {
+  const handleClick = () => {
+    setSelectedLesson(lesson);
+    browserHistory.push(`/courses/${course.urlSlug}/${lesson.lessonNumber}`);
+  };
   return (
     <Card
       backgroundImage={backgroundImage}
       title={title}
       tagline={tagline}
       style={disabled && { opacity: 0.45, cursor: 'default' }}
-      onClick={() => browserHistory.push('/courses/scott-storch-teaches-music-production')}
+      onClick={handleClick}
     >
       <PreviewTitle style={disabled && { cursor: 'default' }} className="disable-selection">
         {title}
@@ -105,4 +120,7 @@ const LessonCard = ({ backgroundImage, title, tagline, disabled }) => {
   );
 };
 
-export default LessonCard;
+export default connect(
+  null,
+  { setSelectedLesson },
+)(LessonCard);
