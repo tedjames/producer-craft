@@ -1,4 +1,5 @@
 import React from 'react';
+import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -79,11 +80,12 @@ const PreviewTagline = styled.p`
   }
 `;
 
-const InstructorCard = ({ style, backgroundImage, name, tagline }) => {
+const InstructorCard = ({ style, backgroundImage, name, tagline, course }) => {
   return (
     <Container
       style={{ ...style, alignItems: tagline && 'flex-start' }}
       backgroundImage={backgroundImage}
+      onClick={() => browserHistory.push(`/preview/${course.urlSlug}`)}
     >
       <InstructorTitle
         tagline={tagline}
