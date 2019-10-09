@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
+import { setSelectedCourse } from '../../actions';
 
 const Card = styled.div`
   height: 160px;
@@ -137,16 +139,27 @@ const MiniCard = styled.div`
   }
 `;
 
-const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
+const CourseCard = ({
+  backgroundImage,
+  title,
+  tagline,
+  disabled,
+  mini,
+  course,
+  setSelectedCourse,
+}) => {
+  const handleClick = () => {
+    setSelectedCourse(course);
+    return !disabled && browserHistory.push(`/preview/${course.urlSlug}`);
+  };
+
   return mini ? (
     <MiniCard
       backgroundImage={backgroundImage}
       title={title}
       tagline={tagline}
       style={disabled && { opacity: 0.45, cursor: 'default' }}
-      onClick={() =>
-        !disabled && browserHistory.push('/preview/scott-storch-teaches-music-production')
-      }
+      onClick={handleClick}
     >
       <PreviewTitle style={{ marginTop: 5 }} className="disable-selection" mini>
         {title}
@@ -161,9 +174,7 @@ const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
       title={title}
       tagline={tagline}
       style={disabled && { opacity: 0.45, cursor: 'default' }}
-      onClick={() =>
-        !disabled && browserHistory.push('/preview/scott-storch-teaches-music-production')
-      }
+      onClick={handleClick}
     >
       <PreviewTitle style={disabled && { cursor: 'default' }} className="disable-selection">
         {title}
@@ -175,4 +186,7 @@ const CourseCard = ({ backgroundImage, title, tagline, disabled, mini }) => {
   );
 };
 
-export default CourseCard;
+export default connect(
+  null,
+  { setSelectedCourse },
+)(CourseCard);
