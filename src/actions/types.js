@@ -62,6 +62,10 @@ export const MENU_MODAL = 'MENU_MODAL';
 export const USER_MODAL = 'USER_MODAL';
 export const REGISTRATION_MODAL = 'REGISTRATION_MODAL';
 
+// View Actions
+export const COURSE_SELECTED = 'COURSE_SELECTED';
+export const LESSON_SELECTED = 'LESSON_SELECTED';
+
 // Admin Modals
 export const ADD_COURSE_MODAL = 'ADD_COURSE_MODAL';
 export const EDIT_COURSE_MODAL = 'EDIT_COURSE_MODAL';
@@ -73,6 +77,7 @@ export const EDIT_FILE_MODAL = 'EDIT_FILE_MODAL';
 // Course Management
 export const CREATE_COURSE = 'CREATE_COURSE';
 export const FETCH_COURSES = 'FETCH_COURSES';
+export const FETCH_COURSE = 'FETCH_COURSE';
 export const UPDATE_COURSE = 'UPDATE_COURSE';
 export const DELETE_COURSE = 'DELETE_COURSE';
 
@@ -88,8 +93,15 @@ export const FETCH_COMMENTS = 'FETCH_COMMENTS';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
 
+// Comment Reply Management
+export const CREATE_COMMENT_REPLY = 'CREATE_COMMENT_REPLY';
+export const FETCH_COMMENT_REPLIES = 'FETCH_COMMENT_REPLIES';
+export const UPDATE_COMMENT_REPLY = 'UPDATE_COMMENT_REPLY';
+export const DELETE_COMMENT_REPLY = 'DELETE_COMMENT_REPLY';
+
 // Lesson Management
 export const CREATE_LESSON = 'CREATE_LESSON';
 export const FETCH_LESSONS = 'FETCH_LESSONS';
 export const UPDATE_LESSON = 'UPDATE_LESSON';
 export const DELETE_LESSON = 'DELETE_LESSON';
+export const CLEAR_LESSONS = 'CLEAR_LESSONS';
