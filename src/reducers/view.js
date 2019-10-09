@@ -11,11 +11,18 @@ import {
   EDIT_LESSON_MODAL,
   ADD_FILE_MODAL,
   EDIT_FILE_MODAL,
+  COURSE_SELECTED,
+  LESSON_SELECTED,
+  FETCH_COURSE,
+  PENDING,
+  ERROR,
 } from '../actions/types';
 
 const INITIAL_STATE = {
   snackbar: { variant: 'info', message: '' },
   showSnackbar: false,
+  selectedCourse: '',
+  selectedLesson: false,
   showSubscribeModal: false,
   showPaymentModal: false,
   showAccountModal: false,
@@ -43,6 +50,19 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case FETCH_COURSE:
+      switch (action.payload) {
+        case PENDING:
+          return { ...state, fetchingCourse: true };
+        case ERROR:
+          return { ...state, fetchingCourse: false };
+        default:
+          return {
+            ...state,
+            selectedCourse: action.payload,
+            fetchingCourse: false,
+          };
+      }
     case SNACKBAR:
       return {
         ...state,
@@ -85,6 +105,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, showAddFileModal: action.payload || false };
     case EDIT_FILE_MODAL:
       return { ...state, showEditFileModal: action.payload || false };
+    case COURSE_SELECTED:
+      return { ...state, selectedCourse: action.payload };
+    case LESSON_SELECTED:
+      return { ...state, selectedLesson: action.payload };
     default:
       return state;
   }
