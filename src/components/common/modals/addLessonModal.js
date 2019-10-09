@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import styled, { keyframes } from 'styled-components';
-import { RemoveScroll } from 'react-remove-scroll';
 
-import { toggleAddLessonModal } from '../../../actions';
+import { toggleAddLessonModal, createLesson } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -66,7 +63,7 @@ const MobileAccountInfoRow = styled.div`
   }
 `;
 
-const AddLessonModal = ({ open, toggleAddLessonModal }) => {
+const AddLessonModal = ({ open, toggleAddLessonModal, createLesson, course }) => {
   const [lessonName, setLessonName] = useState('');
   const [lessonNumber, setLessonNumber] = useState('');
   const [mediaId, setMediaId] = useState('');
@@ -75,7 +72,16 @@ const AddLessonModal = ({ open, toggleAddLessonModal }) => {
   const [thumbnailImage, setThumbnailImage] = useState('');
 
   const handleSubmit = () => {
-    return console.log('handling add course submit');
+    //TODO: ADD FORM VALIDATION
+    createLesson({
+      courseId: course.courseId,
+      lessonName,
+      lessonNumber,
+      description,
+      mediaId,
+      thumbnailImage,
+      trailerImage,
+    });
   };
   return (
     <Dialog
@@ -293,6 +299,7 @@ const AddLessonModal = ({ open, toggleAddLessonModal }) => {
             />
           </MobileAccountInfoRow>
           <FlatButton
+            onClick={handleSubmit}
             style={{
               width: 260,
               minHeight: 45,
@@ -328,9 +335,10 @@ const AddLessonModal = ({ open, toggleAddLessonModal }) => {
 
 const mapStateToProps = ({ view }) => ({
   open: view.showAddLessonModal,
+  course: view.selectedCourse,
 });
 
 export default connect(
   mapStateToProps,
-  { toggleAddLessonModal },
+  { toggleAddLessonModal, createLesson },
 )(AddLessonModal);
