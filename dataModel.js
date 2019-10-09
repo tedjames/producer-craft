@@ -152,6 +152,7 @@ const dataModel = {
   ],
   lessons: [
     {
+      lessonNumber: 0,
       lesson_id: 'asldkjlakdj',
       media_id: 'gL7fha8',
       course_id: 'course_197ga27d',
