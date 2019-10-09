@@ -9,7 +9,7 @@ import styled, { keyframes } from 'styled-components';
 import { RemoveScroll } from 'react-remove-scroll';
 import Swal from 'sweetalert2';
 
-import { toggleEditLessonModal } from '../../../actions';
+import { toggleEditLessonModal, updateLesson, deleteLesson } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -67,16 +67,45 @@ const MobileAccountInfoRow = styled.div`
   }
 `;
 
-const EditLessonModal = ({ open, toggleEditLessonModal }) => {
-  const [lessonName, setLessonName] = useState('');
-  const [lessonNumber, setLessonNumber] = useState('');
-  const [mediaId, setMediaId] = useState('');
-  const [description, setDescription] = useState('');
-  const [trailerImage, setTrailerImage] = useState('');
-  const [thumbnailImage, setThumbnailImage] = useState('');
+const EditLessonModal = ({
+  open,
+  toggleEditLessonModal,
+  selectedLesson,
+  updateLesson,
+  deleteLesson,
+}) => {
+  const [lessonName, setLessonName] = useState(selectedLesson ? selectedLesson.lessonName : '');
+  const [lessonNumber, setLessonNumber] = useState(
+    selectedLesson ? selectedLesson.lessonNumber : '',
+  );
+  const [mediaId, setMediaId] = useState(selectedLesson ? selectedLesson.mediaId : '');
+  const [description, setDescription] = useState(selectedLesson ? selectedLesson.description : '');
+  const [trailerImage, setTrailerImage] = useState(
+    selectedLesson ? selectedLesson.trailerImage : '',
+  );
+  const [thumbnailImage, setThumbnailImage] = useState(
+    selectedLesson ? selectedLesson.thumbnailImage : '',
+  );
+
+  if (open && !lessonNumber) {
+    setLessonName(selectedLesson.lessonName);
+    setLessonNumber(selectedLesson.lessonNumber);
+    setMediaId(selectedLesson.mediaId);
+    setDescription(selectedLesson.description);
+    setTrailerImage(selectedLesson.trailerImage);
+    setThumbnailImage(selectedLesson.thumbnailImage);
+  }
 
   const handleSubmit = () => {
-    return console.log('handling add course submit');
+    updateLesson({
+      lessonId: selectedLesson.lessonId,
+      lessonName,
+      lessonNumber,
+      description,
+      mediaId,
+      thumbnailImage,
+      trailerImage,
+    });
   };
   const handleDelete = () => {
     Swal.fire({
@@ -87,14 +116,8 @@ const EditLessonModal = ({ open, toggleEditLessonModal }) => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
-    }).then(result => {
-      if (result.value) {
-        Swal.fire(
-          'Lesson Deleted!',
-          'Be sure to update the course playlist in JW Player.',
-          'success',
-        );
-      }
+    }).then(() => {
+      deleteLesson({ lessonId: selectedLesson.lessonId });
     });
   };
   return (
@@ -313,6 +336,7 @@ const EditLessonModal = ({ open, toggleEditLessonModal }) => {
             />
           </MobileAccountInfoRow>
           <FlatButton
+            onClick={handleSubmit}
             style={{
               width: 260,
               minHeight: 45,
@@ -351,9 +375,10 @@ const EditLessonModal = ({ open, toggleEditLessonModal }) => {
 
 const mapStateToProps = ({ view }) => ({
   open: view.showEditLessonModal,
+  selectedLesson: view.selectedLesson,
 });
 
 export default connect(
   mapStateToProps,
-  { toggleEditLessonModal },
+  { toggleEditLessonModal, updateLesson, deleteLesson },
 )(EditLessonModal);
