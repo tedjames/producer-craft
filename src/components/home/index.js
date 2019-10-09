@@ -8,6 +8,7 @@ import {
   showRegistrationModal,
   toggleSubscribeModal,
   toggleAddCourseModal,
+  fetchCourses,
 } from '../../actions';
 import {
   AuthModal,
@@ -68,6 +69,8 @@ class Home extends Component {
 
   componentDidMount() {
     window.addEventListener('scroll', this.scrollListener);
+    const { fetchCourses, courses } = this.props;
+    return !courses && fetchCourses();
   }
 
   componentWillUnmount() {
@@ -91,7 +94,13 @@ class Home extends Component {
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { showRegistrationModal, user, toggleSubscribeModal, toggleAddCourseModal } = this.props;
+    const {
+      showRegistrationModal,
+      user,
+      toggleSubscribeModal,
+      toggleAddCourseModal,
+      courses,
+    } = this.props;
     const { showTrailerModal, showFloatingActionBar } = this.state;
     return (
       <div style={{ overflowX: 'hidden' }}>
@@ -123,30 +132,18 @@ class Home extends Component {
 
           <SectionTitle style={{ marginTop: 0 }}>Recently Added</SectionTitle>
           <CardList mini>
-            <CourseCard
-              backgroundImage={HeroImage3}
-              title="BOI-1DA"
-              tagline="Teaches Drumming"
-              mini
-            />
-            <CourseCard
-              backgroundImage={HeroImage4}
-              title="Southside"
-              tagline="Teaches Trap Production"
-              mini
-            />
-            <CourseCard
-              backgroundImage={HeroImage5}
-              title="London on da track"
-              tagline="Teaches FL Studio"
-              mini
-            />
-            <CourseCard
-              backgroundImage={HeroImage}
-              title="London on da track"
-              tagline="Teaches FL Studio"
-              mini
-            />
+            {courses &&
+              courses.slice(0, 3).map(course => {
+                return (
+                  <CourseCard
+                    backgroundImage={course.thumbnailImage}
+                    title={course.instructorName}
+                    tagline={course.tagline}
+                    course={course}
+                    mini
+                  />
+                );
+              })}
           </CardList>
 
           {/* Value Propositions */}
@@ -186,23 +183,17 @@ class Home extends Component {
           {/* Available Courses */}
           <SectionTitle>Now Available</SectionTitle>
           <CardList>
-            <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
-
-            <CourseCard
-              backgroundImage={HeroImage4}
-              title="Southside"
-              tagline="Teaches Trap Production"
-            />
-            <CourseCard
-              backgroundImage={HeroImage5}
-              title="London on da track"
-              tagline="Teaches FL Studio"
-            />
-            <CourseCard
-              backgroundImage={HeroImage}
-              title="London on da track"
-              tagline="Teaches FL Studio"
-            />
+            {courses &&
+              courses.map(course => {
+                return (
+                  <CourseCard
+                    backgroundImage={course.thumbnailImage}
+                    title={course.instructorName}
+                    tagline={course.tagline}
+                    course={course}
+                  />
+                );
+              })}
           </CardList>
 
           {/* Coming Soon */}
@@ -288,15 +279,22 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.auth.user,
-  email: state.auth.email,
-  error: state.auth.error,
-  loading: state.auth.loading,
-  showModal: state.auth.showModal,
+const mapStateToProps = ({ auth, admin }) => ({
+  user: auth.user,
+  email: auth.email,
+  error: auth.error,
+  loading: auth.loading,
+  showModal: auth.showModal,
+  courses: admin.courses,
 });
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, showRegistrationModal, toggleSubscribeModal, toggleAddCourseModal },
+  {
+    showAuthModal,
+    showRegistrationModal,
+    toggleSubscribeModal,
+    toggleAddCourseModal,
+    fetchCourses,
+  },
 )(Home);
