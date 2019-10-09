@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import styled, { keyframes } from 'styled-components';
 import { RemoveScroll } from 'react-remove-scroll';
 
-import { toggleAddCourseModal } from '../../../actions';
+import { toggleAddCourseModal, createCourse } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -66,12 +66,13 @@ const MobileAccountInfoRow = styled.div`
   }
 `;
 
-const AddCourseModal = ({ open, toggleAddCourseModal }) => {
+const AddCourseModal = ({ open, toggleAddCourseModal, createCourse }) => {
   const [courseName, setCourseName] = useState('');
+  const [courseNumber, setCourseNumber] = useState('');
   const [instructorName, setInstructorName] = useState('');
   const [price, setPrice] = useState('');
   const [productId, setProductId] = useState('');
-  const [slug, setSlug] = useState('');
+  const [urlSlug, setSlug] = useState('');
   const [tagline, setTagline] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [bioImage, setBioImage] = useState('');
@@ -83,10 +84,41 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
   const [twitterUrl, setTwitterUrl] = useState('');
   const [facebookUrl, setFacebookUrl] = useState('');
   const [redditUrl, setRedditUrl] = useState('');
+  const [valuePropTitle, setValuePropTitle] = useState('');
+  const [valuePropTitle2, setValuePropTitle2] = useState('');
+  const [valuePropTitle3, setValuePropTitle3] = useState('');
+  const [valuePropDescription, setValuePropDescription] = useState('');
+  const [valuePropDescription2, setValuePropDescription2] = useState('');
+  const [valuePropDescription3, setValuePropDescription3] = useState('');
 
   const handleSubmit = () => {
-    return console.log('handling add course submit');
+    createCourse({
+      courseName,
+      courseNumber,
+      instructorName,
+      price,
+      productId,
+      urlSlug,
+      tagline,
+      coverImage,
+      trailerUrl,
+      thumbnailImage,
+      bioImage,
+      bioTitle,
+      bioDescription,
+      readMoreUrl,
+      twitterUrl,
+      facebookUrl,
+      redditUrl,
+      valuePropTitle,
+      valuePropTitle2,
+      valuePropTitle3,
+      valuePropDescription,
+      valuePropDescription2,
+      valuePropDescription3,
+    });
   };
+
   return (
     <Dialog
       open={open}
@@ -97,6 +129,22 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
       <DialogContent style={{ margin: 0, padding: 0 }}>
         <Container>
           <SectionTitle>Add New Course</SectionTitle>
+          <TextField
+            style={{ marginBottom: 12.5 }}
+            // onChange={e => usernameChanged(e.target.value)}
+            //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+            value={courseNumber}
+            onChange={e => setCourseNumber(e.target.value)}
+            margin="dense"
+            id="course-number"
+            label="Course Number"
+            type="name"
+            placeholder="Course Number"
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
           <AccountInfoRow>
             <TextField
               style={{ marginBottom: 12.5, marginRight: 10 }}
@@ -170,7 +218,7 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
               style={{ marginBottom: 12.5, marginRight: 10 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value={slug}
+              value={urlSlug}
               onChange={e => setSlug(e.target.value)}
               margin="dense"
               id="course-slug"
@@ -369,6 +417,110 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
               }}
             />
           </AccountInfoRow>
+          {/* Value Propositions */}
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle}
+              onChange={e => setValuePropTitle(e.target.value)}
+              margin="dense"
+              id="value-prop-title"
+              label="Value Prop Title"
+              type="text"
+              placeholder="22 Lessons"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription}
+              onChange={e => setValuePropDescription(e.target.value)}
+              margin="dense"
+              id="value-prop-description"
+              label="Value Prop Description"
+              type="text"
+              placeholder="Exclusive acccess to..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle2}
+              onChange={e => setValuePropTitle2(e.target.value)}
+              margin="dense"
+              id="value-prop-title-2"
+              label="Value Prop Title 2"
+              type="text"
+              placeholder="Sample Pack"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription2}
+              onChange={e => setValuePropDescription2(e.target.value)}
+              margin="dense"
+              id="value-prop-description-2"
+              label="Value Prop Description 2"
+              type="text"
+              placeholder="Over 24 samples..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+          <AccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5, marginRight: 10 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle3}
+              onChange={e => setValuePropTitle3(e.target.value)}
+              margin="dense"
+              id="value-prop-title-3"
+              label="Value Prop Title 3"
+              type="text"
+              placeholder="Competition"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription3}
+              onChange={e => setValuePropDescription3(e.target.value)}
+              margin="dense"
+              id="value-prop-description-3"
+              label="Value Prop Description 3"
+              type="text"
+              placeholder="Share your musical works..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </AccountInfoRow>
+
           {/* NOTE: Mobile Responsive - Account Info Field */}
           <MobileAccountInfoRow>
             <TextField
@@ -443,7 +595,7 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
               style={{ marginBottom: 12.5, marginRight: 10 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value={slug}
+              value={urlSlug}
               onChange={e => setSlug(e.target.value)}
               margin="dense"
               id="course-slug"
@@ -642,7 +794,110 @@ const AddCourseModal = ({ open, toggleAddCourseModal }) => {
               }}
             />
           </MobileAccountInfoRow>
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle}
+              onChange={e => setValuePropTitle(e.target.value)}
+              margin="dense"
+              id="value-prop-title"
+              label="Value Prop Title"
+              type="text"
+              placeholder="22 Lessons"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription}
+              onChange={e => setValuePropDescription(e.target.value)}
+              margin="dense"
+              id="value-prop-description"
+              label="Value Prop Description"
+              type="text"
+              placeholder="Exclusive acccess to..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle2}
+              onChange={e => setValuePropTitle2(e.target.value)}
+              margin="dense"
+              id="value-prop-title-2"
+              label="Value Prop Title 2"
+              type="text"
+              placeholder="Sample Pack"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription2}
+              onChange={e => setValuePropDescription2(e.target.value)}
+              margin="dense"
+              id="value-prop-description-2"
+              label="Value Prop Description 2"
+              type="text"
+              placeholder="Over 24 samples..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
+          <MobileAccountInfoRow>
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropTitle3}
+              onChange={e => setValuePropTitle3(e.target.value)}
+              margin="dense"
+              id="value-prop-title-3"
+              label="Value Prop Title 3"
+              type="text"
+              placeholder="Competition"
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              style={{ marginBottom: 12.5 }}
+              // onChange={e => usernameChanged(e.target.value)}
+              //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
+              value={valuePropDescription3}
+              onChange={e => setValuePropDescription3(e.target.value)}
+              margin="dense"
+              id="value-prop-description-3"
+              label="Value Prop Description 3"
+              type="text"
+              placeholder="Share your musical works..."
+              variant="outlined"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </MobileAccountInfoRow>
           <FlatButton
+            onClick={handleSubmit}
             style={{
               width: 260,
               minHeight: 45,
@@ -682,5 +937,5 @@ const mapStateToProps = ({ view }) => ({
 
 export default connect(
   mapStateToProps,
-  { toggleAddCourseModal },
+  { toggleAddCourseModal, createCourse },
 )(AddCourseModal);
