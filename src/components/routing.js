@@ -79,20 +79,16 @@ export default class App extends Component {
               <Route path="/" component={AuthListener}>
                 <IndexRoute component={Home} onEnter={this.scrollRestore} />
                 <Route path="streaming" component={StreamingTest} onEnter={this.scrollRestore} />
-                <Route path="preview">
-                  <Route
-                    path="scott-storch-teaches-music-production"
-                    component={CoursePreview}
-                    onEnter={this.scrollRestore}
-                  />
-                </Route>
-                <Route path="courses">
-                  <Route
-                    path="scott-storch-teaches-music-production"
-                    component={CourseViewer}
-                    onEnter={this.scrollRestore}
-                  />
-                </Route>
+                <Route
+                  path="preview/:urlSlug"
+                  component={CoursePreview}
+                  onEnter={this.scrollRestore}
+                />
+                <Route
+                  path="courses/:urlSlug/:lessonNumber"
+                  component={CourseViewer}
+                  onEnter={this.scrollRestore}
+                />
               </Route>
             </Router>
           </Suspense>
