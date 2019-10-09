@@ -10,6 +10,8 @@ import {
   EDIT_LESSON_MODAL,
   ADD_FILE_MODAL,
   EDIT_FILE_MODAL,
+  COURSE_SELECTED,
+  LESSON_SELECTED,
 } from './types';
 
 export const closeSnackbar = () => ({
@@ -77,5 +79,15 @@ export const toggleAddFileModal = payload => ({
 
 export const toggleEditFileModal = payload => ({
   type: EDIT_FILE_MODAL,
+  payload,
+});
+
+export const setSelectedCourse = payload => ({
+  type: COURSE_SELECTED,
+  payload,
+});
+
+export const setSelectedLesson = payload => ({
+  type: LESSON_SELECTED,
   payload,
 });
