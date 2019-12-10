@@ -1,6 +1,8 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { browserHistory, withRouter } from 'react-router';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { setSelectedCourse, clearLessons } from '../../actions';
 
 const Container = styled.div`
   flex: 0 0 auto;
@@ -80,12 +82,26 @@ const PreviewTagline = styled.p`
   }
 `;
 
-const InstructorCard = ({ style, backgroundImage, name, tagline, course }) => {
+const InstructorCard = ({
+  style,
+  backgroundImage,
+  name,
+  tagline,
+  course,
+  setSelectedCourse,
+  clearLessons,
+}) => {
+  const handleClick = () => {
+    const { urlSlug } = course;
+    setSelectedCourse(course);
+    clearLessons();
+    return browserHistory.push(`/preview/${urlSlug}`);
+  };
   return (
     <Container
       style={{ ...style, alignItems: tagline && 'flex-start' }}
       backgroundImage={backgroundImage}
-      onClick={() => browserHistory.push(`/preview/${course.urlSlug}`)}
+      onClick={handleClick}
     >
       <InstructorTitle
         tagline={tagline}
@@ -103,4 +119,9 @@ const InstructorCard = ({ style, backgroundImage, name, tagline, course }) => {
   );
 };
 
-export default InstructorCard;
+export default withRouter(
+  connect(
+    null,
+    { setSelectedCourse, clearLessons },
+  )(InstructorCard),
+);
