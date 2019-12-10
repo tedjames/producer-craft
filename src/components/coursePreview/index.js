@@ -163,10 +163,18 @@ class CoursePreview extends Component {
   }
 
   componentDidUpdate() {
-    const { course, fetchLessons, lessons } = this.props;
+    const { course, fetchLessons, lessons, params } = this.props;
+    window.scrollTo(0, 0);
 
+    if (course) {
     if (!lessons) {
+        console.log('componentDidUpdate: FETCHING LESSONS');
       fetchLessons({ courseId: course.courseId });
+    }
+      if (course.urlSlug !== params.urlSlug) {
+        window.scrollTo(0, 0);
+        document.location.reload();
+      }
     }
   }
 
