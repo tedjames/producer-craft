@@ -1,19 +1,36 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+
 import styled from 'styled-components';
 import Confetti from 'react-dom-confetti';
 import InputBase from '@material-ui/core/InputBase';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Swal from 'sweetalert2';
+
+// UUID for Generating Unique IDs
+import uuidv4 from 'uuid/v4';
+
 import * as linkify from 'linkifyjs';
 import hashtag from 'linkifyjs/plugins/hashtag';
 import Linkify from 'linkifyjs/react';
 
+import Avatar from 'react-avatar';
+
+import { db } from '../../database';
+
+import {
+  deleteComment,
+  likeComment,
+  dislikeComment,
+  createCommentReply,
+  deleteCommentReply,
+} from '../../actions';
 import { AnimatedButton, FlatButton, ButtonText } from '../common';
 
-import StorchHero from '../../assets/storch-hero-image.png';
-import StorchHero4 from '../../assets/storch-hero-image-4.png';
+// import StorchHero from '../../assets/storch-hero-image.png';
 
 // Apply hashtag plugin to linkify
 hashtag(linkify);
@@ -45,7 +62,7 @@ const FieldCard = styled.div`
   margin-right: 0px;
   margin-bottom: -20px;
   border: ${props => (props.showReplyButtons ? '0px #ddd solid' : '1px #ddd solid')};
-  transition: all 0.1s ease;
+  transition: all 0.3s ease;
 `;
 
 const CommentButtons = styled.div`
@@ -63,30 +80,30 @@ const InputField = styled(InputBase)`
   font-family: roboto-condensed !important;
 `;
 
-const UserAvatar = styled.div`
-  height: 48px;
-  width: 48px;
-  border-radius: 180px;
-  margin-right: 15px;
-  background-repeat: no-repeat;
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-size: cover;
-  background-color: #555;
-`;
+// const UserAvatar = styled.div`
+//   height: 48px;
+//   width: 48px;
+//   border-radius: 180px;
+//   margin-right: 15px;
+//   background-repeat: no-repeat;
+//   background-image: ${props => `url(${props.backgroundImage})`};
+//   background-size: cover;
+//   background-color: #555;
+// `;
 
-const MiniAvatar = styled.div`
-  height: 20px;
-  width: 20px;
-  border-radius: 180px;
-  background-repeat: no-repeat;
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-size: cover;
-  background-color: #555;
-  border: 2px #555 solid;
-`;
+// const MiniAvatar = styled.div`
+//   height: 20px;
+//   width: 20px;
+//   border-radius: 180px;
+//   background-repeat: no-repeat;
+//   background-image: ${props => `url(${props.backgroundImage})`};
+//   background-size: cover;
+//   background-color: #555;
+//   border: 2px #555 solid;
+// `;
 
 const CommentContainer = styled.div`
-  display: flex;
+  display: ${props => (props.deleted ? 'none' : 'flex')};
 `;
 const CommentDetails = styled.div`
   width: 100%;
@@ -150,6 +167,10 @@ const LikeCount = styled.div`
   margin-right: 5px;
   text-transform: uppercase;
   margin-left: 7.5px;
+  cursor: pointer;
+  :hover {
+    opacity: 0.8;
+  }
 `;
 
 const ActionIcon = styled.div`
@@ -167,25 +188,40 @@ const ActionIcon = styled.div`
 `;
 
 const CommentReplyContainer = styled.div`
-  display: flex;
+  display: ${props => (props.deleted ? 'none' : 'flex')};
   justify-content: space-between;
   margin-top: 10px;
   padding-bottom: 15px;
   padding-top: 5px;
   border-bottom: 1px dotted #ddd;
 `;
-const InstructorLike = styled.div`
-  position: relative;
-  margin-bottom: 2.5px;
-  margin-left: 2.5px;
-`;
+// const InstructorLike = styled.div`
+//   position: relative;
+//   margin-bottom: 2.5px;
+//   margin-left: 2.5px;
+//   display: none;
+// `;
 
 const AvatarContainer = styled.div`
   width: 60px;
 `;
 
-const CommentReply = ({ name, message }) => {
+const CommentReply = ({
+  name,
+  message,
+  commentReplyId,
+  lessonId,
+  commentId,
+  deleteCommentReply,
+  setReplyDeleteCount,
+  replyDeleteCount,
+  newReplies,
+  setNewReply,
+  cached,
+  nickname,
+}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [deleted, toggleDeleted] = React.useState(false);
   const handleReplySettingsClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -193,11 +229,33 @@ const CommentReply = ({ name, message }) => {
   const handleReplySettingsClose = () => {
     setAnchorEl(null);
   };
+
+  const handleCommentReplyDelete = () => {
+    console.log('Handling reply delete with: ', lessonId, commentId, commentReplyId);
+    console.log('SETTING REPLY DELETE COUNT TO: ', `${replyDeleteCount + 1}`);
+
+    if (!cached) {
+      setReplyDeleteCount(replyDeleteCount + 1);
+    }
+    deleteCommentReply({ lessonId, commentId, commentReplyId });
+    handleReplySettingsClose();
+    toggleDeleted(true);
+    const updatedNewReplies = newReplies.filter(reply => {
+      console.log('Filtering: ', reply.id, commentReplyId, reply.id !== commentReplyId);
+
+      return reply.id !== commentReplyId;
+    });
+    console.log('SETTING NEW REPLIES TO: ', updatedNewReplies);
+
+    setNewReply([...updatedNewReplies]);
+  };
+  console.log('Reply delete count: ', replyDeleteCount);
+
   return (
-    <CommentReplyContainer>
+    <CommentReplyContainer deleted={deleted}>
       <div style={{ display: 'flex' }}>
         <AvatarContainer>
-          <UserAvatar backgroundImage={StorchHero} />
+          <Avatar size="42" name={name} color="#40baff" round />
         </AvatarContainer>
         <div>
           <CommenterName>{name}</CommenterName>
@@ -236,19 +294,43 @@ const CommentReply = ({ name, message }) => {
         onClose={handleReplySettingsClose}
       >
         <MenuItem onClick={handleReplySettingsClose}>Report</MenuItem>
-        <MenuItem onClick={handleReplySettingsClose}>Delete</MenuItem>
+        <MenuItem onClick={handleCommentReplyDelete}>Delete</MenuItem>
       </Menu>
     </CommentReplyContainer>
   );
 };
 
-const Comment = () => {
+const Comment = ({
+  key,
+  message,
+  deleteComment,
+  likeComment,
+  dislikeComment,
+  lessonId,
+  commentId,
+  user,
+  likeCount,
+  createCommentReply,
+  deleteCommentReply,
+  replyCount,
+  nickname,
+}) => {
+  const savedLike = localStorage.getItem(commentId);
   const [showReplies, toggleReplies] = useState(false);
-  const [liked, likeComment] = useState(false);
+  const [commentReplies, setCommentReplies] = useState([]);
+  const [replyDeleteCount, setReplyDeleteCount] = useState(0);
+  const [liked, toggleLike] = useState(savedLike ? 1 : 0);
   const [showReplyButtons, toggleReplyButtons] = useState(false);
+  const [deleted, toggleDeleted] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
+  const [newReplies, setNewReply] = useState([]);
   // Element anchor state for dropdown menu
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const userId = user && user.uid ? user.uid : false;
+
+  const isAdmin = user && user.roles ? user.roles.includes('admin') : false;
+
   const cancelReply = () => {
     setReplyMessage('');
     toggleReplyButtons(false);
@@ -260,6 +342,124 @@ const Comment = () => {
   const handleSettingsClose = () => {
     setAnchorEl(null);
   };
+  const handleDelete = () => {
+    if (!user || !isAdmin) {
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Unable to Delete',
+        text: "Only the comment's author or admins can delete this.",
+        type: 'error',
+        confirmButtonText: 'Continue',
+        timer: 8000,
+      });
+    }
+
+    setAnchorEl(null);
+    deleteComment({ lessonId, commentId });
+    return toggleDeleted(true);
+  };
+
+  const handleLike = () => {
+    if (!user) {
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Sign in Required',
+        text: 'Please sign in or register an account to leave comments',
+        type: 'error',
+        confirmButtonText: 'Continue',
+        timer: 8000,
+      });
+    }
+
+    const likeParams = { commentId, lessonId, userId };
+
+    // Sets liked to 0 if the user is disliking or 1 if liking
+    // this is used to increment or decrement the like count onCLick
+    if (liked === 1) {
+      // Set liked to 0 aka false
+      toggleLike(0);
+      // Save like value in localstorage
+      localStorage.removeItem(commentId);
+    } else if (savedLike) {
+      // Set liked to 0 aka false
+      toggleLike(0);
+      // Save like value in localstorage
+      localStorage.removeItem(commentId);
+    } else {
+      // Set liked to 1 aka true
+      toggleLike(1);
+      // Save like value in localstorage
+      localStorage.setItem(commentId, 1);
+    }
+    return liked === 1 ? dislikeComment(likeParams) : likeComment(likeParams);
+  };
+
+  const handleReply = () => {
+    if (!user) {
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Sign in Required',
+        text: 'Please sign in or register an account to leave comments',
+        type: 'error',
+        confirmButtonText: 'Continue',
+        timer: 8000,
+      });
+    }
+
+    const commentReplyId = uuidv4();
+    setNewReply([
+      { message: replyMessage, id: commentReplyId, nickname: user.displayName },
+      ...newReplies,
+    ]);
+    createCommentReply({
+      message: replyMessage,
+      nickname: user.displayName,
+      lessonId,
+      commentId,
+      commentReplyId,
+      userId,
+    });
+    cancelReply();
+  };
+
+  const fetchCommentReplies = () => {
+    if (replyCount > 0) {
+      db.collection('lessons')
+        .doc(lessonId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('replies')
+        .get()
+        .then(snapshot => {
+          const fetchedCommentReplies = [];
+          snapshot.forEach(doc => {
+            fetchedCommentReplies.push(doc.data());
+          });
+          console.log('Fetched comment replies: ', fetchedCommentReplies);
+          setCommentReplies(fetchedCommentReplies);
+        })
+        .catch(err => {
+          console.log('Error fetching comment replies', err);
+        });
+    }
+  };
+
+  const handleToggleReplies = () => {
+    if (showReplies) {
+      toggleReplies(false);
+    } else {
+      toggleReplies(true);
+      return newReplies.length > 0 ? null : fetchCommentReplies();
+    }
+  };
+
+  // Default action for opening URLs found in comments
   const linkProps = {
     onClick: e => {
       // eslint-disable-next-line no-alert
@@ -268,27 +468,28 @@ const Comment = () => {
       }
     },
   };
+
   return (
-    <CommentContainer>
+    <CommentContainer key={key} deleted={deleted}>
       <AvatarContainer>
-        <UserAvatar backgroundImage={StorchHero4} />
+        <Avatar size="42" name={nickname} color="#40baff" round />
       </AvatarContainer>
       <CommentDetails showReplies={showReplies}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <CommenterName>Alice C.</CommenterName>
+          <CommenterName>{nickname || 'Anonymous User'}</CommenterName>
           {/* Settings Button */}
         </div>
         <CommentMessage className="linkify">
           <Linkify options={{ attributes: linkProps }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua.
+            {message ||
+              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temporincididunt ut labore et dolore magna aliqua.'}
           </Linkify>
         </CommentMessage>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <CommentActionBar>
             <button
               type="button"
-              onClick={() => likeComment(!liked)}
+              onClick={handleLike}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -298,6 +499,7 @@ const Comment = () => {
                 background: 'transparent',
                 border: '0px',
                 outline: 'none',
+                cursor: 'pointer',
               }}
             >
               <ActionIcon activated={liked}>
@@ -307,23 +509,29 @@ const Comment = () => {
                   height="14"
                   viewBox="0 0 24 24"
                   style={{ position: 'relative', top: 1 }}
-                  fill={liked ? 'red' : '#bebebe'}
+                  fill={liked || savedLike ? 'red' : '#bebebe'}
                   stroke="none"
                   strokeWidth="0"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   className="feather feather-heart"
-                  onClick={() => likeComment(!liked)}
                 >
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
               </ActionIcon>
 
               <Confetti active={liked} config={confettiConfig} />
-              <LikeCount className="disable-selection">4 Likes</LikeCount>
+              <LikeCount className="disable-selection">
+                {likeCount && liked ? `${likeCount} Like${likeCount > 1 ? 's' : ''}` : ''}
+                {!likeCount && !liked ? 'Like' : ''}
+                {likeCount && !liked
+                  ? `${likeCount - 1 === 0 ? '' : likeCount - 1} Like${likeCount > 1 ? 's' : ''}`
+                  : ''}
+                {!likeCount && liked === 1 ? '1 Like' : ''}
+              </LikeCount>
             </button>
             <button
-              onClick={() => toggleReplies(!showReplies)}
+              onClick={handleToggleReplies}
               type="button"
               style={{
                 display: 'flex',
@@ -354,12 +562,20 @@ const Comment = () => {
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
               </svg>
 
-              <CommentAction
-                className="disable-selection"
-                onClick={() => toggleReplies(!showReplies)}
-                style={{ marginRight: 5 }}
-              >
-                8 Replies
+              <CommentAction className="disable-selection" style={{ marginRight: 5 }}>
+                {replyCount > 1 && `${replyCount + newReplies.length - replyDeleteCount} Replies`}
+                {replyCount === 1 && newReplies.length > 0
+                  ? `${replyCount + newReplies.length - replyDeleteCount} Replies`
+                  : ''}
+                {replyCount === 1 && newReplies.length === 0
+                  ? `${replyCount + newReplies.length} Reply`
+                  : ''}
+                {replyCount === 0 && newReplies.length > 1
+                  ? `${newReplies.length - replyDeleteCount} Replies`
+                  : ''}
+                {replyCount === 0 && newReplies.length === 1 ? '1 Reply' : ''}
+                {replyCount === 0 && newReplies.length === 0 ? 'Reply' : ''}
+                {replyCount === 0 && !newReplies ? 'Reply' : ''}
               </CommentAction>
             </button>
 
@@ -372,11 +588,11 @@ const Comment = () => {
               onClose={handleSettingsClose}
             >
               <MenuItem onClick={handleSettingsClose}>Report</MenuItem>
-              <MenuItem onClick={handleSettingsClose}>Delete</MenuItem>
+              <MenuItem onClick={handleDelete}>Delete</MenuItem>
             </Menu>
 
             {/* Instructor Like */}
-            <InstructorLike>
+            {/* <InstructorLike>
               <MiniAvatar backgroundImage={StorchHero} />
               <svg
                 style={{ position: 'absolute', bottom: -4, right: -5 }}
@@ -393,7 +609,7 @@ const Comment = () => {
               >
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-            </InstructorLike>
+            </InstructorLike> */}
           </CommentActionBar>
           <CommentAction
             onClick={e => handleSettingsClick(e)}
@@ -449,21 +665,56 @@ const Comment = () => {
               >
                 <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
               </FlatButton>
-              <FlatButton>
+              <FlatButton onClick={handleReply}>
                 <ButtonText>Submit</ButtonText>
               </FlatButton>
             </CommentButtons>
-
             {/* Comment Replies */}
-            <CommentReply name="Joel O." message="Sick track! Deff following you." />
-            <CommentReply name="Joel O." message="Sick track! Deff following you." />
-            <CommentReply name="Joel O." message="Sick track! Deff following you." />
+            {newReplies.length > 0 &&
+              newReplies.map(newReply => {
+                return (
+                  <CommentReply
+                    key={newReply.id}
+                    name={user.displayName}
+                    commentReplyId={newReply.id}
+                    commentId={commentId}
+                    lessonId={lessonId}
+                    message={newReply.message}
+                    deleteCommentReply={deleteCommentReply}
+                    setReplyDeleteCount={setReplyDeleteCount}
+                    replyDeleteCount={replyDeleteCount}
+                    newReplies={newReplies}
+                    setNewReply={setNewReply}
+                    cached
+                  />
+                );
+              })}
+
+            {commentReplies &&
+              commentReplies.map(commentReply => {
+                return (
+                  <CommentReply
+                    key={commentReply.commentReplyId}
+                    name={commentReply.nickname}
+                    lessonId={lessonId}
+                    commentReplyId={commentReply.commentReplyId}
+                    commentId={commentId}
+                    message={commentReply.message}
+                    deleteCommentReply={deleteCommentReply}
+                    setReplyDeleteCount={setReplyDeleteCount}
+                    replyDeleteCount={replyDeleteCount}
+                    newReplies={newReplies}
+                    setNewReply={setNewReply}
+                  />
+                );
+              })}
             <AnimatedButton
               onClick={() => null}
               containerStyle={{
                 width: 278,
                 alignSelf: 'flex-start',
                 marginTop: 5,
+                display: 'none',
               }}
               textStyle={{ color: '#777' }}
             >
@@ -476,4 +727,11 @@ const Comment = () => {
   );
 };
 
-export default Comment;
+const mapStateToProps = ({ auth }) => ({
+  user: auth.user,
+});
+
+export default connect(
+  mapStateToProps,
+  { deleteComment, likeComment, dislikeComment, createCommentReply, deleteCommentReply },
+)(Comment);
