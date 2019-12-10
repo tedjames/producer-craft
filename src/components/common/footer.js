@@ -101,7 +101,7 @@ const FooterMenuItem = styled.a`
   max-width: 260px;
 `;
 
-const FooterText = styled.a`
+const FooterText = styled.div`
   font-family: roboto-condensed, sans-serif;
   font-size: 12px;
   color: #777;
