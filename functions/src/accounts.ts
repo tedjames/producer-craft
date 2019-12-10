@@ -33,7 +33,12 @@ export const saveAnonymousUser = functions.https.onCall(async (data, context) =>
 });
 
 export const createUserEvent = functions.auth.user().onCreate(async user => {
-  const { uid, email } = user;
+  const { uid, email, displayName } = user;
+  // Create profile for user with uid and username
+  await db
+    .collection('profiles')
+    .doc(uid)
+    .set({ uid, username: displayName });
   // Delete email if previously saved in database
   await db
     .collection('emails')
