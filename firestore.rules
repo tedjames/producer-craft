@@ -1,8 +1,86 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth.uid != null;
+    function getRoles() {
+        return get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.roles;
+    }
+    function isSignedIn() {
+      return request.auth.uid != null;
+    }
+     function emailVerified() {
+      return request.auth.token.email_verified;
+    }
+    function userExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function isUser(userId) {
+      return request.auth.uid == userId;
+    }
+      // [READ] Data that exists on the Firestore document
+    function existingData() {
+      return resource.data;
+    }
+    // [WRITE] Data that is sent to a Firestore document
+    function incomingData() {
+      return request.resource.data;
+    }
+    match /profiles/{profileId} {
+      // TODO: Create a cloud function that updates displayName here when user changes displayName
+      allow read: if getRoles().hasAny(['admin']) == true || isUser(profileId);
+      allow create: if getRoles().hasAny(['admin']) == true || isUser(profileId);
+      allow update: if getRoles().hasAny(['admin']) == true || isUser(profileId);
+      allow delete: if getRoles().hasAny(['admin']) == true || isUser(profileId);
+    }
+    match /accounts/{accountId} {
+      allow read: if getRoles().hasAny(['admin']) == true || isUser(accountId);
+      allow create: if getRoles().hasAny(['admin']) == true;
+      allow update: if getRoles().hasAny(['admin']) == true;
+      allow delete: if getRoles().hasAny(['admin']) == true;
+    }
+    match /users/{userId} {
+      allow read: if getRoles().hasAny(['admin']) || isUser(userId);
+      allow create: if getRoles().hasAny(['admin']) || isUser(userId);
+      allow update: if getRoles().hasAny(['admin']) || isUser(userId);
+      allow delete: if getRoles().hasAny(['admin']) || isUser(userId);
+    }
+    match /courses/{lessonId} {
+      allow read;
+      allow create: if getRoles().hasAny(['admin']) == true;
+      allow update: if getRoles().hasAny(['admin']) == true;
+      allow delete: if getRoles().hasAny(['admin']) == true;
+    }
+    match /lessons/{lessonId} {
+      allow read;
+      allow create: if getRoles().hasAny(['admin']) == true;
+      allow update: if getRoles().hasAny(['admin']) == true;
+      allow delete: if getRoles().hasAny(['admin']) == true;
+
+      match /files/{fileId} {
+        allow read;
+        allow create: if getRoles().hasAny(['admin']) == true;
+        allow update: if getRoles().hasAny(['admin']) == true;
+        allow delete: if getRoles().hasAny(['admin']) == true;
+      }
+      match /comments/{commentId} {
+        allow read;
+        allow create: if isSignedIn() == true && isUser(incomingData().userId);
+        allow update: if isUser(existingData().userId);
+        allow delete: if getRoles().hasAny(['admin']) == true || isUser(existingData().userId);
+
+          match /likes/{likeId} {
+            allow read: if getRoles().hasAny(['admin']) == true;
+            allow create: if isSignedIn() == true;
+            allow update: if isUser(existingData().userId);
+            allow delete: if getRoles().hasAny(['admin']) == true || isUser(existingData().userId);
+          }
+
+          match /replies/{commentReplyId} {
+            allow read;
+            allow create: if isSignedIn() == true;
+            allow update: if isUser(existingData().userId);
+            allow delete: if getRoles().hasAny(['admin']) == true || isUser(existingData().userId);
+          }
+        }
+      }
     }
   }
-}
