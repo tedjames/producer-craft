@@ -334,7 +334,9 @@ class CoursePreview extends Component {
           />
 
           {/* Recommended Courses */}
-          <Recommended courses={courses} key="recommended-courses" />
+          {courses && (
+            <Recommended courses={courses} selectedCourse={course} key="recommended-courses" />
+          )}
 
           {/* Return Home Button */}
           <ReturnSection />
