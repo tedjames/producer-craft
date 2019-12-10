@@ -1,15 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import styled, { keyframes } from 'styled-components';
-import { RemoveScroll } from 'react-remove-scroll';
 import { useDropzone } from 'react-dropzone';
+import Swal from 'sweetalert2';
 
-import { toggleAddFileModal } from '../../../actions';
+import { toggleAddFileModal, createFile } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -51,44 +49,30 @@ const SectionTitle = styled.p`
   cursor: default;
 `;
 
-const AccountInfoRow = styled.div`
-  display: flex;
-  @media (max-width: 480px) {
-    display: none;
-  }
-`;
-
-const MobileAccountInfoRow = styled.div`
-  display: none;
-  @media (max-width: 480px) {
-    display: flex;
-    flex-direction: column;
-    width: 80vw;
-  }
-`;
-
-const AddFileModal = ({ open, toggleAddFileModal }) => {
-  const [courseName, setCourseName] = useState('');
-  const [instructorName, setInstructorName] = useState('');
-  const [price, setPrice] = useState('');
-  const [productId, setProductId] = useState('');
-  const [slug, setSlug] = useState('');
-  const [tagline, setTagline] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [bioImage, setBioImage] = useState('');
-  const [trailerUrl, setTrailerUrl] = useState('');
-  const [thumbnailImage, setThumbnailImage] = useState('');
-  const [bioTitle, setBioTitle] = useState('');
-  const [bioDescription, setBioDescription] = useState('');
-  const [readMoreUrl, setReadMoreUrl] = useState('');
-  const [twitterUrl, setTwitterUrl] = useState('');
-  const [facebookUrl, setFacebookUrl] = useState('');
-  const [redditUrl, setRedditUrl] = useState('');
+const AddFileModal = ({ open, toggleAddFileModal, createFile, lessonId }) => {
+  const [fileName, setFileName] = useState('');
 
   const onDrop = useCallback(acceptedFiles => {
-    // Do something with the files
+    console.log('File dropped: ', acceptedFiles);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  const handleSubmit = () => {
+    toggleAddFileModal(false);
+    if (!fileName || fileName === '') {
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Unable to Create File',
+        text: 'Make sure to include a name for the file.',
+        type: 'error',
+        confirmButtonText: 'Okay',
+        timer: 8000,
+      });
+    }
+    return createFile({ fileName, lessonId, path: 'UNDEFINED_PATH' });
+  };
 
   return (
     <Dialog
@@ -104,8 +88,8 @@ const AddFileModal = ({ open, toggleAddFileModal }) => {
             style={{ marginBottom: 12.5, marginRight: 10 }}
             // onChange={e => usernameChanged(e.target.value)}
             //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-            value={courseName}
-            onChange={e => setCourseName(e.target.value)}
+            value={fileName}
+            onChange={e => setFileName(e.target.value)}
             margin="dense"
             id="file-name"
             label="File Name"
@@ -121,6 +105,7 @@ const AddFileModal = ({ open, toggleAddFileModal }) => {
             {isDragActive ? <p>Drop the files here ...</p> : <p>Click here to upload file</p>}
           </div>
           <FlatButton
+            onClick={handleSubmit}
             style={{
               width: 260,
               minHeight: 45,
@@ -156,9 +141,10 @@ const AddFileModal = ({ open, toggleAddFileModal }) => {
 
 const mapStateToProps = ({ view }) => ({
   open: view.showAddFileModal,
+  lessonId: view.selectedLesson.lessonId,
 });
 
 export default connect(
   mapStateToProps,
-  { toggleAddFileModal },
+  { toggleAddFileModal, createFile },
 )(AddFileModal);

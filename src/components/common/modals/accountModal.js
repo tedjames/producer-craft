@@ -1,10 +1,8 @@
 import React, { Component, useState } from 'react';
-import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import styled, { keyframes } from 'styled-components';
-import { RemoveScroll } from 'react-remove-scroll';
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
 import { injectStripe, Elements } from 'react-stripe-elements';
@@ -15,7 +13,12 @@ import ButtonText from '../buttonText';
 import UpdateCardForm from './updateCardForm';
 import Footer from '../footer';
 
-import { logoutUser, toggleAccountModal } from '../../../actions';
+import {
+  logoutUser,
+  toggleAccountModal,
+  fetchAccountDetails,
+  updateAccountDetails,
+} from '../../../actions';
 
 const FADE_IN_DURATION = '0.45s';
 
@@ -203,11 +206,22 @@ const MobileAccountInfoRow = styled.div`
   }
 `;
 
-const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
-  const [firstName, setFirstName] = useState('John');
-  const [lastName, setLastName] = useState('Doe');
-  const [email, setEmail] = useState('your@email.com');
-  const [username, setUsername] = useState('JohnMusic');
+const AccountModal = ({
+  open,
+  onClose,
+  logoutUser,
+  toggleAccountModal,
+  user,
+  updateAccountDetails,
+  account,
+}) => {
+  const [firstName, setFirstName] = useState(account.firstName);
+  const [lastName, setLastName] = useState(account && account.lastName ? account.lastName : '');
+  const [email, setEmail] = useState(account && account.email ? account.email : '');
+  const [username, setUsername] = useState(
+    account && account.displayName ? account.displayName : '',
+  );
+
   const HandleDeleteAccount = () => {
     Swal.fire({
       title: 'Delete Account',
@@ -297,12 +311,13 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               style={{ marginBottom: 12.5, marginRight: 10 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value="Ted"
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
               margin="dense"
               id="account-first-name"
               label="First Name"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.firstName ? account.firstName : 'First Name'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -312,12 +327,13 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               style={{ marginBottom: 12.5 }}
               // onChange={e => usernameChanged(e.target.value)}
               //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-              value="Werbel"
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
               margin="dense"
               id="account-last-name"
               label="Last Name"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.lastName ? account.lastName : 'Last Name'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -335,7 +351,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-username"
               label="Username"
               type="name"
-              placeholder="My Name"
+              placeholder={user && user.displayName ? user.displayName : 'Username'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -351,7 +367,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-email"
               label="Email"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.email ? account.email : 'Email'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -371,7 +387,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-first-name-mobile"
               label="First Name"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.firstName ? account.firstName : 'First Name'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -387,7 +403,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-last-name-mobile"
               label="Last Name"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.lastName ? account.lastName : 'Last Name'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -405,7 +421,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-username-mobile"
               label="Username"
               type="name"
-              placeholder="My Name"
+              placeholder={user && user.displayName ? user.displayName : 'Username'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -421,7 +437,7 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
               id="account-email-mobile"
               label="Email"
               type="name"
-              placeholder="My Name"
+              placeholder={account && account.email ? account.email : 'Email'}
               variant="outlined"
               InputLabelProps={{
                 shrink: true,
@@ -429,13 +445,26 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
             />
           </MobileAccountInfoRow>
 
-          <FlatButton style={{ width: 260, marginTop: 5, marginBottom: 20 }}>
+          <FlatButton
+            onClick={() =>
+              updateAccountDetails({
+                uid: user.uid,
+                firstName,
+                lastName,
+                displayName: username,
+                email,
+              })
+            }
+            style={{ width: 260, marginTop: 5, marginBottom: 20 }}
+          >
             <ButtonText>SUBMIT CHANGES</ButtonText>
           </FlatButton>
           <LessonTitle>Payment Method</LessonTitle>
           <Cards
             number="7543"
-            name="Ted Werbel"
+            name={`${user && user.firstName ? user.firstName : 'Your'} ${
+              user && user.lastName ? user.lastName : 'Name'
+            }`}
             expiry="11/2021"
             cvc="xxx"
             issuer="visa"
@@ -808,9 +837,14 @@ const AccountModal = ({ open, onClose, logoutUser, toggleAccountModal }) => {
   );
 };
 
+const mapStateToProps = ({ auth, admin }) => ({
+  user: auth.user,
+  account: admin.account,
+});
+
 export default connect(
-  null,
-  { logoutUser, toggleAccountModal },
+  mapStateToProps,
+  { logoutUser, toggleAccountModal, fetchAccountDetails, updateAccountDetails },
 )(AccountModal);
 
 // NOTE: Form Container
@@ -838,7 +872,7 @@ class FormContainer extends Component {
     }
 
     const { firstName, lastName } = this.state;
-    const { stripe, productId, amount, togglePaymentModal } = this.props;
+    const { stripe, togglePaymentModal } = this.props;
     this.setState({ loading: true });
 
     // Create source with Stripe API

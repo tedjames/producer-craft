@@ -3,7 +3,6 @@ import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import styled, { keyframes } from 'styled-components';
-import { RemoveScroll } from 'react-remove-scroll';
 
 const FADE_IN_DURATION = '0.45s';
 

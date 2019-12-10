@@ -1,16 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import styled, { keyframes } from 'styled-components';
-import { RemoveScroll } from 'react-remove-scroll';
 import { useDropzone } from 'react-dropzone';
 import Swal from 'sweetalert2';
 
-import { toggleEditFileModal } from '../../../actions';
+import { toggleEditFileModal, deleteFile, updateFile } from '../../../actions';
 import ButtonText from '../buttonText';
 import FlatButton from '../flatButton';
 
@@ -52,43 +49,19 @@ const SectionTitle = styled.p`
   cursor: default;
 `;
 
-const AccountInfoRow = styled.div`
-  display: flex;
-  @media (max-width: 480px) {
-    display: none;
-  }
-`;
-
-const MobileAccountInfoRow = styled.div`
-  display: none;
-  @media (max-width: 480px) {
-    display: flex;
-    flex-direction: column;
-    width: 80vw;
-  }
-`;
-
-const EditFileModal = ({ open, toggleEditFileModal }) => {
-  const [courseName, setCourseName] = useState('');
-  const [instructorName, setInstructorName] = useState('');
-  const [price, setPrice] = useState('');
-  const [productId, setProductId] = useState('');
-  const [slug, setSlug] = useState('');
-  const [tagline, setTagline] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [bioImage, setBioImage] = useState('');
-  const [trailerUrl, setTrailerUrl] = useState('');
-  const [thumbnailImage, setThumbnailImage] = useState('');
-  const [bioTitle, setBioTitle] = useState('');
-  const [bioDescription, setBioDescription] = useState('');
-  const [readMoreUrl, setReadMoreUrl] = useState('');
-  const [twitterUrl, setTwitterUrl] = useState('');
-  const [facebookUrl, setFacebookUrl] = useState('');
-  const [redditUrl, setRedditUrl] = useState('');
+const EditFileModal = ({
+  showEditFileModal,
+  toggleEditFileModal,
+  deleteFile,
+  updateFile,
+  lessonId,
+}) => {
+  const [fileName, setFileName] = useState('');
+  const { fileId, path } = showEditFileModal;
 
   const handleDelete = () => {
     Swal.fire({
-      title: 'Delete Lesson',
+      title: 'Delete File',
       text: 'Are you sure you want to delete this file?',
       type: 'warning',
       showCancelButton: true,
@@ -97,19 +70,43 @@ const EditFileModal = ({ open, toggleEditFileModal }) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(result => {
       if (result.value) {
-        Swal.fire('Lesson Deleted!', 'File has been removed from storage and database.', 'success');
+        return deleteFile({ fileName: showEditFileModal.fileName, fileId, path, lessonId });
       }
+      return toggleEditFileModal(false);
     });
   };
 
-  const onDrop = useCallback(acceptedFiles => {
+  const handleUpdate = () => {
+    if (fileName === '') {
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Unable to Update File',
+        text: 'Make sure to include a name for the file.',
+        type: 'error',
+        confirmButtonText: 'Okay',
+        timer: 8000,
+      });
+    }
+    return updateFile({
+      fileName,
+      fileId,
+      path,
+      lessonId,
+      oldFileName: showEditFileModal.fileName,
+    });
+  };
+
+  const onDrop = useCallback(files => {
     // Do something with the files
+    console.log('Files dropped: ', files);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <Dialog
-      open={open}
+      open={!!showEditFileModal}
       onClose={() => toggleEditFileModal(false)}
       aria-labelledby="form-dialog-title"
       fullScreen
@@ -121,13 +118,13 @@ const EditFileModal = ({ open, toggleEditFileModal }) => {
             style={{ marginBottom: 12.5, marginRight: 10 }}
             // onChange={e => usernameChanged(e.target.value)}
             //onKeyPress={e => e.key === 'Enter' && this.handleSubmit()}
-            value={courseName}
-            onChange={e => setCourseName(e.target.value)}
+            value={fileName}
+            onChange={e => setFileName(e.target.value)}
             margin="dense"
             id="file-name"
             label="File Name"
             type="name"
-            placeholder="File Name"
+            placeholder={showEditFileModal.fileName || ''}
             variant="outlined"
             InputLabelProps={{
               shrink: true,
@@ -138,6 +135,7 @@ const EditFileModal = ({ open, toggleEditFileModal }) => {
             {isDragActive ? <p>Drop the files here ...</p> : <p>Click here to upload file</p>}
           </div>
           <FlatButton
+            onClick={handleUpdate}
             style={{
               width: 260,
               minHeight: 45,
@@ -175,10 +173,11 @@ const EditFileModal = ({ open, toggleEditFileModal }) => {
 };
 
 const mapStateToProps = ({ view }) => ({
-  open: view.showEditFileModal,
+  showEditFileModal: view.showEditFileModal,
+  lessonId: view.selectedLesson.lessonId,
 });
 
 export default connect(
   mapStateToProps,
-  { toggleEditFileModal },
+  { toggleEditFileModal, deleteFile, updateFile },
 )(EditFileModal);

@@ -111,7 +111,7 @@ class SubscribeModal extends Component {
 
   render() {
     // eslint-disable-next-line no-shadow
-    const { open, toggleSubscribeModal, productDetails, error } = this.props;
+    const { open, toggleSubscribeModal, productDetails } = this.props;
     return (
       <Dialog
         open={open}
