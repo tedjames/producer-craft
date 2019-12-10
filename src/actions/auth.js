@@ -175,7 +175,18 @@ export const pendingAuthentication = () => {
 export const authenticate = authUser => {
   return dispatch => {
     // TODO: check if authUser.email matches email found in db user document
-    dispatch({ type: AUTH_USER, payload: authUser });
+    db.collection('accounts')
+      .doc(authUser.uid)
+      .get()
+      .then(doc => {
+        // handle listen to users success
+        console.log('Successfully retrieved user accounts object!', doc.data());
+        const account = doc.data();
+        dispatch({
+          type: AUTH_USER,
+          payload: { ...authUser, ...account },
+        });
+      });
   };
 };
 export const unauthenticate = () => {
@@ -250,64 +261,40 @@ export const createUser = ({ username, email, password }) => {
       .createUserWithEmailAndPassword(email, password)
       .then(userRecord => {
         console.log('Account successfully created:', userRecord);
-        const { uid } = userRecord.user;
 
         // Add reference to user in db
-        db.collection('profiles')
-          .doc(uid)
-          .set({ uid, username })
+        auth()
+          // update display name to show in confirmation email
+          .currentUser.updateProfile({
+            displayName: username,
+          })
           .then(() => {
             auth()
-              // update display name to show in confirmation email
-              .currentUser.updateProfile({
-                displayName: username,
-              })
+              .currentUser.sendEmailVerification()
               .then(() => {
-                auth()
-                  .currentUser.sendEmailVerification()
-                  .then(() => {
-                    console.log('Verification email sent!');
-                    dispatch({ type: AUTH_MODAL, payload: false });
-                    dispatch({
-                      type: SNACKBAR,
-                      payload: { variant: 'success', message: 'Verification email sent' },
-                    });
-                    dispatch({ type: CREATE_USER, payload: SUCCESS });
-                    Swal.fire({
-                      customClass: {
-                        container: 'my-swal',
-                      },
-                      title: 'Account Created',
-                      text:
-                        'Welcome to Producer Craft! Feel free to preview some of our classes and if you like what you see, consider subscribing for all-access or purchase our classes individually.',
-                      type: 'success',
-                      confirmButtonText: 'Continue',
-                    });
-                  })
-                  .catch(error => {
-                    console.log('Error sending verification email: ', error);
-                    dispatch({
-                      type: SNACKBAR,
-                      payload: { variant: 'error', message: 'Unable to send verification email' },
-                    });
-                    dispatch({ type: CREATE_USER, payload: ERROR });
-                    Swal.fire({
-                      customClass: {
-                        container: 'my-swal',
-                      },
-                      title: 'Account Created',
-                      text:
-                        'Your account was successfully created but we could not send out a verification email to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
-                      type: 'success',
-                      confirmButtonText: 'Continue',
-                    });
-                  });
-              })
-              .catch(error => {
-                console.log('Error assigning display name: ', error);
+                console.log('Verification email sent!');
+                dispatch({ type: AUTH_MODAL, payload: false });
                 dispatch({
                   type: SNACKBAR,
-                  payload: { variant: 'error', message: 'Unable to assign display name' },
+                  payload: { variant: 'success', message: 'Verification email sent' },
+                });
+                dispatch({ type: CREATE_USER, payload: SUCCESS });
+                Swal.fire({
+                  customClass: {
+                    container: 'my-swal',
+                  },
+                  title: 'Account Created',
+                  text:
+                    'Welcome to Producer Craft! Feel free to preview some of our classes and if you like what you see, consider subscribing for all-access or purchase our classes individually.',
+                  type: 'success',
+                  confirmButtonText: 'Continue',
+                });
+              })
+              .catch(error => {
+                console.log('Error sending verification email: ', error);
+                dispatch({
+                  type: SNACKBAR,
+                  payload: { variant: 'error', message: 'Unable to send verification email' },
                 });
                 dispatch({ type: CREATE_USER, payload: ERROR });
                 Swal.fire({
@@ -316,48 +303,47 @@ export const createUser = ({ username, email, password }) => {
                   },
                   title: 'Account Created',
                   text:
-                    'Your account was successfully created but we could not send out a verification email or assign a display name to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
+                    'Your account was successfully created but we could not send out a verification email to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
                   type: 'success',
                   confirmButtonText: 'Continue',
                 });
               });
-            // send verification email to user
           })
           .catch(error => {
-            // handle adding db document error
-            console.log('Error adding document to users collection: ', error);
+            console.log('Error assigning display name: ', error);
             dispatch({
               type: SNACKBAR,
-              payload: { variant: 'error', message: 'Unable to create user' },
+              payload: { variant: 'error', message: 'Unable to assign display name' },
             });
             dispatch({ type: CREATE_USER, payload: ERROR });
             Swal.fire({
               customClass: {
                 container: 'my-swal',
               },
-              title: 'Internal Error',
+              title: 'Account Created',
               text:
-                'Your account was successfully created but we could not save your information in our database for some unforeseen reason. Please make another account or email us for assistance.',
-              type: 'error',
-              confirmButtonText: 'OKAY',
+                'Your account was successfully created but we could not send out a verification email or assign a display name to you. While this is not an immediate problem, feel free to email us if you experience any unforeseen issues.',
+              type: 'success',
+              confirmButtonText: 'Continue',
             });
           });
+        // send verification email to user
       })
       .catch(error => {
-        // handle error creating user w/ admin API
-        console.log('Error creating new user: ', error);
-        dispatch({ type: AUTH_ERROR, payload: error.message });
+        // handle adding db document error
+        console.log('Error adding document to users collection: ', error);
         dispatch({
           type: SNACKBAR,
           payload: { variant: 'error', message: 'Unable to create user' },
         });
-        dispatch({ type: CREATE_USER, payload: { ERROR: true, message: error.message } });
+        dispatch({ type: CREATE_USER, payload: ERROR });
         Swal.fire({
           customClass: {
             container: 'my-swal',
           },
-          title: 'Error Creating Account',
-          text: error.message,
+          title: 'Internal Error',
+          text:
+            'Your account was successfully created but we could not save your information in our database for some unforeseen reason. Please make another account or email us for assistance.',
           type: 'error',
           confirmButtonText: 'OKAY',
         });

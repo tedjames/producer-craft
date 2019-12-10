@@ -12,7 +12,11 @@ import {
   EDIT_FILE_MODAL,
   COURSE_SELECTED,
   LESSON_SELECTED,
+  FETCH_COMMENTS,
+  // FETCH_FILES,
+  // ERROR,
 } from './types';
+import { db } from '../database';
 
 export const closeSnackbar = () => ({
   type: SNACKBAR,
@@ -87,7 +91,27 @@ export const setSelectedCourse = payload => ({
   payload,
 });
 
-export const setSelectedLesson = payload => ({
-  type: LESSON_SELECTED,
-  payload,
-});
+export const setSelectedLesson = payload => {
+  return dispatch => {
+    dispatch({ type: LESSON_SELECTED, payload });
+    const { lessonId } = payload;
+    console.log('Setting selected lesson: ', lessonId);
+
+    db.collection('lessons')
+      .doc(lessonId)
+      .collection('comments')
+      .orderBy('likeCount', 'desc')
+      .get()
+      .then(snapshot => {
+        const comments = [];
+        snapshot.forEach(doc => {
+          comments.push(doc.data());
+        });
+        console.log('Fetched comments: ', comments);
+        dispatch({ type: FETCH_COMMENTS, payload: comments });
+      })
+      .catch(err => {
+        console.log('Error fetching comments', err);
+      });
+  };
+};

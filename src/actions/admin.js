@@ -1,10 +1,9 @@
 // Sweetalert Modals
 import Swal from 'sweetalert2';
-// React Router
-import { browserHistory } from 'react-router';
 // UUID for Generating Unique IDs
 import uuidv4 from 'uuid/v4';
 // Firebase SDK
+import firebase from 'firebase';
 import { db } from '../database';
 // Redux Action Types
 import {
@@ -30,7 +29,6 @@ import {
   CLEAR_LESSONS,
   // File Management
   CREATE_FILE,
-  FETCH_FILES,
   DELETE_FILE,
   UPDATE_FILE,
   ADD_FILE_MODAL,
@@ -40,12 +38,15 @@ import {
   FETCH_COMMENTS,
   DELETE_COMMENT,
   UPDATE_COMMENT,
+  CLEAR_COMMENTS,
   // Comment Reply Management
   CREATE_COMMENT_REPLY,
   FETCH_COMMENT_REPLIES,
   UPDATE_COMMENT_REPLY,
   DELETE_COMMENT_REPLY,
   // Account Management
+  FETCH_ACCOUNT_DETAILS,
+  UPDATE_ACCOUNT_DETAILS,
 } from './types';
 
 ///////////////////////////
@@ -56,18 +57,19 @@ export const fetchCourses = () => {
   return dispatch => {
     db.collection('courses')
       .orderBy('courseNumber')
-      .get()
-      .then(snapshot => {
-        const courses = [];
-        snapshot.forEach(doc => {
-          courses.push(doc.data());
-        });
-        console.log('Fetched courses: ', courses);
-        dispatch({ type: FETCH_COURSES, payload: courses });
-      })
-      .catch(err => {
-        console.log('Error fetching courses', err);
-      });
+      .onSnapshot(
+        snapshot => {
+          const courses = [];
+          snapshot.forEach(doc => {
+            courses.push(doc.data());
+          });
+          console.log('Fetched courses: ', courses);
+          dispatch({ type: FETCH_COURSES, payload: courses });
+        },
+        err => {
+          console.log('Error fetching courses', err);
+        },
+      );
   };
 };
 
@@ -76,17 +78,18 @@ export const fetchCourseBySlug = ({ urlSlug }) => {
     dispatch({ type: FETCH_COURSE, payload: PENDING });
     db.collection('courses')
       .where('urlSlug', '==', `${urlSlug}`)
-      .get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          console.log('Fetched course successfully: ', doc.data());
-          dispatch({ type: FETCH_COURSE, payload: doc.data() });
-        });
-      })
-      .catch(err => {
-        console.log('Unable to fetch course: ', err);
-        dispatch({ type: FETCH_COURSE, payload: ERROR });
-      });
+      .onSnapshot(
+        snapshot => {
+          snapshot.forEach(doc => {
+            console.log('Fetched course successfully: ', doc.data());
+            dispatch({ type: FETCH_COURSE, payload: doc.data() });
+          });
+        },
+        err => {
+          console.log('Unable to fetch course: ', err);
+          dispatch({ type: FETCH_COURSE, payload: ERROR });
+        },
+      );
   };
 };
 
@@ -97,18 +100,20 @@ export const fetchLessons = ({ courseId }) => {
     db.collection('lessons')
       .where('courseId', '==', `${courseId}`)
       .orderBy('lessonNumber')
-      .get()
-      .then(snapshot => {
-        const lessons = [];
-        snapshot.forEach(doc => {
-          lessons.push(doc.data());
-        });
-        console.log('Fetched lessons: ', lessons);
-        dispatch({ type: FETCH_LESSONS, payload: lessons });
-      })
-      .catch(err => {
-        console.log('Error fetching lessons', err);
-      });
+      .onSnapshot(
+        snapshot => {
+          const lessons = [];
+          snapshot.forEach(doc => {
+            lessons.push(doc.data());
+          });
+          console.log('Fetched lessons: ', lessons);
+          dispatch({ type: FETCH_LESSONS, payload: lessons });
+        },
+        err => {
+          console.log('Error fetching lessons', err);
+          dispatch({ type: FETCH_LESSONS, payload: ERROR });
+        },
+      );
   };
 };
 
@@ -117,41 +122,16 @@ export const clearLessons = () => ({
   payload: null,
 });
 
-export const fetchFiles = ({ courseId, lessonId }) => {
+export const fetchComments = ({ lessonId }) => {
   return dispatch => {
-    db.collection('courses')
-      .doc(courseId)
-      .collection('lessons')
-      .doc(lessonId)
-      .collection('files')
-      .get()
-      .then(snapshot => {
-        const files = [];
-        snapshot.forEach(doc => {
-          console.log(doc.data());
-          files.push(doc.data());
-        });
-        console.log('Fetched files: ', files);
-        dispatch({ type: FETCH_FILES, payload: files });
-      })
-      .catch(err => {
-        console.log('Error fetching lessons', err);
-      });
-  };
-};
-
-export const fetchComments = ({ courseId, lessonId }) => {
-  return dispatch => {
-    db.collection('courses')
-      .doc(courseId)
-      .collection('lessons')
+    db.collection('lessons')
       .doc(lessonId)
       .collection('comments')
+      .orderBy('likeCount', 'desc')
       .get()
       .then(snapshot => {
         const comments = [];
         snapshot.forEach(doc => {
-          console.log(doc.data());
           comments.push(doc.data());
         });
         console.log('Fetched comments: ', comments);
@@ -159,6 +139,28 @@ export const fetchComments = ({ courseId, lessonId }) => {
       })
       .catch(err => {
         console.log('Error fetching comments', err);
+      });
+  };
+};
+
+export const fetchCommentReplies = ({ lessonId, commentId }) => {
+  return dispatch => {
+    db.collection('lessons')
+      .doc(lessonId)
+      .collection('comments')
+      .doc(commentId)
+      .collection('replies')
+      .get()
+      .then(snapshot => {
+        const commentReplies = [];
+        snapshot.forEach(doc => {
+          commentReplies.push(doc.data());
+        });
+        console.log('Fetched comment replies: ', commentReplies);
+        dispatch({ type: FETCH_COMMENT_REPLIES, payload: commentReplies });
+      })
+      .catch(err => {
+        console.log('Error fetching comment replies', err);
       });
   };
 };
@@ -537,20 +539,19 @@ export const deleteLesson = ({ lessonId }) => {
 };
 
 // File Management Actions
-export const createFile = ({ fileName, lessonId, fileUrl }) => {
+export const createFile = ({ fileName, lessonId, path }) => {
   return dispatch => {
     dispatch({ type: CREATE_FILE, payload: PENDING });
     //TODO: add form validation here
     const fileId = uuidv4();
     db.collection('lessons')
       .doc(lessonId)
-      .collection('files')
-      .doc(fileId)
-      .set({
-        fileName,
-        lessonId,
-        fileUrl,
-      })
+      .set(
+        {
+          files: firebase.firestore.FieldValue.arrayUnion({ fileId, fileName, path }),
+        },
+        { merge: true },
+      )
       .then(() => {
         console.log('File created!');
         dispatch({ type: ADD_FILE_MODAL, payload: false });
@@ -581,58 +582,74 @@ export const createFile = ({ fileName, lessonId, fileUrl }) => {
   };
 };
 
-export const updateFile = ({ fileId, fileName, lessonId, fileUrl }) => {
-  return dispatch => {
+export const updateFile = ({ fileId, fileName, lessonId, path, oldFileName }) => {
+  return async dispatch => {
     dispatch({ type: UPDATE_FILE, payload: PENDING });
-    //TODO: add form validation here
-    db.collection('files')
-      .doc(fileId)
+    const batch = db.batch();
+
+    const filesRef = db.collection('lessons').doc(lessonId);
+
+    batch.set(
+      filesRef,
+      {
+        files: firebase.firestore.FieldValue.arrayRemove({ fileId, fileName: oldFileName, path }),
+      },
+      { merge: true },
+    );
+
+    batch.set(
+      filesRef,
+      {
+        files: firebase.firestore.FieldValue.arrayUnion({ fileId, fileName, path }),
+      },
+      { merge: true },
+    );
+
+    try {
+      await batch.commit();
+    } catch (err) {
+      console.log('Error updating file: ', err);
+      dispatch({ type: UPDATE_FILE, payload: ERROR });
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Internal Error',
+        text: 'Unable to write file to database! Check console for error logging.',
+        type: 'error',
+        confirmButtonText: 'Continue',
+      });
+    }
+
+    console.log('File updated!');
+    dispatch({ type: EDIT_FILE_MODAL, payload: false });
+    dispatch({ type: UPDATE_FILE, payload: SUCCESS });
+    Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      title: 'File Updated',
+      text: 'File data successfully updated!',
+      type: 'success',
+      confirmButtonText: 'Continue',
+    });
+  };
+};
+
+export const deleteFile = ({ fileId, lessonId, path, fileName }) => {
+  return dispatch => {
+    db.collection('lessons')
+      .doc(lessonId)
       .set(
         {
-          fileName,
-          lessonId,
-          fileUrl,
+          files: firebase.firestore.FieldValue.arrayRemove({ fileId, fileName, path }),
         },
         { merge: true },
       )
       .then(() => {
-        console.log('File updated!');
-        dispatch({ type: EDIT_FILE_MODAL, payload: false });
-        dispatch({ type: UPDATE_FILE, payload: SUCCESS });
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          title: 'File Updated',
-          text: 'File data successfully updated!',
-          type: 'success',
-          confirmButtonText: 'Continue',
-        });
-      })
-      .catch(err => {
-        console.log('Error updating file: ', err);
-        dispatch({ type: UPDATE_FILE, payload: ERROR });
-        Swal.fire({
-          customClass: {
-            container: 'my-swal',
-          },
-          title: 'Internal Error',
-          text: 'Unable to write file to database! Check console for error logging.',
-          type: 'error',
-          confirmButtonText: 'Continue',
-        });
-      });
-  };
-};
-
-export const deleteFile = ({ fileId }) => {
-  return dispatch => {
-    db.collection('files')
-      .doc(fileId)
-      .delete()
-      .then(() => {
         // handle delete user reference from db success
         console.log('Successfully deleted file from db!');
+        // TODO: Delete file from storage bucket using "path" (localize this to component instead?)
         dispatch({ type: EDIT_FILE_MODAL, payload: false });
         dispatch({ type: DELETE_FILE, payload: SUCCESS });
         Swal.fire({
@@ -664,7 +681,7 @@ export const deleteFile = ({ fileId }) => {
 };
 
 // Comment Management Actions
-export const createComment = ({ lessonId, message, userId }) => {
+export const createComment = ({ lessonId, message, userId, nickname }) => {
   return dispatch => {
     dispatch({ type: CREATE_COMMENT, payload: PENDING });
     //TODO: add form validation here
@@ -678,10 +695,16 @@ export const createComment = ({ lessonId, message, userId }) => {
         commentId,
         userId,
         message,
+        nickname,
+        likeCount: 0,
+        replyCount: 0,
       })
       .then(() => {
         console.log('Comment created!');
-        dispatch({ type: CREATE_COMMENT, payload: message });
+        dispatch({
+          type: CREATE_COMMENT,
+          payload: { message, commentId, lessonId, nickname, replyCount: 0 },
+        });
       })
       .catch(err => {
         console.log('Error creating comment: ', err);
@@ -744,6 +767,8 @@ export const updateComment = ({ commentId, message, lessonId }) => {
 
 export const deleteComment = ({ lessonId, commentId }) => {
   return dispatch => {
+    console.log('DELETING COMMENT WITH: ', lessonId, commentId);
+
     db.collection('lessons')
       .doc(lessonId)
       .collection('comments')
@@ -762,12 +787,62 @@ export const deleteComment = ({ lessonId, commentId }) => {
   };
 };
 
+export const likeComment = ({ lessonId, commentId, userId }) => {
+  return () => {
+    console.log('likeComment: FIRED');
+
+    db.collection('lessons')
+      .doc(lessonId)
+      .collection('comments')
+      .doc(commentId)
+      .collection('likes')
+      .doc(userId)
+      .set({ value: 1, userId, commentId, lessonId }, { merge: true })
+      .then(() => {
+        return console.log('Comment Liked!');
+      })
+      .catch(err => {
+        return console.log('Error! Unable to like comment: ', err);
+      });
+  };
+};
+
+export const dislikeComment = ({ lessonId, commentId, userId }) => {
+  return () => {
+    console.log('dislikeComment: FIRED');
+    db.collection('lessons')
+      .doc(lessonId)
+      .collection('comments')
+      .doc(commentId)
+      .collection('likes')
+      .doc(userId)
+      .set({ value: 0, userId, commentId, lessonId }, { merge: true })
+      .then(() => {
+        return console.log('Comment Disliked!');
+      })
+      .catch(err => {
+        return console.log('Error! Unable to dislike comment: ', err);
+      });
+  };
+};
+
+export const clearComments = () => ({
+  type: CLEAR_COMMENTS,
+  payload: null,
+});
+
 // Comment Reply Management Actions
-export const createCommentReply = ({ lessonId, message, userId, commentId }) => {
+export const createCommentReply = ({
+  lessonId,
+  message,
+  userId,
+  commentId,
+  commentReplyId,
+  nickname,
+}) => {
   return dispatch => {
     dispatch({ type: CREATE_COMMENT_REPLY, payload: PENDING });
     //TODO: add form validation here
-    const commentReplyId = uuidv4();
     db.collection('lessons')
       .doc(lessonId)
       .collection('comments')
@@ -780,6 +855,7 @@ export const createCommentReply = ({ lessonId, message, userId, commentId }) => 
         commentReplyId,
         userId,
         message,
+        nickname,
       })
       .then(() => {
         console.log('Comment reply created!');
@@ -835,6 +911,142 @@ export const deleteCommentReply = ({ lessonId, commentId, commentReplyId }) => {
       .catch(error => {
         console.log('Error deleting comment from database: ', error);
         dispatch({ type: DELETE_COMMENT_REPLY, payload: ERROR });
+        return Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Unable to Delete Reply',
+          text: "Only the comment's author or admins can delete this.",
+          type: 'error',
+          confirmButtonText: 'Continue',
+          timer: 8000,
+        });
       });
+  };
+};
+
+// Account Details
+
+export const fetchAccountDetails = ({ uid }) => {
+  return dispatch => {
+    dispatch({ type: FETCH_ACCOUNT_DETAILS, payload: PENDING });
+    db.collection('users')
+      .doc(uid)
+      .get()
+      .then(doc => {
+        const payload = doc.data();
+        console.log('Fetched account details: ', payload);
+        dispatch({ type: FETCH_ACCOUNT_DETAILS, payload });
+      })
+      .catch(err => {
+        console.log('Error fetching account details from /users/{uid}: ', err);
+        dispatch({ type: FETCH_ACCOUNT_DETAILS, payload: ERROR });
+
+        Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Internal Error',
+          text: 'Unable to fetch account details.',
+          type: 'error',
+          confirmButtonText: 'Continue',
+        });
+      });
+  };
+};
+
+export const updateAccountDetails = ({ uid, firstName, lastName, displayName, email }) => {
+  return async dispatch => {
+    dispatch({ type: UPDATE_ACCOUNT_DETAILS, payload: PENDING });
+    const userRef = db.collection('users').doc(uid);
+
+    if (firstName === '' && lastName === '' && displayName === '' && email === '') {
+      console.log('No firstName, lastName, displayName or email provided.');
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Internal Error',
+        text: 'No information to be updated.',
+        type: 'error',
+        confirmButtonText: 'Continue',
+      });
+    }
+
+    // Update users/{uid} in db
+    try {
+      const nameBatch = db.batch();
+      if (firstName !== '' && lastName !== '') {
+        nameBatch.set(userRef, { firstName, lastName }, { merge: true });
+      }
+      if (firstName === '' && lastName !== '') {
+        nameBatch.set(userRef, { lastName }, { merge: true });
+      }
+      if (firstName !== '' && lastName === '') {
+        nameBatch.set(userRef, { firstName }, { merge: true });
+      }
+
+      await nameBatch.commit();
+    } catch (err) {
+      console.log('Error updating firstName and lastName: ', err);
+      return Swal.fire({
+        customClass: {
+          container: 'my-swal',
+        },
+        title: 'Internal Error',
+        text: 'Unable to update account details.',
+        type: 'error',
+        confirmButtonText: 'Continue',
+      });
+    }
+
+    // If displayName is provided, update displayName in firebase
+    if (displayName !== '') {
+      try {
+        const profileBatch = db.batch();
+        const profileRef = db.collection('profiles').doc(uid);
+        profileBatch.set(profileRef, { username: displayName, uid }, { merge: true });
+        await profileBatch.commit();
+      } catch (err) {
+        console.log('Error updating displayName: ', err);
+        return Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Internal Error',
+          text: 'Unable to update username.',
+          type: 'error',
+          confirmButtonText: 'Continue',
+        });
+      }
+    }
+    // If email is provided, update email in firebase
+    if (email !== '') {
+      try {
+        const emailBatch = db.batch();
+        emailBatch.set(userRef, { email }, { merge: true });
+        await emailBatch.commit();
+      } catch (err) {
+        console.log('Error updating email in: ', err);
+        return Swal.fire({
+          customClass: {
+            container: 'my-swal',
+          },
+          title: 'Internal Error',
+          text: 'Unable to update email.',
+          type: 'error',
+          confirmButtonText: 'Continue',
+        });
+      }
+    }
+    return Swal.fire({
+      customClass: {
+        container: 'my-swal',
+      },
+      title: 'Success!',
+      text: 'Account details successfully updated.',
+      type: 'success',
+      confirmButtonText: 'Continue',
+    });
   };
 };
