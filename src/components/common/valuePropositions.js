@@ -11,6 +11,8 @@ const ValuePropositions = styled.div`
   padding-right: 20px;
   padding-top: 20px;
   padding-bottom: 0px;
+  justify-content: center;
+  align-items: center;
   @media (max-width: 1200px) {
     flex-direction: column;
     justify-content: center;
