@@ -314,12 +314,14 @@ class CoursePreview extends Component {
                 justifyContent: 'center',
               }}
             >
+              {isAdmin && (
               <FlatButton
                 onClick={() => toggleAddLessonModal(true)}
                 style={{ width: 260, marginTop: 10, marginBottom: 0 }}
               >
                 <ButtonText>+ ADD NEW LESSON</ButtonText>
               </FlatButton>
+              )}
             </div>
           </CardList>
 
