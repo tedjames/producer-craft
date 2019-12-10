@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
-import { FlatButton, Header, ButtonText } from '../common';
-import StorchHero from '../../assets/storch-hero-image-3.png';
+import { Header } from '../common';
 
 const Container = styled.div`
   height: 35vh;

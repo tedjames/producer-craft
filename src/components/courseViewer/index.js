@@ -1,16 +1,18 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
 /* eslint-disable max-len */
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { browserHistory } from 'react-router';
+import { browserHistory, withRouter } from 'react-router';
 
 import Slide from '@material-ui/core/Slide';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { connect } from 'react-redux';
+import FileCard from './fileCard';
 
 // Redux
-import { connect } from 'react-redux';
 import {
   showAuthModal,
   showRegistrationModal,
@@ -26,6 +28,8 @@ import {
   fetchLessons,
   fetchCourseBySlug,
   fetchCourses,
+  fetchComments,
+  clearComments,
 } from '../../actions';
 
 // Components
@@ -51,9 +55,6 @@ import ActionBar from './actionBar';
 import Recommended from './recommended';
 import CommentSubmission from './commentSubmission';
 import Comment from './comment';
-
-// Image Assets
-import StorchHero4 from '../../assets/storch-hero-image-4.png';
 
 // componentDidMount() {
 //   auth().onAuthStateChanged(user => {
@@ -318,46 +319,6 @@ const FilesSection = styled.div`
   justify-content: flex-start;
   padding-right: 20px;
 `;
-const FileCard = styled.div`
-  display: flex;
-  height: 60px;
-  margin-top: 10px;
-  margin-right: 10px;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 12.5px;
-  padding-right: 17.5px;
-  background: #fff;
-  border-radius: 12px;
-  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bcb4c7' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
-  cursor: pointer;
-  box-shadow: 2px 2px 66px -35px rgba(0, 0, 0, 0.39);
-  :hover {
-    opacity: 0.85;
-  }
-  :active {
-    opacity: 0.7;
-  }
-`;
-const FileIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fafafa;
-  border: 1px #eee dotted;
-  border-radius: 80px;
-  height: 40px;
-  width: 40px;
-  margin-right: 12.5px;
-`;
-const FileName = styled.div`
-  font-family: roboto-condensed;
-  font-weight: 400;
-  font-size: 12px;
-  color: #222;
-  text-align: left;
-`;
-
 const SharingButtons = styled.div`
   display: flex;
   align-items: center;
@@ -450,24 +411,26 @@ class CourseViewer extends Component {
       fetchCourseBySlug,
       fetchLessons,
       lessons,
-      clearLessons,
-      selectedCourse,
       selectedLesson,
       setSelectedLesson,
-      courses,
+      fetchComments,
+      comments,
     } = this.props;
 
     // Get urlSlug - for case where url is typed in
     const pathArray = window.location.pathname.split('/');
     const urlSlug = pathArray[2];
     const lessonNumber = pathArray[3];
+    clearComments();
 
     if (!course) {
       fetchCourseBySlug({ urlSlug });
+      console.log('componentDidMount: FETCHING COURSE');
     }
 
     if (!lessons && course.courseId) {
       fetchLessons({ courseId: course.courseId });
+      console.log('componentDidMount: FETCHING LESSONS');
     }
 
     if (!selectedLesson && lessons) {
@@ -475,28 +438,43 @@ class CourseViewer extends Component {
 
       setSelectedLesson(lessons[lessonNumber]);
     }
+
+    if (!comments) {
+      if (selectedLesson) {
+        console.log('componentDidMount: FETCHING COMMENTS');
+        fetchComments({ lessonId: selectedLesson.lessonId });
+      }
+    }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const {
-      course,
-      fetchLessons,
-      fetchCourses,
-      lessons,
-      selectedLesson,
-      setSelectedLesson,
-      courses,
-    } = this.props;
-    const pathArray = window.location.pathname.split('/');
-    const lessonNumber = pathArray[3];
-
-    if (!lessons && course) {
-      fetchLessons({ courseId: course.courseId });
+  componentDidUpdate(prevProps) {
+    const { course, fetchLessons, lessons, selectedLesson, setSelectedLesson, params } = this.props;
+    const { lessonNumber } = params;
+    if (selectedLesson) {
+      if (lessonNumber !== selectedLesson.lessonNumber) {
+        document.location.reload();
+      }
     }
 
-    if (!selectedLesson && lessons) {
+    if (!lessons && course && !prevProps.comments) {
+      console.log('componentDidUpdate: FETCHING LESSONS w/ prevProps: ', prevProps);
+      return !prevProps.lessons && fetchLessons({ courseId: course.courseId });
+    }
+
+    if (!selectedLesson && lessons && !prevProps.comments) {
       setSelectedLesson(lessons[lessonNumber - 1]);
     }
+
+    // if (!comments) {
+    //   if (selectedLesson) {
+    //     console.log('componentDidUpdate: FETCHING COMMENTS w/ prevProps: ', prevProps, comments);
+    //     return !prevProps.comments && fetchComments({ lessonId: selectedLesson.lessonId });
+    //   }
+    // }
+  }
+
+  componentWillUnmount() {
+    clearComments();
   }
 
   handleEnroll() {
@@ -510,8 +488,9 @@ class CourseViewer extends Component {
   }
 
   handleLessonChange(lesson) {
-    const { course, setSelectedLesson } = this.props;
+    const { course, setSelectedLesson, clearComments } = this.props;
     browserHistory.push(`/courses/${course.urlSlug}/${lesson.lessonNumber}`);
+    clearComments();
     setSelectedLesson(lesson);
     return this.setState({ showLessonPlanModal: false });
   }
@@ -525,13 +504,16 @@ class CourseViewer extends Component {
       toggleEditLessonModal,
       toggleEditCourseModal,
       toggleAddFileModal,
-      toggleEditFileModal,
       selectedLesson,
       course,
       courses,
       lessons,
+      newComment,
+      comments,
     } = this.props;
     const { showTrailerModal, showLessonPlanModal } = this.state;
+    const isAdmin = user && user.roles ? user.roles.includes('admin') : false;
+
     return (
       <div style={{ overflowX: 'hidden' }} id="course-viewer">
         {/* Hero Image, Title and Enroll/Follow Buttons */}
@@ -565,66 +547,20 @@ class CourseViewer extends Component {
               </LessonDescription>
 
               <FilesSection>
-                <FileCard onClick={() => toggleEditFileModal(true)}>
-                  <FileIcon>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="19"
-                      height="19"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#37d6ff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-link"
-                    >
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                    </svg>
-                  </FileIcon>
-                  <FileName className="disable-selection">Ableton Template Project</FileName>
-                </FileCard>
-                <FileCard>
-                  <FileIcon>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="19"
-                      height="19"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#37d6ff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-link"
-                    >
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                    </svg>
-                  </FileIcon>
-                  <FileName className="disable-selection">Scott Storch Drum Kit</FileName>
-                </FileCard>
-                <FileCard>
-                  <FileIcon>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="19"
-                      height="19"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#37d6ff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-link"
-                    >
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                    </svg>
-                  </FileIcon>
-                  <FileName className="disable-selection">Drum Rack Presets</FileName>
-                </FileCard>
+                {selectedLesson &&
+                  selectedLesson.files &&
+                  selectedLesson.files.map(file => {
+                    const { fileName, fileId, path } = file;
+                    return (
+                      <FileCard
+                        key={file.fileId}
+                        fileName={fileName}
+                        fileId={fileId}
+                        path={path}
+                        lessonId={selectedLesson.lessonId}
+                      />
+                    );
+                  })}
               </FilesSection>
 
               {/* Share this Course */}
@@ -694,60 +630,94 @@ class CourseViewer extends Component {
                   Lesson Plan
                 </AnimatedButton>
               </LessonPlanButton>
-
-              <ShareText className="disable-selection" style={{ marginBottom: 5 }}>
-                Admin Options
-              </ShareText>
-              <div
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <FlatButton
-                  onClick={() => toggleEditLessonModal(true)}
+              {isAdmin && [
+                <ShareText className="disable-selection" style={{ marginBottom: 5 }}>
+                  Admin Options
+                </ShareText>,
+                <div
                   style={{
-                    width: 260,
-                    marginTop: 7.5,
-                    marginRight: 10,
-                    marginBottom: 0,
+                    display: 'flex',
+                    width: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    flexWrap: 'wrap',
                   }}
                 >
-                  <ButtonText>EDIT LESSON</ButtonText>
-                </FlatButton>
+                  <FlatButton
+                    onClick={() => toggleEditLessonModal(true)}
+                    style={{
+                      width: 260,
+                      marginTop: 7.5,
+                      marginRight: 10,
+                      marginBottom: 0,
+                    }}
+                  >
+                    <ButtonText>EDIT LESSON</ButtonText>
+                  </FlatButton>
 
-                <FlatButton
-                  onClick={() => toggleEditCourseModal(true)}
-                  style={{
-                    width: 260,
-                    marginTop: 7.5,
-                    marginRight: 10,
-                    marginBottom: 0,
-                    background: '#ddd',
-                  }}
-                >
-                  <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
-                </FlatButton>
+                  <FlatButton
+                    onClick={() => toggleEditCourseModal(true)}
+                    style={{
+                      width: 260,
+                      marginTop: 7.5,
+                      marginRight: 10,
+                      marginBottom: 0,
+                      background: '#ddd',
+                    }}
+                  >
+                    <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
+                  </FlatButton>
 
-                <FlatButton
-                  onClick={() => toggleAddFileModal(true)}
-                  style={{ width: 260, marginTop: 7.5, marginBottom: 0, background: '#ddd' }}
-                >
-                  <ButtonText style={{ color: '#555' }}>+ ADD FILE</ButtonText>
-                </FlatButton>
-              </div>
+                  <FlatButton
+                    onClick={() => toggleAddFileModal(true)}
+                    style={{ width: 260, marginTop: 7.5, marginBottom: 0, background: '#ddd' }}
+                  >
+                    <ButtonText style={{ color: '#555' }}>+ ADD FILE</ButtonText>
+                  </FlatButton>
+                </div>,
+              ]}
 
               {/* Comments Section */}
               <Comments>
                 <CommentSectionTitle className="disable-selection">COMMENTS</CommentSectionTitle>
-                <CommentSubmission />
-                <Comment />
-                <Comment />
-                <Comment />
-                <Comment />
+                <CommentSubmission user={user} lessonId={selectedLesson.lessonId} />
+                {newComment &&
+                  newComment.map(comment => {
+                    const { message, commentId, lessonId, replyCount, nickname } = comment;
+                    return (
+                      <Comment
+                        key={commentId}
+                        nickname={nickname}
+                        message={message}
+                        commentId={commentId}
+                        lessonId={lessonId}
+                        replyCount={replyCount}
+                      />
+                    );
+                  })}
+                {comments &&
+                  comments.map(comment => {
+                    const {
+                      commentId,
+                      message,
+                      lessonId,
+                      likeCount,
+                      replyCount,
+                      nickname,
+                    } = comment;
+
+                    return (
+                      <Comment
+                        key={commentId}
+                        nickname={nickname}
+                        lessonId={lessonId}
+                        commentId={commentId}
+                        message={message}
+                        likeCount={likeCount}
+                        replyCount={replyCount}
+                      />
+                    );
+                  })}
               </Comments>
             </LessonDetails>
 
@@ -757,7 +727,10 @@ class CourseViewer extends Component {
               {lessons &&
                 lessons.map(lesson => {
                   return (
-                    <LessonPreview onClick={() => this.handleLessonChange(lesson)}>
+                    <LessonPreview
+                      key={lesson.lessonId}
+                      onClick={() => this.handleLessonChange(lesson)}
+                    >
                       <Thumbnail backgroundImage={lesson.thumbnailImage} />
                       <LessonPreviewInfo>
                         <LessonNumber>// {lesson.lessonNumber}</LessonNumber>
@@ -774,12 +747,14 @@ class CourseViewer extends Component {
                   justifyContent: 'center',
                 }}
               >
-                <FlatButton
-                  onClick={() => toggleAddLessonModal(true)}
-                  style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
-                >
-                  <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
-                </FlatButton>
+                {isAdmin && (
+                  <FlatButton
+                    onClick={() => toggleAddLessonModal(true)}
+                    style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
+                  >
+                    <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
+                  </FlatButton>
+                )}
               </div>
             </LessonPlan>
           </CourseDetails>
@@ -796,7 +771,7 @@ class CourseViewer extends Component {
 
           {/* Recommended Courses */}
 
-          {courses && <Recommended courses={courses} />}
+          {courses && <Recommended courses={courses} selectedCourse={course} />}
 
           {/* Return Home Button */}
           <ReturnSection />
@@ -830,7 +805,10 @@ class CourseViewer extends Component {
             {lessons &&
               lessons.map(lesson => {
                 return (
-                  <LessonPreview onClick={() => this.handleLessonChange(lesson)}>
+                  <LessonPreview
+                    key={lesson.lessonId}
+                    onClick={() => this.handleLessonChange(lesson)}
+                  >
                     <Thumbnail backgroundImage={lesson.thumbnailImage} />
                     <LessonPreviewInfo>
                       <LessonNumber>// {lesson.lessonNumber}</LessonNumber>
@@ -847,12 +825,14 @@ class CourseViewer extends Component {
                 justifyContent: 'center',
               }}
             >
-              <FlatButton
-                onClick={() => toggleAddLessonModal(true)}
-                style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
-              >
-                <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
-              </FlatButton>
+              {isAdmin && (
+                <FlatButton
+                  onClick={() => toggleAddLessonModal(true)}
+                  style={{ width: 260, marginTop: 15, marginBottom: 0, background: '#ddd' }}
+                >
+                  <ButtonText style={{ color: '#555' }}>+ ADD NEW LESSON</ButtonText>
+                </FlatButton>
+              )}
             </div>
           </LessonPlanModal>
         </Dialog>
@@ -882,24 +862,30 @@ const mapStateToProps = ({ auth, view, admin }) => ({
   course: view.selectedCourse,
   lessons: admin.lessons,
   courses: admin.courses,
+  newComment: admin.newComment,
+  comments: admin.comments,
 });
 
-export default connect(
-  mapStateToProps,
-  {
-    showAuthModal,
-    showRegistrationModal,
-    toggleSubscribeModal,
-    togglePaymentModal,
-    toggleAddLessonModal,
-    toggleEditLessonModal,
-    toggleEditCourseModal,
-    toggleAddFileModal,
-    toggleEditFileModal,
-    clearLessons,
-    fetchLessons,
-    setSelectedLesson,
-    fetchCourseBySlug,
-    fetchCourses,
-  },
-)(CourseViewer);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    {
+      showAuthModal,
+      showRegistrationModal,
+      toggleSubscribeModal,
+      togglePaymentModal,
+      toggleAddLessonModal,
+      toggleEditLessonModal,
+      toggleEditCourseModal,
+      toggleAddFileModal,
+      toggleEditFileModal,
+      clearLessons,
+      fetchLessons,
+      setSelectedLesson,
+      fetchCourseBySlug,
+      fetchCourses,
+      fetchComments,
+      clearComments,
+    },
+  )(CourseViewer),
+);
