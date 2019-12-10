@@ -1,3 +1,8 @@
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+// import client from 'firebase-tools';
+import { db } from './config';
+import { catchErrors } from './helpers';
 
 const updateLikeCount = async (lessonId: any, commentId: any, value: any) => {
   const liked = value > 0;
