@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import { FlatButton, Header, ButtonText } from '../common';
-import StorchHero from '../../assets/storch-hero-image-3.png';
 
 const Container = styled.div`
   height: 70vh;
@@ -335,7 +334,7 @@ export default class Hero extends PureComponent {
             <ButtonText>Enroll</ButtonText>
           </FlatButton>
           <FlatButton
-            onClick={() => browserHistory.push('/courses/scott-storch-teaches-music-production')}
+            onClick={() => browserHistory.push(`/courses/${course.urlSlug}/1`)}
             style={{ width: 180, backgroundColor: 'rgba(255, 255, 255, 0.125' }}
           >
             <ButtonText>Preview</ButtonText>
