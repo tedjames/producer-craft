@@ -14,6 +14,7 @@ import {
   fetchCourseBySlug,
   fetchLessons,
   clearLessons,
+  clearComments,
 } from '../../actions';
 
 // Components
