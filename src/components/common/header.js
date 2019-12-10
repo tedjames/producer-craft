@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import styled from 'styled-components';
-import { showAuthModal, toggleAccountModal, logoutUser } from '../../actions';
+import { showAuthModal, toggleAccountModal, logoutUser, fetchAccountDetails } from '../../actions';
 import Logo from './logo';
 import MenuModal from './modals/menuModal';
 import AccountModal from './modals/accountModal';
@@ -64,6 +64,7 @@ const Header = ({
   user,
   toggleAccountModal,
   showAccountModal,
+  fetchAccountDetails,
 }) => {
   const [showMenu, toggleMenu] = useState(false);
   const handleLogout = () => {
@@ -74,11 +75,15 @@ const Header = ({
     toggleAccountModal(false);
     toggleMenu(false);
   };
+  const handleMenuClick = () => {
+    fetchAccountDetails({ uid: user.uid });
+    toggleMenu(true);
+  };
   return (
     <Container style={style}>
       <Logo onClick={() => browserHistory.push('/')} />
       {user ? (
-        <LoginButton className="disable-selection" onClick={() => toggleMenu(true)}>
+        <LoginButton className="disable-selection" onClick={handleMenuClick}>
           <svg
             width="24"
             height="24"
@@ -123,5 +128,5 @@ const mapStateToProps = ({ auth, view }) => ({
 
 export default connect(
   mapStateToProps,
-  { showAuthModal, toggleAccountModal, logoutUser },
+  { showAuthModal, toggleAccountModal, logoutUser, fetchAccountDetails },
 )(Header);
