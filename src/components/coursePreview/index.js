@@ -248,6 +248,7 @@ class CoursePreview extends Component {
           />
 
           {/* Admin Tools */}
+          {isAdmin && (
           <div
             style={{
               display: 'flex',
@@ -270,6 +271,7 @@ class CoursePreview extends Component {
               <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
             </FlatButton>
           </div>
+          )}
 
           {/* Value Propositions */}
           <ValuePropositions style={{ paddingTop: 0 }}>
