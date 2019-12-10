@@ -174,10 +174,10 @@ class CoursePreview extends Component {
     window.scrollTo(0, 0);
 
     if (course) {
-    if (!lessons) {
+      if (!lessons) {
         console.log('componentDidUpdate: FETCHING LESSONS');
-      fetchLessons({ courseId: course.courseId });
-    }
+        fetchLessons({ courseId: course.courseId });
+      }
       if (course.urlSlug !== params.urlSlug) {
         window.scrollTo(0, 0);
         document.location.reload();
@@ -250,28 +250,28 @@ class CoursePreview extends Component {
 
           {/* Admin Tools */}
           {isAdmin && (
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: 20,
-            }}
-          >
-            <FlatButton
-              onClick={() => toggleEditCourseModal(true)}
+            <div
               style={{
-                width: 260,
-                marginTop: 7.5,
-                marginRight: 10,
-                marginBottom: 0,
-                background: '#ddd',
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 20,
               }}
             >
-              <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
-            </FlatButton>
-          </div>
+              <FlatButton
+                onClick={() => toggleEditCourseModal(true)}
+                style={{
+                  width: 260,
+                  marginTop: 7.5,
+                  marginRight: 10,
+                  marginBottom: 0,
+                  background: '#ddd',
+                }}
+              >
+                <ButtonText style={{ color: '#555' }}>EDIT COURSE</ButtonText>
+              </FlatButton>
+            </div>
           )}
 
           {/* Value Propositions */}
@@ -319,12 +319,12 @@ class CoursePreview extends Component {
               }}
             >
               {isAdmin && (
-              <FlatButton
-                onClick={() => toggleAddLessonModal(true)}
-                style={{ width: 260, marginTop: 10, marginBottom: 0 }}
-              >
-                <ButtonText>+ ADD NEW LESSON</ButtonText>
-              </FlatButton>
+                <FlatButton
+                  onClick={() => toggleAddLessonModal(true)}
+                  style={{ width: 260, marginTop: 10, marginBottom: 0 }}
+                >
+                  <ButtonText>+ ADD NEW LESSON</ButtonText>
+                </FlatButton>
               )}
             </div>
           </CardList>
@@ -381,18 +381,18 @@ const mapStateToProps = ({ auth, view, admin }) => ({
 
 export default withRouter(
   connect(
-  mapStateToProps,
-  {
-    showAuthModal,
-    showRegistrationModal,
-    toggleSubscribeModal,
-    togglePaymentModal,
-    toggleAddLessonModal,
-    toggleEditCourseModal,
-    fetchCourseBySlug,
-    fetchLessons,
-    clearLessons,
+    mapStateToProps,
+    {
+      showAuthModal,
+      showRegistrationModal,
+      toggleSubscribeModal,
+      togglePaymentModal,
+      toggleAddLessonModal,
+      toggleEditCourseModal,
+      fetchCourseBySlug,
+      fetchLessons,
+      clearLessons,
       clearComments,
-  },
+    },
   )(CoursePreview),
 );
