@@ -22,7 +22,7 @@ export const webhookHandler = async (data: any) => {
     const batch = db.batch();
 
     // Update subscription status
-    const subscriptionsRef = await db
+    const subscriptionsRef = db
       .doc(`accounts/${uid}`)
       .collection('subscriptions')
       .doc(`${subId}`);
@@ -32,7 +32,7 @@ export const webhookHandler = async (data: any) => {
     });
 
     // Set subscribed to false
-    const accountsRef = await db.doc(`accounts/${uid}`);
+    const accountsRef = db.doc(`accounts/${uid}`);
     batch.set(
       accountsRef,
       { subscribed: subscription.status === 'active' ? true : false },
