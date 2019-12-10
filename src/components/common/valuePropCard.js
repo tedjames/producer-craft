@@ -51,8 +51,10 @@ const ValueDescription = styled.p`
   margin-bottom: 0px;
   cursor: default;
   line-height: 18px;
+  max-width: 25vw;
   @media (max-width: 1200px) {
     text-align: center;
+    max-width: 55vw;
   }
   @media (max-width: 480px) {
     font-size: 13px;
