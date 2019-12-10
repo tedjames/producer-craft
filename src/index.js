@@ -4,7 +4,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './styles/index.css';
 import './styles/mouse-scroll-animation.css';
-import App from './components/routing';
+import App from './components';
 import * as serviceWorker from './hocs/serviceWorker';
 
 // enables hot module reloading
