@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { browserHistory } from 'react-router';
+import { browserHistory, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
 import { setSelectedLesson } from '../../actions';
@@ -23,7 +23,7 @@ const Card = styled.div`
   padding-right: 40px;
   box-shadow: inset 340px -40px 70px 140px rgba(0, 0, 0, 0.7);
   transition: all 0.35s ease;
-  cursor: default;
+  cursor: pointer;
   opacity: 0.925;
   @media (min-width: 1290px) {
     flex: 0 44%;
@@ -120,7 +120,9 @@ const LessonCard = ({
   );
 };
 
-export default connect(
-  null,
-  { setSelectedLesson },
-)(LessonCard);
+export default withRouter(
+  connect(
+    null,
+    { setSelectedLesson },
+  )(LessonCard),
+);
