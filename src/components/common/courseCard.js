@@ -20,7 +20,7 @@ const Card = styled.div`
   padding-left: 20px;
   padding-bottom: 20px;
   padding-right: 40px;
-  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 280px -40px 70px 140px rgba(0, 0, 0, 0.67);
   transition: all 0.35s ease;
   cursor: pointer;
   opacity: 0.96;
@@ -45,7 +45,7 @@ const Card = styled.div`
     height: 240px;
   }
   :hover {
-    box-shadow: inset 380px -40px 70px 140px rgba(0, 0, 0, 0.87);
+    box-shadow: inset 380px -40px 70px 140px rgba(0, 0, 0, 0.75);
   }
   :active {
     opacity: 0.85;
