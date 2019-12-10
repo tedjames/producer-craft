@@ -298,6 +298,7 @@ class CoursePreview extends Component {
               lessons.map(lesson => {
                 return (
                   <LessonCard
+                    key={lesson.lessonId}
                     backgroundImage={lesson.thumbnailImage}
                     title={lesson.lessonNumber}
                     tagline={lesson.lessonName}
