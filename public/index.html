@@ -7,33 +7,32 @@
       name="viewport"
       content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"
     />
-
     <meta name="theme-color" content="#000000" />
-    <script src="https://js.stripe.com/v3/"></script>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Adobe Typekit Integration -->
     <link rel="stylesheet" href="https://use.typekit.net/gpa4kmd.css" />
+
+    <!-- StripeJS Client Library -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- Fetch polyfill for IE11 support -->
     <script
       crossorigin="anonymous"
       src="https://polyfill.io/v3/polyfill.min.js?features=fetch"
     ></script>
+
+    <!-- Support for touch events -->
     <script>
-      // Adds :active support for touch events
       document.addEventListener('touchstart', function() {}, false);
     </script>
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>Producer Craft</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
     <!-- SVG Gradient Config -->
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
       <linearGradient id="my-cool-gradient" x2="1" y2="1">
