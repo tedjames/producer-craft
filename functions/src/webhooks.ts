@@ -57,7 +57,7 @@ export const invoiceWebhookEndpoint = functions.https.onRequest(async (req, res)
 
     res.sendStatus(200);
   } catch (err) {
-    console.log('Error caught elsewhere: ', err);
+    console.log('Error: ', err);
     res.status(400).send(err);
   }
 });
