@@ -146,12 +146,18 @@ class CoursePreview extends Component {
   }
 
   componentDidMount() {
-    const { course, fetchCourseBySlug, fetchLessons, lessons, clearLessons } = this.props;
-
-    // Get urlSlug - for case where url is typed in
-    const pathArray = window.location.pathname.split('/');
-    const urlSlug = pathArray[2];
+    const {
+      course,
+      fetchCourseBySlug,
+      fetchLessons,
+      lessons,
+      clearLessons,
+      params,
+      clearComments,
+    } = this.props;
+    const { urlSlug } = params;
     clearLessons();
+    clearComments();
 
     if (!lessons && course.courseId) {
       fetchLessons({ courseId: course.courseId });
