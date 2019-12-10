@@ -32,8 +32,7 @@ import {
 // Components
 import Hero from './hero';
 
-// Image Assets
-import HeroImage3 from '../../assets/hero-image-3.jpeg';
+// Images for "Coming Soon" Section
 import HeroImage4 from '../../assets/hero-image-8.jpg';
 import HeroImage5 from '../../assets/hero-image-10.png';
 import HeroImage from '../../assets/hero-image-12.jpg';
@@ -102,6 +101,8 @@ class Home extends Component {
       courses,
     } = this.props;
     const { showTrailerModal, showFloatingActionBar } = this.state;
+    const isAdmin = user && user.roles ? user.roles.includes('admin') : false;
+
     return (
       <div style={{ overflowX: 'hidden' }}>
         {/* Animated Hero Image and Featured Courses */}
@@ -113,29 +114,32 @@ class Home extends Component {
         />
         {/* Recently Added Courses */}
         <div style={{ background: '#fff', paddingTop: 40, paddingBottom: 40 }}>
-          <SectionTitle style={{ marginTop: 0, marginBottom: 17.5 }}>ADMIN TOOLS</SectionTitle>
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <FlatButton
-              onClick={() => toggleAddCourseModal(true)}
-              style={{ width: 260, marginTop: 0, marginBottom: 20 }}
+          {isAdmin && [
+            <SectionTitle style={{ marginTop: 0, marginBottom: 17.5 }}>ADMIN TOOLS</SectionTitle>,
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <ButtonText>+ ADD NEW COURSE</ButtonText>
-            </FlatButton>
-          </div>
+              <FlatButton
+                onClick={() => toggleAddCourseModal(true)}
+                style={{ width: 260, marginTop: 0, marginBottom: 20 }}
+              >
+                <ButtonText>+ ADD NEW COURSE</ButtonText>
+              </FlatButton>
+            </div>,
+          ]}
 
           <SectionTitle style={{ marginTop: 0 }}>Recently Added</SectionTitle>
           <CardList mini>
             {courses &&
-              courses.slice(0, 3).map(course => {
+              courses.slice(0, 4).map(course => {
                 return (
                   <CourseCard
+                    key={course.courseId}
                     backgroundImage={course.thumbnailImage}
                     title={course.instructorName}
                     tagline={course.tagline}
@@ -169,16 +173,20 @@ class Home extends Component {
           )}
 
           {/* My Classes */}
-          <SectionTitle id="my-classes">My Classes</SectionTitle>
-          <CardList>
-            <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
+          {/* {user && [
+            <SectionTitle key={user.uid} id="my-classes">
+              My Classes
+            </SectionTitle>,
+            <CardList>
+              <CourseCard backgroundImage={HeroImage3} title="BOI-1DA" tagline="Teaches Drumming" />
 
-            <CourseCard
-              backgroundImage={HeroImage4}
-              title="Southside"
-              tagline="Teaches Trap Production"
-            />
-          </CardList>
+              <CourseCard
+                backgroundImage={HeroImage4}
+                title="Southside"
+                tagline="Teaches Trap Production"
+              />
+            </CardList>,
+          ]} */}
 
           {/* Available Courses */}
           <SectionTitle>Now Available</SectionTitle>
@@ -187,6 +195,7 @@ class Home extends Component {
               courses.map(course => {
                 return (
                   <CourseCard
+                    key={course.courseId}
                     backgroundImage={course.thumbnailImage}
                     title={course.instructorName}
                     tagline={course.tagline}
