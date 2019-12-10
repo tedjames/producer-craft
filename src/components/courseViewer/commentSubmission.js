@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
 import InputBase from '@material-ui/core/InputBase';
 
+import Avatar from 'react-avatar';
+import { createComment } from '../../actions';
 import { FlatButton, ButtonText } from '../common';
-import StorchProfile from '../../assets/storch-profile-image-2.jpg';
 
 const CommentDetails = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
 `;
-const UserAvatar = styled.div`
-  height: 48px;
-  width: 48px;
-  border-radius: 180px;
-  margin-right: 15px;
-  background-repeat: no-repeat;
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-size: cover;
-  background-color: #555;
-`;
+
 const FieldCard = styled.div`
   background: #fff;
   border-radius: 12px;
@@ -49,18 +42,31 @@ const InputField = styled(InputBase)`
   font-family: roboto-condensed !important;
 `;
 
-const CommentSubmission = () => {
+const CommentSubmission = ({ lessonId, createComment, user }) => {
   const [message, setMessage] = useState('');
   const [showButtons, toggleButtons] = useState(false);
   const close = () => {
     setMessage('');
     toggleButtons(false);
   };
+  const handleSubmit = () => {
+    console.log();
+
+    if (message !== '') {
+      createComment({ lessonId, userId: user.uid, message, nickname: user.displayName });
+      close();
+    }
+  };
   return (
     <div>
       <CommentDetails>
         <div style={{ width: 58 }}>
-          <UserAvatar backgroundImage={StorchProfile} />
+          <Avatar
+            size="42"
+            name={user && user.displayName && user.displayName}
+            color="#40baff"
+            round
+          />
         </div>
         <FieldCard>
           <InputField
@@ -84,7 +90,7 @@ const CommentSubmission = () => {
         >
           <ButtonText style={{ color: '#888' }}>Cancel</ButtonText>
         </FlatButton>
-        <FlatButton>
+        <FlatButton onClick={handleSubmit}>
           <ButtonText>Submit</ButtonText>
         </FlatButton>
       </CommentButtons>
@@ -92,4 +98,7 @@ const CommentSubmission = () => {
   );
 };
 
-export default CommentSubmission;
+export default connect(
+  null,
+  { createComment },
+)(CommentSubmission);
