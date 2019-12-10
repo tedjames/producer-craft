@@ -1,7 +1,7 @@
 import {
   CREATE_COURSE,
   FETCH_COURSES,
-  FETCH_COURSE,
+  // FETCH_COURSE,
   UPDATE_COURSE,
   DELETE_COURSE,
   CREATE_FILE,
@@ -12,6 +12,8 @@ import {
   FETCH_COMMENTS,
   UPDATE_COMMENT,
   DELETE_COMMENT,
+  SET_NEW_COMMENT,
+  CLEAR_COMMENTS,
   CREATE_LESSON,
   FETCH_LESSONS,
   UPDATE_LESSON,
@@ -19,6 +21,7 @@ import {
   ERROR,
   PENDING,
   CLEAR_LESSONS,
+  FETCH_ACCOUNT_DETAILS,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -35,13 +38,14 @@ const INITIAL_STATE = {
   updatingLesson: false,
   deletingLesson: false,
   // comment management
-  comments: [],
+  comments: false,
+  newComment: false,
   fetchingComments: false,
   creatingComment: false,
   updatingComment: false,
   deletingComment: false,
   // file management
-  files: [],
+  files: false,
   fetchingFiles: false,
   creatingFile: false,
   updatingFile: false,
@@ -66,7 +70,7 @@ const INITIAL_STATE = {
   updatingCard: false,
   deletingCard: false,
   // purchase history
-  purchaseHistory: [],
+  purchaseHistory: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -127,7 +131,6 @@ export default (state = INITIAL_STATE, action) => {
             fetchingComments: false,
           };
       }
-
     /* Private Endpoints - writing/deleting course, lesson and file data */
     //
     // Course Management
@@ -216,6 +219,7 @@ export default (state = INITIAL_STATE, action) => {
           return {
             ...state,
             creatingComment: false,
+            newComment: state.newComment ? [...state.newComment, action.payload] : [action.payload],
           };
       }
     case UPDATE_COMMENT:
@@ -242,7 +246,13 @@ export default (state = INITIAL_STATE, action) => {
             deletingComment: false,
           };
       }
-
+    case SET_NEW_COMMENT:
+      return {
+        ...state,
+        newComment: state.newComment ? [...state.newComment, action.payload] : [action.payload],
+      };
+    case CLEAR_COMMENTS:
+      return { ...state, comments: false, newComment: false };
     // File Management
     case CREATE_FILE:
       switch (action.payload) {
@@ -278,6 +288,19 @@ export default (state = INITIAL_STATE, action) => {
           return {
             ...state,
             deletingFile: false,
+          };
+      }
+    case FETCH_ACCOUNT_DETAILS:
+      switch (action.payload) {
+        case PENDING:
+          return { ...state, fetchingAccount: true };
+        case ERROR:
+          return { ...state, fetchingAccount: false };
+        default:
+          return {
+            ...state,
+            fetchingAccount: false,
+            account: action.payload,
           };
       }
     default:
