@@ -7,5 +7,18 @@ export {
 } from './subscriptions';
 export { invoiceWebhookEndpoint } from './webhooks';
 export { stripeGetCoupon } from './coupons';
-export { createUserEvent, deleteUserEvent, saveAnonymousUser } from './accounts';
+export {
+  createUserEvent,
+  deleteUserEvent,
+  saveAnonymousUser,
+  updateUsernameEvent,
+  updateUserEvent,
+} from './accounts';
 export { generateThumbnail } from './thumbnails';
+export {
+  likeComment,
+  handleCreateCommentReply,
+  handleDeleteCommentReply,
+  handleDeleteComment,
+  handleDeleteLesson,
+} from './comments';
