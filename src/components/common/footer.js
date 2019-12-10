@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { functions } from 'firebase';
+import * as functions from 'firebase/functions';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import styled from 'styled-components';

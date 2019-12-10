@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import styled from 'styled-components';
 import { injectStripe, Elements } from 'react-stripe-elements';
-import { functions } from 'firebase';
+import * as functions from 'firebase/functions';
 import Swal from 'sweetalert2';
 
 import Dialog from '@material-ui/core/Dialog';

@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 // UUID for Generating Unique IDs
 import uuidv4 from 'uuid/v4';
 // Firebase SDK
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { db } from '../database';
 // Redux Action Types
 import {
