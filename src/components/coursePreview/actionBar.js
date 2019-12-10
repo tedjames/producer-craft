@@ -39,11 +39,6 @@ const SocialIconButton = styled.a`
   }
 `;
 
-const Genius = styled.img`
-  height: 50px;
-  opacity: 0.7;
-`;
-
 const ActionBar = ({ showRegistrationModal, slug, user, handleEnroll, course }) => {
   return (
     <Container>
