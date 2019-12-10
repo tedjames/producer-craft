@@ -207,6 +207,8 @@ class CoursePreview extends Component {
       courses,
     } = this.props;
     const { showTrailerModal } = this.state;
+    const isAdmin = user && user.roles ? user.roles.includes('admin') : false;
+
     return (
       <div style={{ overflowX: 'hidden' }}>
         {/* Hero Image, Title and Enroll/Follow Buttons */}
