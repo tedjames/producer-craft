@@ -91,3 +91,31 @@ export const deleteUserEvent = functions.auth.user().onDelete(async user => {
   return await batch.commit();
   //TODO: Delete user's thumbnail from storage bucket
 });
+
+const updateDisplayName = async (profileId: string, username: string) => {
+  return await admin.auth().updateUser(profileId, {
+    displayName: username,
+  });
+};
+
+export const updateUsernameEvent = functions.firestore
+  .document('profiles/{profileId}')
+  .onWrite(async (snap, context) => {
+    const { profileId } = context.params;
+    const { username } = snap.after.data();
+    return catchErrors(updateDisplayName(profileId, username));
+  });
+
+const updateEmail = async (userId: string, email: string) => {
+  return await admin.auth().updateUser(userId, {
+    email,
+  });
+};
+
+export const updateUserEvent = functions.firestore
+  .document('users/{userId}')
+  .onWrite(async (snap, context) => {
+    const { userId } = context.params;
+    const { email } = snap.after.data();
+    return catchErrors(updateEmail(userId, email));
+  });
