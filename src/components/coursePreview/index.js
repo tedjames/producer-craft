@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { withRouter } from 'react-router';
 // Redux
 import { connect } from 'react-redux';
 import {
@@ -142,7 +143,6 @@ class CoursePreview extends Component {
 
     this.state = {
       showTrailerModal: false,
-      lessonFetchAttempts: 0,
     };
   }
 
@@ -379,7 +379,8 @@ const mapStateToProps = ({ auth, view, admin }) => ({
   courses: admin.courses,
 });
 
-export default connect(
+export default withRouter(
+  connect(
   mapStateToProps,
   {
     showAuthModal,
@@ -391,5 +392,7 @@ export default connect(
     fetchCourseBySlug,
     fetchLessons,
     clearLessons,
+      clearComments,
   },
-)(CoursePreview);
+  )(CoursePreview),
+);
