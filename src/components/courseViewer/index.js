@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { connect } from 'react-redux';
 import FileCard from './fileCard';
+import LessonBackground from '../../assets/lessonBackground.png';
 
 // Redux
 import {
@@ -517,10 +518,7 @@ class CourseViewer extends Component {
     return (
       <div style={{ overflowX: 'hidden' }} id="course-viewer">
         {/* Hero Image, Title and Enroll/Follow Buttons */}
-        <Hero
-          showRegistrationModal={showRegistrationModal}
-          backgroundImage="https://tedwerbel.netlify.com/static/media/redBackground7.1bfbece9.png"
-        />
+        <Hero showRegistrationModal={showRegistrationModal} backgroundImage={LessonBackground} />
 
         <MainContainer>
           {/* Profile Image */}
